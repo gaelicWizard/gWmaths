@@ -1,0 +1,40 @@
+\documentclass[12pt]{gWmaths}
+%!TxxEX program = pdflatexmk
+%!TEX encoding = UTF-8
+%!TEX spellcheck = en-US
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{blindtext}
+
+\author{John D Pell}
+\title{Test Document}
+%\date{New Year's Day, 2021}
+%\date{\today} % LaTeX uses \today if you don't specify any \date{}
+%%
+
+%rename the "Abstract" section:
+%\renewcommand{\abstractname}{Executive Summary}
+%\renewcommand{\contentsname}{<New table of contents title>}
+%\renewcommand{\listfigurename}{<New table of figures title>}
+%\renewcommand{\listtablename}{<New table of tables title>}
+
+\begin{document}
+	\maketitle
+	\begin{abstract}
+		\blindtext
+		%\shortauthors
+	\end{abstract}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\paragraph[Effect on staff turnover]{An analysis of the
+effect of the revised recruitment policies on staff
+turnover at divisional headquarters}
+
+\phantomsection
+\addcontentsline{toc}{section}{Introduction}
+\section*{Introduction}
+
+	\blinddocument
+\end{document}
