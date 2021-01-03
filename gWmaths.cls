@@ -1,15 +1,47 @@
 %!TEX TS-program = pdflatexmk
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{pellmaths}[2020 Quarantine Accessible TeX Project]
+\NeedsTeXFormat{LaTeX2e} 
+\ProvidesClass{gWmaths}[COVID-19 Quarantine Accessible TeX Project] 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Developed for Diana Pell by John Pell
+%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Input encoding, font loading, Unicode
+%% ref: https://tex.stackexchange.com/a/64457
+%% ref: https://tex.stackexchange.com/a/677
+%% ref: https://tex.stackexchange.com/a/147206
+%% ref: https://tex.stackexchange.com/a/2869
+%% ref: https://tex.stackexchange.com/a/44701 
+%% ref: https://tex.stackexchange.com/a/413046
+
+%\RequirePackage{mmap}
+% `mmap` is `cmap` plus some math-specifics. 
+% `cmap` extends default character mapping to include unicode codepoints.
+% `mmap`/`cmap` must(?) be loaded early / before inputenc and fontenc
+% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
+
+%\RequirePackage[utf8]{inputenc} 
+% When using older backends, this tells the backend to read all files as UTF-8.
+% pdfTeX and newer always read UTF-8 and ignore this package. 
+
+%\RequirePackage[T1]{fontenc}
+% `fontenc` specifies which font format to import.
+% T1 fonts extend the old OT1 format to allow greater than 128 characters
+
+%%TODO switch to fontspec
+
+
+
+% We start by inheriting from the regular "Article" class:
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 \LoadClass{article}
 
-% These packages are either required for some of our features, or are just really nice to have set up:
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
 \RequirePackage{cmap}
+
+% These packages are either required for some of our features, or are just really nice to have set up:
 \RequirePackage[english]{babel}
 \RequirePackage[%
 	pdflang={en-US},
@@ -22,19 +54,23 @@
 \RequirePackage{fancyhdr}
 \RequirePackage{paralist}
 \RequirePackage[shortlabels]{enumitem}
-\RequirePackage{amsfonts,amssymb,amsmath}
+\RequirePackage{amsfonts, amssymb, amsmath}
 \RequirePackage{ifthen}
 \RequirePackage{graphicx}
 \RequirePackage{ntheorem}
-\RequirePackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\RequirePackage[usenames, dvipsnames, svgnames, table]{xcolor}
 \RequirePackage{pdfpages}
 
+%\RequirePackage{lmodern}
+% `lmodern` includes a slightly newer set of default font glyphs
+
+% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
 \RequirePackage[tagged]{accessibility}
 
 %\usepackage{axessibility} % superseded?
 
 
-
+% Set our header depth to maximum 3:
 \setcounter{secnumdepth}{3}
 
 
