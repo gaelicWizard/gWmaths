@@ -1,18 +1,17 @@
-\ProvidesClass{gWmaths}[COVID19 Quarantine Accessible TeX Project] 
-\NeedsTeXFormat{LaTeX2e} 
-
+\ProvidesClass{gWmaths}[2020/01/04 v0.2.3 %
+	COVID19 Quarantine Accessible TeX Project] 
+\NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
 %!TEX program = pdflatexmk
 %!TEX encoding = UTF-8
 %!TEX spellcheck = en-US
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% Developed for Diana Pell by John Pell
+%% 
 %%% % !TeX root = class.tex
 %%% % ! /// BiB program = bibtex (or biber)
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Developed for Diana Pell by John Pell
-%% 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input encoding, font loading, Unicode
 %% ref: https://tex.stackexchange.com/a/64457
@@ -30,17 +29,16 @@
 %% ref: https://tex.stackexchange.com/questions/331597/trouble-transitioning-from-paralist-to-enumitem
 %% https://tex.stackexchange.com/a/202301
 
-
 \RequirePackage[
-	%% docs: http://ctan.mirrors.hoobly.com/macros/latex/base/ifthen.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
 		]{ifthen}
 \RequirePackage[
-	%% docs: https://mirror.las.iastate.edu/tex-archive/macros/generic/iftex/iftex.pdf
+	%% docs: http://mirrors.ctan.org/macros/generic/iftex/iftex.pdf
 		]{iftex}
 
 \ifPDFTeX
-	\RequirePackage[utf8]{inputenc} 
-	% When using older backends, this tells the backend to read all files as UTF-8.
+	\RequirePackage[utf8]{inputenc}[2015/01/01]
+	% When using older engines, this tells the engine to read all files as UTF-8.
 	% XeTeX and LuaTeX always read UTF-8 and ignore this package. 
 	% LaTeX circa 2018 and newer default to UTF-8 as well. 
 \fi
@@ -49,20 +47,42 @@
 %% ref: https://www.latex-project.org/help/documentation/clsguide.pdf
 \DeclareOption{accessibility}{\OptionNotUsed}
 \DeclareOption{axessibility}{\OptionNotUsed}
+
+\DeclareOption{course}{\OptionNotUsed} % root document
+\DeclareOption{syllabus}{\OptionNotUsed} %
+\DeclareOption{exam}{\OptionNotUsed} % 
+\DeclareOption{quiz}{\OptionNotUsed} % 
+\DeclareOption{lecture}{\OptionNotUsed} % Notes for lecturer / overhead
+\DeclareOption{videolecture}{\OptionNotUsed} % Adaptation for use with Show Me
+\DeclareOption{handout}{\OptionNotUsed} % Passed out to students during lecture
+
+\newif\ifgW@myoption% create a flag for this option
+\DeclareOption{someoption}{\ifgW@myoptiontrue}% if the option is set, then raise the flag
+
 % We start by inheriting from the regular "Article" class:
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 \LoadClass{article}
 
+\ifgW@myoption % if the flag is set, then do some thing
+   code active only for this option
+\fi
 
-\ifTUTeX % matches LuaTeX or XeTeX
-	\RequirePackage{fontspec} % Modern font handling.
+
+\ifTUTeX % matches LuaTeX and/or XeTeX
+	\RequirePackage[
+		%% docs: http://mirrors.ctan.org/macros/unicodetex/latex/fontspec/fontspec.pdf
+		]{fontspec} % Modern font handling.
 	\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
 	%\usepackage{unicode-math} % Use unicode symbols
+	
+	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1) 
+	%% Post-2017, don't use xunicode package
+	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
 \else % pdfTeX or older
 	\pdfminorversion=6 %fucking hack for `accessibility`
 
-	\RequirePackage{mmap}
+	\RequirePackage[noTeX]{mmap}
 	% `mmap` is `cmap` plus some math-specifics. 
 	% `cmap` extends default character mapping to include unicode codepoints.
 	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
@@ -73,50 +93,83 @@
 \fi
 
 
+\RequirePackage{tagpdf} % official work-in-progress package for future integrated tagging
+
+%\RequirePackage[
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/standalone/standalone.pdf
+%	subpreambles=false % do not automatically collect preambles
+%		]{standalone}
+%\documentclass[class=gWmaths,crop=false]{standalone}
+%\standaloneconfig
+
+%\RequirePackage[
+	%activeospeccharacters, % don't fuck with < and > 
+	%notheorems?
+		%]{beamerarticle}
+%\documentclass[ignorenonframetext]{beamer}
+%\documentclass[trans]{beamer}
+%Note: When using \include or \input commands, conversions of modes must be controlled manually. See Section 21.3 for details
+%\mode<article>{\usepackage{fullpage}}
+%\mode<presentation>{\usetheme{Berlin}}
+%\subsection<article>{Article-Only Section}
+%\only<article>{\item This particular item is only part of the article version.}
+%\item<presentation:only@0> This text is also only part of the article.
+%The command \setjobnamebeamerversion{main.beamer} tells the article version where to find the presentation version. This is necessary if you wish to include slides from the presentation version in an article as figures.
+%By adjusting the frame template, you can “mimic” the appearance of frames typeset by beamer in your articles.
 
 
+%https://tex.stackexchange.com/a/5231
 
+%pdflatex --jobname=Cookies %\jobname
 
 
 % These packages are either required for some of our features, or are just really nice to have set up:
 \RequirePackage[ % `fancyhdr` may have issues with `accessibility`
-	%% docs: http://mirrors.ibiblio.org/CTAN/macros/latex/contrib/fancyhdr/fancyhdr.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
 		]{fancyhdr}
 \RequirePackage[ % `paralist` redefines {itemize}, {enumerate} environments
-	%% docs: http://ctan.math.washington.edu/tex-archive/macros/latex/contrib/paralist/paralist.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/paralist/paralist.pdf
 		]{paralist}
 %\RequirePackage[ % `enumitem` redefines {itemize}, {enumerate} environments
 	% `enumitem` is substantially more complex than `paralist`
-	%% docs: http://ctan.mirrors.hoobly.com/macros/latex/contrib/enumitem/enumitem.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/enumitem/enumitem.pdf
 	%shortlabels, % compatible with `enumerate`
 	%unboxed % avoid problems nesting environments
 		%]{enumitem}
 \RequirePackage[
-	%% docs: http://ctan.mirrors.hoobly.com/macros/latex/required/amsmath/amsldoc.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/required/amsmath/amsldoc.pdf
 		]{amsfonts, amssymb, amsmath}
 \RequirePackage[
-	%% docs: http://ctan.math.utah.edu/ctan/tex-archive/macros/latex/required/graphics/grfguide.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf
 		]{graphicx}
 \RequirePackage[ % `xcolor` defines color names for any driver
-	%% docs: https://mirror.las.iastate.edu/tex-archive/macros/latex/contrib/xcolor/xcolor.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
 	hyperref, 
 	dvipsnames, 
 	svgnames, 
 	table
 		]{xcolor}
 %\RequirePackage[ % `pdfpages` improves inserting PDF clippings over graphicx
-	%% docs: http://mirrors.ibiblio.org/CTAN/macros/latex/contrib/pdfpages/pdfpages.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/pdfpages/pdfpages.pdf
 		%]{pdfpages}
 
 \RequirePackage[ % `babel` allows for i18n, and l10n 
-	%% docs: http://ctan.math.utah.edu/ctan/tex-archive/macros/latex/required/babel/base/babel.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/required/babel/base/babel.pdf
 	% babel cannot set the pdf-lang option for hyperref
 	english % The language can be tagged on the \documentclass declaration!
 		]{babel}
 
+\RequirePackage[
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/phonenumbers/doc/phonenumbers-en.pdf
+	country=US, % switch default from DE to US.
+	foreign=international, % Use sensible defaults for full ITU numbers.
+	home-country=none, % Do not strip the country code (default).
+	home-area-code=none, % Do *not* strip area code, ever (default).
+	link=on % clickable tel: link (default).
+		]{phonenumbers}
 
 \RequirePackage[ % improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel`
-	%% docs: http://ctan.math.washington.edu/tex-archive/macros/latex/contrib/ntheorem/ntheorem.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf
 	hyperref,
 	amsmath,
 	thmmarks,
@@ -124,43 +177,125 @@
 	standard % load predefined environments
 		]{ntheorem}
 
+\RequirePackage[
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/csquotes/csquotes.pdf
+	autostyle=try, % use `babel` if available
+	%autopunct % look ahead for trailing punctuation to move inside marks
+		]{csquotes}
 
-
+%define new \listofXs
+%% docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
 
 \ifPDFTeX % not XeTeX nor LuaTeX
 	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
+	%\RequirePDFTEX
 	\RequirePackage[tagged]{accessibility}
 \fi
-%\RequirePackage{axessibility}
+
+\RequirePackage[
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/axessibility/axessibility.pdf
+		]{axessibility}
 
 
-
+\RequirePackage[ % required *before* `hyperref`
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/hyperxmp/hyperxmp.pdf
+		]{hyperxmp} 
 \RequirePackage[ % `hyperref` claims to be about hypertext, but it's actually a significant structural support!
-	%% docs: https://mirrors.concertpass.com/tex-archive/macros/latex/contrib/hyperref/doc/manual.html
-	pdfencoding=auto,
-	pdflang={en-US},
-	linktoc=all,
-	colorlinks,
-	linktoc=all,
-	pdfusetitle,
-	pdfdisplaydoctitle
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.pdf
+	colorlinks, % set hyperlinks in color
+	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
+	linktoc=all, % link section name *and* page number from toc
+	pdfencoding=auto, % use unicode or WTFncode in PDF tags
+	pdfusetitle, % use \title{} for PDF metadata
+	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
+	pdfpagelabels, % tag pages with page numbers from \LaTeX ("ii" or whatever) 
+	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
 	%% NOTE: https://tex.stackexchange.com/q/1863
 		]{hyperref}
-%%also: https://mirrors.concertpass.com/tex-archive/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
+%%also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
+\RequirePackage[
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/oberdiek/hypdoc.pdf
+		]{hypdoc} % hypdoc
 
 \RequirePackage[ % `pdfcomment` requires `hyperref` to be loaded first
-	%% docs: https://mirror.las.iastate.edu/tex-archive/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 	linewidth = 1 % TODO: what is `linewidth` for?
 		]{pdfcomment} % requires `hyperref` to load first
 \RequirePackage{geometry} 
 
+%\RequirePackage[
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/currfile/currfile.pdf
+		%]{currfile} %\currfilename
+
+\ifLuaTeX
+	%\RequirePackage{pdftexcmds}
+\fi
+
+\RequirePackage[
+	%% docs: http://mirrors.ctan.org/macros/latex/contrib/filemod/filemod.pdf
+		]{filemod}
 
 
-%\HyperSetup
+%http://mirrors.ctan.org/macros/latex/base/ltfilehook-doc.pdf
+\GetFileInfo{\CurrentFile}
+\AtEndOfClass{
+	\GetFileInfo{\jobname.tex} % read \ProvidesFile{}[] from the ultimate TeX
+	%\listfiles % track loaded files in this job
+	%\@getclass
+	\date{\filemodprintdate{\jobname.tex}}
+		}
+
+%\RequirePackage{fixltx2e}[2015/01/01]
+
+\hypersetup{
+	pdfsubject={\fileinfo}, % this takes the name/description of the *class*...
+	%pdflang={en-US}, % `hyperxmp` will ask `babel` for the language code!
+	hyperindex % turn this shit back on, JFC.
+		}
+
+\AtBeginDocument{
+	\listfiles % track loaded files in this job
+	%\date{omg}
+	\hypersetup{
+		%pdfdate={\pdffilemoddate{\jobname.tex}}, % 2020 or 2020-01 or 2020-01-04
+		pdfcreationdate={\pdffilemoddate{\jobname.tex}},
+		pdfrendition=default, %screen,
+		%pdfsubject={},
+		%pdfsubtitle={},
+		%pdfurl={}, % full path to *this* PDF
+		pdfinfo={
+			%CreationDate={\pdffilemoddate{\jobname.tex}}
+				},
+		%pdfsource={\jobname.tex} % default
+		pdfuapart=1 % that's the whole point, but we're lacking...
+			}
+		}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtBeginDocument{
+	\makeatletter
+	\let\thetitle\@title
+	\let\theauthor\@author
+	\let\thethanks\@thanks
+	\let\thedate\@date
+	\makeatother
+		}
+
+
+
+\providecommand*{\q}[2][]{\blockquote[#1][]{#2}}
+	% Short-hand for quotes via `csquotes`
+	% TODO: \blockcquote
+	% \providencommand can't more than one optional argument...
+	%% ref: https://tex.stackexchange.com/a/29975
+	%% ref: https://www.overleaf.com/learn/latex/Commands
+	%% ref: https://tex.stackexchange.com/questions/321435/newcommand-and-renewcommand-difficulty-in-class-file
+	%% ref: https://stackoverflow.com/questions/1812214/latex-optional-arguments
+	%% ref: https://tex.stackexchange.com/a/1057
+	
 
 
 
