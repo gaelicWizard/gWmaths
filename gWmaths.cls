@@ -1,26 +1,168 @@
-\ProvidesClass{gWmaths}[2020/01/04 v0.2.3 %
+\ProvidesClass{gWmaths}[2020/01/04 v0.2.4 %
 	COVID19 Quarantine Accessible TeX Project] 
 \NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% 
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse{Copy the following lines to the *top* of your \LaTeX document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[english,lecture]{gWmaths}
 %!TEX program = pdflatexmk
 %!TEX encoding = UTF-8
 %!TEX spellcheck = en-US
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Developed for Diana Pell by John Pell
-%% 
-%%% % !TeX root = class.tex
-%%% % ! /// BiB program = bibtex (or biber)
+%!TeX root = COURSE_MAIN.TEX
+%!TeX BiB program = biber
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fi%		Copy the *above* lines to the top of your \LaTeX document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% We need `iftex` early to set up defaults
+\RequirePackage{%
+	iftex, % http://mirrors.ctan.org/macros/generic/iftex/iftex.pdf
+	l3keys2e, % http://mirrors.ctan.org/macros/latex/contrib/l3packages/l3keys2e.pdf
+	xparse, % http://mirrors.ctan.org/macros/latex/contrib/l3packages/xparse.pdf
+		}
+%\RequirePackage{fixltx2e}[2015/01/01]
+%\RequirePackage{expl3} lt3graph % http://mirrors.ctan.org/macros/latex/contrib/lt3graph/lt3graph.pdf
+%%
+%\expandafter\def\csname ver@l3regex.sty\endcsname{} % https://tex.stackexchange.com/a/491456
+%%
 
-\RequirePackage% load early b/c we needs it
-	{iftex}% http://mirrors.ctan.org/macros/generic/iftex/iftex.pdf
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hack up global package options list: 
+\def\gW@classoptionslist{\@classoptionslist}
+\providecommand\gW@addGlobalOption[1]{%
+   \xdef\gW@classoptionslist{\gW@classoptionslist,#1}%
+}
+\AtEndOfClass{
+	%\let\gWoptions\gW@classoptionslist
+	\let\@classoptionslist\gW@classoptionslist
+		}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\gW@addGlobalOption{utf8} % All documents are UTF-8 in the 21st century. If not, fix your document.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%TODO:
+%% http://mirrors.ctan.org/macros/latex/base/slides.pdf
+%% http://mirrors.ctan.org/macros/latex209/contrib/eslides/eslides.pdf
+%%hypcap
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Set up our options and defaults
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\ifgW@hyperref% Load & configure `hyperref`?
+\DeclareOption{hyperref}{\gW@hyperreftrue}
+
+\newif\ifgW@ntheorem% Load & configure `ntheorem`?
+\DeclareOption{ntheorem}{\gW@ntheoremtrue
+	\gW@amsthmfalse% block amsthm, conflicts
+		}% 
+
+\newif\ifgW@amsmath% Load & configure `amsmath`?
+\DeclareOption{amsmath}{\gW@amsmathtrue}
+
+\newif\ifgW@hypdoc% Load & configure `hypdoc`?
+\DeclareOption{hypdoc}{\gW@hypdoctrue%
+	\gW@hyperreftrue% require `hyperref` too
+		}%
+
+\newif\ifgW@amsthm% Load & configure `amsthm`
+\DeclareOption{amsthm}{\gW@amsthmtrue
+	\gW@ntheoremfalse% block `ntheorem`, conflicts
+		}%
+
+\newif\ifgW@report% create a flag for this option
+\DeclareOption{report}{\gW@reporttrue}% if the option is set, then raise the flag
+
+\newif\ifgW@article% create a flag for this option
+\DeclareOption{article}{\gW@articletrue}% if the option is set, then raise the flag
+
+\newif\ifgW@slides% create a flag for this option
+\DeclareOption{slides}{\gW@slidestrue}% if the option is set, then raise the flag
+
+\newif\ifgW@myoption% create a flag for this option
+\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
+
+\newif\ifgW@myoption% create a flag for this option
+\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
+
+
+
+\ExecuteOptions{% Run our default options
+	hyperref, 
+	ntheorem,
+	hypdoc,
+	article,
+	amsmath,
+		}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Prepare arguments for all the packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+% Set up modern defaults for encodings:
+%\PassOptionsToPackage{% `inputenc`
+	%utf8 % All documents are UTF-8 in the 21st century. If not, fix your document.
+		%}{inputenc}
+\PassOptionsToPackage{% `fontenc`
+	T1		% T1 fonts extend the old OT1 format to allow greater than 128 characters
+		}{fontenc}
+\PassOptionsToPackage{% `mmap`
+	noTeX % use unicode codepoints, not TeX names. 
+		}{mmap} % Allows copy/pasta from PDF.
+
+%%
+% Set up Hyper\TeX (hyperref, et al), which is basically the structural core of the document:
+\ifgW@hyperref\PassOptionsToPackage{% `hyperref`
+	colorlinks, % set hyperlinks in color
+	linktoc=all, % link section name *and* page number from toc
+	%pdfencoding=auto, % use unicode or WTFncode in PDF tags
+	pdfusetitle, % use \title{} for PDF metadata
+	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
+	pdfpagelabels, % tag pages with page numbers from \LaTeX ("ii" or whatever) 
+	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
+		}{hyperref}
+%%
+% Inform *all* packages that `hyperref` is in use:
+\gW@addGlobalOption{hyperref}
+%%
+%\PassOptionsToPackage{% `xcolor`
+%	hyperref % Support the `hyperref` package in terms of color expressions by defining additional keys
+%		}{xcolor}
+%\PassOptionsToPackage{% `ntheorem`
+%	hyperref, % Support the `hyperref` package
+%		}{ntheorem}
+\fi
+
+%%
+% Set up `scrbase` not to argue with iftex.
 \PassOptionsToPackage{% `scrbase`
 	internalonly % don't define macros to conflict with `iftex`
 		}{scrbase} % KOMA-Script base package
 
+
+%%
+% Set up documentation utilities from `hyperref` documentation package.
+\ifgW@hypdoc\PassOptionsToPackage{% `hyperref`
+	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
+		}{hyperref}
+\fi
+
+%%
+% Set up colors now that we have color printers and video screens...
 \PassOptionsToPackage{% `xcolor`
 	xcdraw, % use PS/PDF commands to draw frames and boxes, in dvips, pdftex, dvipdfm
 	fixinclude, % prevents dvips from explicitly resetting current color to black before actually inserting an .eps file
@@ -29,43 +171,42 @@
 	svgnames, % Load a set of predefined colors according to SVG 1.1.
 	x11names*, % Load a set of predefined colors according to Unix/X11, delayed.
 	table, % Load the `colortbl` package
-	hyperref % Support the hyperref package in terms of color expressions by defining additional keys
 		}{xcolor}
 
-\PassOptionsToPackage{% `inputenc`
-	utf8 % UTF-8
-		}{inputenc}
-
-\PassOptionsToPackage{% `mmap`
-	noTeX % use unicode codepoints, not TeX names
-		}{mmap}
-
-\PassOptionsToPackage{% `fontenc`
-	T1 % use font format from this century
-		}{fontenc}
-
-\PassOptionsToPackage{% `ntheorem`
-	hyperref, % cope with `hyperref`
-	amsmath, % cope with `amsmath`
+%%
+% Set up a much nicer set of theorem environments:
+\ifgW@ntheorem\PassOptionsToPackage{% `ntheorem`
 	thmmarks, % enables the automatical placement of endmarks
 	thref, % enables the extended reference features
 	standard % load predefined environments
 		}{ntheorem}
-
+%%
+% Inform *all* packages that `ntheorem` is in use:
+\gW@addGlobalOption{ntheorem}
+%%
+%\PassOptionsToPackage{% `empheq`
+%	ntheorem % cope with `ntheorem`
+%		}{empheq}
 \PassOptionsToClass{% `beamer`
-	%noamsthm
-	t
+	noamsthm % prevent from loading `amsthm`, which conflicts with `ntheorem`
 		}{beamer}
+\fi
 
-\PassOptionsToPackage{% `empheq`
-	ntheorem % cope with `ntheorem`
-		}{empheq}
+%%
+% Set up the most common mathematics package:
+\ifgW@amsmath\PassOptionsToPackage{% `amsmath`
+		}{amsmath}
+%%
+% Inform *all* packages that `amsmath` is in use:
+\gW@addGlobalOption{amsmath}
+%%
+%\PassOptionsToPackage{% `ntheorem`
+%	amsmath, % cope with `amsmath`
+%		}{ntheorem}
+\fi
 
-\PassOptionsToPackage{% `csquotes`
-	autostyle=try, % use `babel` if available
-	%autopunct % look ahead for trailing punctuation to move inside marks
-		}{csquotes}
-
+%%
+% Set up formatting for telephone numbers:
 \PassOptionsToPackage{% `phonenumbers`
 	country=US, % switch defaults from DE to US.
 	foreign=international, % Use sensible defaults for full ITU numbers.
@@ -74,20 +215,26 @@
 	link=on % clickable tel: link (default).
 		}{phonenumbers}
 
-\PassOptionsToPackage{% `hyperref`
-	colorlinks, % set hyperlinks in color
-	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
-	linktoc=all, % link section name *and* page number from toc
-	%pdfencoding=auto, % use unicode or WTFncode in PDF tags
-	pdfusetitle, % use \title{} for PDF metadata
-	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
-	pdfpagelabels, % tag pages with page numbers from \LaTeX ("ii" or whatever) 
-	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
-		}{hyperref}
+%%
+% Set up a nicer quotation package:
+\PassOptionsToPackage{% `csquotes`
+	autostyle=try, % use `babel` if available
+	%autopunct % look ahead for trailing punctuation to move inside marks
+		}{csquotes}
 
-\PassOptionsToPackage{% `babel`
-	english % The language can be tagged on the \documentclass declaration!
-		}{babel}
+
+
+
+\PassOptionsToClass{% `beamer`
+	t % ?
+		}{beamer}
+
+
+
+
+%\PassOptionsToPackage{% `babel`
+	%english % The language can be tagged on the \documentclass declaration!
+		%}{babel}
 
 \PassOptionsToPackage{%
 	%heightrounded % round off to avoid overfull alrgn;earujs
@@ -117,29 +264,13 @@
 %% ref: https://tex.stackexchange.com/questions/331597/trouble-transitioning-from-paralist-to-enumitem
 %% https://tex.stackexchange.com/a/202301
 
-\ifeTeX\else
-	\RequireeTeX% LaTeX requires eTeX now
-\fi
-
-\ifpdf
-	\pdfminorversion=6 %fucking hack for `accessibility`
-\fi
-
-\ifTUTeX\else
-	\RequirePackage[utf8]{inputenc}[2015/01/01]
-	% When using older engines, this tells the engine to read all files as UTF-8.
-	% XeTeX and LuaTeX always read UTF-8 and ignore this package. 
-	% LaTeX circa 2018 and newer default to UTF-8 as well. 
-\fi
-
-\RequirePackage% required *before* `hyperref`
-	{hyperxmp} % http://mirrors.ctan.org/macros/latex/contrib/hyperxmp/hyperxmp.pdf
-
 
 %% ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
 %% ref: https://www.latex-project.org/help/documentation/clsguide.pdf
-\DeclareOption{accessibility}{\OptionNotUsed}
-\DeclareOption{axessibility}{\OptionNotUsed}
+\newif\ifgW@accessibility
+\DeclareOption{accessibility}{\gW@accessibilitytrue\requirePDFTeX}
+\newif\ifgW@axessibility
+\DeclareOption{axessibility}{\gW@axessibilitytrue}
 
 \DeclareOption{course}{\OptionNotUsed} % root document
 \DeclareOption{syllabus}{\OptionNotUsed} %
@@ -161,6 +292,8 @@
 \DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
 
 
+%\ExecuteOption{videolecture}
+
 %\gW@videolecturetrue
 
 \ifgW@videolecture
@@ -171,23 +304,63 @@
 	%\RequirePackage{beamerarticle}
 \fi
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{\gWclassToLoad}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 
-\RequirePackage%
-	{amsfonts, % http://mirrors.ctan.org/fonts/amsfonts/doc/amsfndoc.pdf
-	amssymb} % http://mirrors.ctan.org/fonts/amsfonts/doc/amssymb.pdf
-\RequirePackage%
-	{amsmath} % http://mirrors.ctan.org/macros/latex/required/amsmath/amsldoc.pdf
-%http://mirrors.ctan.org/macros/latex/contrib/mathtools/mathtools.pdf
-%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
-\ifgW@videolecture\else
-	\RequirePackage% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
-		{ntheorem} % http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf 
-			%https://tex.stackexchange.com/a/5633
+\ifpdf
+	\pdfminorversion=6 %fucking hack for `accessibility`
 \fi
 
-\LoadClass{\gWclassToLoad}
+
+
+%\RequirePackage% Automatically configure package load order.
+%	{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
+%xparse
+%l3keys2e
+%lt3graph
+%withargs
+%%\LoadPackagesNow
+
+
+\ifTUTeX\else%pdfTeX
+	\RequirePackage[utf8]{inputenc}[2015/01/01]
+	% When using older engines, this tells the engine to read all files as UTF-8.
+	% XeTeX and LuaTeX always read UTF-8 and ignore this package. 
+	% LaTeX circa 2018 and newer default to UTF-8 as well. 
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Load the base document class
+%\ifgW@report\LoadClass{report} \fi
+\ifgW@article\LoadClass{article} \fi
+%\ifgW@slides\LoadClass{slides} \fi
+%\else\ClassError{wat}
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Begin actually loading packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% See https://github.com/mhelvens/latex-pkgloader/blob/master/pkgloader-recommended.sty
+%%
+\RequirePackage{% `hyperxmp` required *before* `hyperref`
+	babel,		% http://mirrors.ctan.org/macros/latex/required/babel/base/babel.pdf
+	hyperxmp		% http://mirrors.ctan.org/macros/latex/contrib/hyperxmp/hyperxmp.pdf
+		}%	% babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
+
+
+\RequirePackage{%
+	amsfonts,		% http://mirrors.ctan.org/fonts/amsfonts/doc/amsfndoc.pdf
+	amssymb,		% http://mirrors.ctan.org/fonts/amsfonts/doc/amssymb.pdf
+	amsmath,		% http://mirrors.ctan.org/macros/latex/required/amsmath/amsldoc.pdf
+	%mathtools,		%http://mirrors.ctan.org/macros/latex/contrib/mathtools/mathtools.pdf
+%%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
+		}%
+
+
+
+\ifgW@ntheorem\RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
+	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf 
+		}	%https://tex.stackexchange.com/a/5633
+\fi
 
 
 
@@ -208,14 +381,9 @@
 	%% docs: http://mirrors.ctan.org/info/xetexref/xetex-reference.pdf
 \fi
 
-\ifPDFTeX
-\ifgW@videolecture\else
-	\RequirePackage%
-		{mmap} %https://ctan.org/pkg/mmap
-	% `mmap` is `cmap` plus some math-specifics. 
-	% `cmap` extends default character mapping to include unicode codepoints.
-	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
-\fi\fi
+
+\RequirePackage% load *before* `fontspec`
+	{graphics,graphicx} % http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf
 
 \ifTUTeX % "Unicode TeX" matches LuaTeX and/or XeTeX
 	\RequirePackage% must load *after* maths fonts (specifically euler)
@@ -226,9 +394,14 @@
 	%% Post-2017, don't use xunicode package
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
 \else % pdfTeX or older
-	\RequirePackage[T1]{fontenc}
-	% `fontenc` specifies which font format to import.
+	\RequirePackage{%
+		mmap,	% `mmap` must load *after* `hyperref` % https://ctan.org/pkg/mmap
+		fontenc,	% `fontenc` must load *after* `mmap`/`cmap`	% `fontenc` specifies which font format to import.
+			}%
 	% T1 fonts extend the old OT1 format to allow greater than 128 characters
+	% `mmap` is `cmap` plus some math-specifics. 
+	% `cmap` extends default character mapping to include unicode codepoints.
+	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
 \fi
 
 
@@ -238,7 +411,7 @@
 %	subpreambles=false % do not automatically collect preambles
 %		]{standalone}
 %\documentclass[class=gWmaths,crop=false]{standalone}
-%\standaloneconfig
+%\standaloneconfig{}
 
 %\RequirePackage[%
 	%activeospeccharacters, % don't fuck with < and > 
@@ -262,7 +435,7 @@
 
 
 % These packages are either required for some of our features, or are just really nice to have set up:
-\RequirePackage% `fancyhdr` may have issues with `accessibility`
+\RequirePackage% `fancyhdr` may have issues with `accessibility`, must load *before* `hyperref`
 	{fancyhdr} % http://mirrors.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
 
 \ifgW@videolecture\else
@@ -283,23 +456,16 @@
 		{unicode-math} % http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unicode-math.pdf
 \fi
 
-\RequirePackage%
-	{graphics,graphicx} % http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf
-\RequirePackage%
-	{xcolor} % http://mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
-
 %\RequirePackage% `pdfpages` improves inserting PDF clippings over graphicx
 	%{pdfpages} % http://mirrors.ctan.org/macros/latex/contrib/pdfpages/pdfpages.pdf
 
-\RequirePackage% `babel` allows for i18n, and l10n 
-	% babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
-	{babel} % http://mirrors.ctan.org/macros/latex/required/babel/base/babel.pdf
-
-\RequirePackage% pretty printing and formatting
-	{phonenumbers} % http://mirrors.ctan.org/macros/latex/contrib/phonenumbers/doc/phonenumbers-en.pdf
-
-\RequirePackage% quotes, block quotes, citations
-	{csquotes} % http://mirrors.ctan.org/macros/latex/contrib/csquotes/csquotes.pdf
+\RequirePackage{%
+	xcolor,		% http://mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
+	phonenumbers,	% http://mirrors.ctan.org/macros/latex/contrib/phonenumbers/doc/phonenumbers-en.pdf
+	csquotes,		% http://mirrors.ctan.org/macros/latex/contrib/csquotes/csquotes.pdf
+	geometry,		% http://mirrors.ctan.org/macros/latex/contrib/geometry/geometry.pdf
+	filemod,		% http://mirrors.ctan.org/macros/latex/contrib/filemod/filemod.pdf
+		}
 
 \ifgW@videolecture\else
 	\RequirePackage% un-dumb \maketitle
@@ -309,12 +475,10 @@
 %define new \listofXs
 %% docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
-\ifPDFTeX % not XeTeX nor LuaTeX
+\ifgW@accessibility %\ifPDFTeX % not XeTeX nor LuaTeX
 	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
-	%\RequirePDFTEX
-	\ifgW@videolecture\else
-		\RequirePackage[tagged]{accessibility}
-	\fi
+	\requirePDFTEX % `accessibility` is badly hacked together and quite old...
+	\RequirePackage[tagged]{accessibility}
 \fi
 
 \ifXeTeX\else% seems like XeTeX is actually kind of a hack and maybe not much future...
@@ -328,22 +492,21 @@
 
 %http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf % too complex
 
-\RequirePackage% `hyperref` claims to be about hypertext, but it's actually a significant structural support!
+\RequirePackage{% `hyperref` claims to be about hypertext, but it's actually a significant structural support!
 	%% NOTE: https://tex.stackexchange.com/q/1863
-	{hyperref} % http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.pdf
-%%also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
+	hyperref,		% http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.pdf
+	pdfcomment,	% http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
+		}% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
 \ifgW@videolecture\else
 	\RequirePackage%
 		{hypdoc} % http://mirrors.ctan.org/macros/latex/contrib/oberdiek/hypdoc.pdf
 \fi
 
-\RequirePackage[ % `pdfcomment` requires `hyperref` to be loaded first
+%\RequirePackage[ % `pdfcomment` requires `hyperref` to be loaded first
 	%% docs: http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 	%linewidth = 1 % TODO: what is `linewidth` for?
-		]{pdfcomment} % http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
-\RequirePackage%
-	{geometry} % http://mirrors.ctan.org/macros/latex/contrib/geometry/geometry.pdf
+		%]{pdfcomment} % http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 
 %hack for some releases of TeX Live which disable auto-detection
 \ifXeTeX\geometry{xetex}\fi% 
@@ -356,15 +519,29 @@
 	%\RequirePackage{pdftexcmds}
 \fi
 
-\RequirePackage%
-	{filemod} % http://mirrors.ctan.org/macros/latex/contrib/filemod/filemod.pdf
 
 
 
 %\RequirePackage%
 	%{ifthen} % http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ugly hack, because of the unfortunate deprecation of 'n' to 'c' conversion,
+% plus the fact that kernel errors, even non-fatal ones, cannot be redirected.
+% Will think of a better solution at some point, but not now.
+\ExplSyntaxOn
+\let\__withargs_docs_old_kernel_msg_error:nnnnnn\__kernel_msg_error:nnnnnn
+\def\__kernel_msg_error:nnnnnn#1#2{
+  \str_if_eq:nnTF { #1/#2 } { kernel/deprecated-variant }{
+    \__kernel_msg_warning:nnnnnn{#1}{#2}
+  }{
+    \__withargs_docs_old_kernel_msg_error:nnnnnn{#1}{#2}
+  }
+}
+\ExplSyntaxOff
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%\LoadPackagesNow% `pkgloader`
 
 
 \@ifundefined{GetFileInfo}{}{% https://tex.stackexchange.com/a/30486
@@ -382,7 +559,6 @@
 			}
 		}% \GetFileInfo
 
-%\RequirePackage{fixltx2e}[2015/01/01]
 
 \hypersetup{%
 	%pdflang={en-US}, % `hyperxmp` will ask `babel` for the language code!
