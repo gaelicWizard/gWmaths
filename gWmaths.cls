@@ -1,12 +1,12 @@
-\ProvidesClass{gWmaths}[2020/01/04 v0.2.4 %
+\ProvidesClass{gWmaths}[2020/01/04 v0.2.3 %
 	COVID19 Quarantine Accessible TeX Project] 
 \NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%% 
-%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 \iffalse{Copy the following lines to the *top* of your \LaTeX document}
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[english,lecture]{gWmaths}
@@ -17,11 +17,11 @@
 %!TeX BiB program = biber
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 \fi%		Copy the *above* lines to the top of your \LaTeX document
+%%
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%%
-%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% We need `iftex` early to set up defaults
 \RequirePackage{%
@@ -34,8 +34,13 @@
 %%
 %\expandafter\def\csname ver@l3regex.sty\endcsname{} % https://tex.stackexchange.com/a/491456
 %%
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Specify some requirements, but this is mostly redundant...
+\RequireeTeX%necessarily true for all modern \LaTeX
+\ifpdf{}{
+	%\RequirePDF%invalid macro
+}
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hack up global package options list: 
 \def\gW@classoptionslist{\@classoptionslist}
@@ -55,12 +60,17 @@
 %% http://mirrors.ctan.org/macros/latex/base/slides.pdf
 %% http://mirrors.ctan.org/macros/latex209/contrib/eslides/eslides.pdf
 %%hypcap
-
+%% http://mirrors.ctan.org/macros/latex/contrib/etoolbox/etoolbox.pdf
+%%% \newbool & \newtoggle
+%% http://mirrors.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf
+%% http://mirrors.ctan.org/macros/latex/contrib/noindentafter/noindentafter.pdf
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up our options and defaults
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifgW@hyperref% Load & configure `hyperref`?
 \DeclareOption{hyperref}{\gW@hyperreftrue}
@@ -265,6 +275,11 @@
 %% https://tex.stackexchange.com/a/202301
 
 
+%%todo etoolbox http://mirrors.ctan.org/macros/latex/contrib/etoolbox/etoolbox.pdf
+
+%%todo ifthen http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
+
+\let\@classoptionslist\gW@classoptionslist
 %% ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
 %% ref: https://www.latex-project.org/help/documentation/clsguide.pdf
 \newif\ifgW@accessibility
@@ -312,14 +327,19 @@
 \fi
 
 
-
+\RequirePackage%
+	%[2020/05/05] %Request the \LaTeX format in effect as of this date
+	%[current]%Use the \LaTeX format as-is.
+	%[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the active format
+		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
 %\RequirePackage% Automatically configure package load order.
-%	{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
+	%[2018/04/29]{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
 %xparse
 %l3keys2e
 %lt3graph
 %withargs
-%%\LoadPackagesNow
+%%
+%%%\LoadPackagesNow
 
 
 \ifTUTeX\else%pdfTeX
