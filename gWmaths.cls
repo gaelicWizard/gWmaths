@@ -1,13 +1,21 @@
-\ProvidesClass{gWmaths}[2020/01/04 v0.2.3 %
+\ProvidesClass{gWmaths}[2020/01/09 v0.2.5 %
 	COVID19 Quarantine Accessible TeX Project] 
 \NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
+\RequirePackage{iftex, l3keys2e, xparse, expl3}% Use \LaTeX3 facilities
+%\RequirePackage{l3bootstrap}
+%\GetIdInfo $Id$ %
+%\ProvidesExplPackage{\ExplFileName}
+%	{\ExplFileDate}{\ExplFileVersion}{\ExplFileDescription}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse%\if\ExplFileName\jobname
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%
-\iffalse{Copy the following lines to the *top* of your \LaTeX document}
+%% Copy the following lines to the *top* of your \LaTeX document
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 \documentclass[english,lecture]{gWmaths}
 %!TEX program = pdflatexmk
@@ -16,6 +24,8 @@
 %!TeX root = COURSE_MAIN.TEX
 %!TeX BiB program = biber
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 \fi%		Copy the *above* lines to the top of your \LaTeX document
@@ -23,23 +33,20 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% We need `iftex` early to set up defaults
-\RequirePackage{%
-	iftex, % http://mirrors.ctan.org/macros/generic/iftex/iftex.pdf
-	l3keys2e, % http://mirrors.ctan.org/macros/latex/contrib/l3packages/l3keys2e.pdf
-	xparse, % http://mirrors.ctan.org/macros/latex/contrib/l3packages/xparse.pdf
-		}
-%\RequirePackage{fixltx2e}[2015/01/01]
-%\RequirePackage{expl3} lt3graph % http://mirrors.ctan.org/macros/latex/contrib/lt3graph/lt3graph.pdf
 %%
-%\expandafter\def\csname ver@l3regex.sty\endcsname{} % https://tex.stackexchange.com/a/491456
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Specify some requirements, but this is mostly redundant...
 \RequireeTeX%necessarily true for all modern \LaTeX
-\ifpdf{}{
+%\RequirePackage{fixltx2e}[2015/01/01]
+\ifpdf{}
 	%\RequirePDF%invalid macro
-}
+\fi
+\RequirePackage%
+	%[2020/05/05] %Request the \LaTeX format in effect as of this date
+	[current]%Use the \LaTeX format as-is.
+	%[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the in-box format
+		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hack up global package options list: 
@@ -70,54 +77,88 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up our options and defaults
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ExplSyntaxOn
+\keys_define:nn { gWmaths / gWexample }
+{
+%	gWsomeMultipleChoice	= .choice:	,
+%	gWsomeMultipleChoice / gWsomeKeyOptionaA	.bool_set:N	= \gW@someMultipleChoiceKeyOptionA		,
+%	gWsomeMultipleChoice / gWsomeKeyOptionaB	.code:n	= {dome complicated shit}	,
+%	gWsomeMultipleChoice	.value_required	,
+
+	gWsomeBooleanFlag	.bool_set:N	=	\l_gW_someFlag	,
+	gWsomeBooleanFlag	.default:n		=	true	,
+
+	gWsomeMiscArgument	.code:n = {curly-braces are actually optional, but that's dumb.}	,
+%	gWsomeMiscArgument	.value_forbidden:	,
+
+%	gWuseBaseClass	.choice_code:n	= {
+%		Do something using either
+%		\l_keys_choice_tl or
+%		\l_keys_choice_int.
+		%The name of the current choice (for example choice-b) is assigned to \l_keys_choice_tl, its numeric position in the list (for example 1 for choice-b) is assigned to \l_keys_choice_int. Notice that this is indexed from 0!
+%			}	,
+
+%	gWuseBaseClass	.generate_choices:n	=	{
+%		article, % Choice 0
+%		report, % Choice 1
+%		beamer, % Choice 2
+%			}	,
+
+	gWuseHyperDoc	.code:n	= Something with #1 ,
+	gWuseAMSmath	.code:n	= Other thing #1 ,
+	gWhyperTeX	.meta:n	=	{
+		gWuseHyperDoc	= #1 ,
+		gWuseAMSmath = #1 ,
+			}	,
+
+	gWsomeDIMvalue .dim_set:N = \l_gW_gWsomeDIMvalue	,
+	gWsomeInteger .int_set:N = \l_gW_maxCounter	,
+	gWwtfIsSkipType .skip_set:N = \l_gW_skip_yourself	,
+	gWtehTokenList .tl_set:N = \l_gW_block_of_text_or_code_or_whatever	,
+
+	unknown	.code:n	=	{%'unknown' is hardcoded the "default case"
+		\msg_error:nnx { gWmaths }
+		{ unknown-key } { \l_keys_key_tl }
+			}
+}
+
+\keys_define:nn { gWmaths }
+{
+	hyperref	.bool_set:N	= \gW@hyperref	,
+%	hyperref	.default:n	= true	,
+
+	ntheorem	.bool_set:N	= \gW@ntheorem	,
+%	ntheorem	.default	= true	,
+
+	amsmath	.bool_set:N	= \gW@amsmath	,
+%	amsmath	.default	= true	,
+
+	hypdoc	.bool_set:N	= \gW@hypdoc	,
+
+	amsthm	.bool_set:N	= \gW@amsthm	,
+
+	accessibility	.bool_set:N	= \gW@accessibility	,
+	axessibility	.bool_set:N	= \gW@axessibility	,
+
+	videolecture	.bool_set:N	= \gW@videolecture	,
+	oneinch	.bool_set:N	= \gW@oneinch	,
+
+	documentClass	.tl_set:N	= \gW@documentClass	,
+	documentClass .default:n	= article	,
+	article	.meta:n	= {
+		documentClass	= article	,
+			}
+%	article	.value_forbidden:
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newif\ifgW@hyperref% Load & configure `hyperref`?
-\DeclareOption{hyperref}{\gW@hyperreftrue}
-
-\newif\ifgW@ntheorem% Load & configure `ntheorem`?
-\DeclareOption{ntheorem}{\gW@ntheoremtrue
-	\gW@amsthmfalse% block amsthm, conflicts
-		}% 
-
-\newif\ifgW@amsmath% Load & configure `amsmath`?
-\DeclareOption{amsmath}{\gW@amsmathtrue}
-
-\newif\ifgW@hypdoc% Load & configure `hypdoc`?
-\DeclareOption{hypdoc}{\gW@hypdoctrue%
-	\gW@hyperreftrue% require `hyperref` too
-		}%
-
-\newif\ifgW@amsthm% Load & configure `amsthm`
-\DeclareOption{amsthm}{\gW@amsthmtrue
-	\gW@ntheoremfalse% block `ntheorem`, conflicts
-		}%
-
-\newif\ifgW@report% create a flag for this option
-\DeclareOption{report}{\gW@reporttrue}% if the option is set, then raise the flag
-
-\newif\ifgW@article% create a flag for this option
-\DeclareOption{article}{\gW@articletrue}% if the option is set, then raise the flag
-
-\newif\ifgW@slides% create a flag for this option
-\DeclareOption{slides}{\gW@slidestrue}% if the option is set, then raise the flag
-
-\newif\ifgW@myoption% create a flag for this option
-\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
-
-\newif\ifgW@myoption% create a flag for this option
-\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
-
-
-
-\ExecuteOptions{% Run our default options
+\keys_set:nn { gWmaths }{% Set our default options
 	hyperref, 
 	ntheorem,
 	hypdoc,
 	article,
 	amsmath,
 		}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prepare arguments for all the packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,7 +177,7 @@
 
 %%
 % Set up Hyper\TeX (hyperref, et al), which is basically the structural core of the document:
-\ifgW@hyperref\PassOptionsToPackage{% `hyperref`
+\bool_if:nTF \gW@hyperref{\PassOptionsToPackage{% `hyperref`
 	colorlinks, % set hyperlinks in color
 	linktoc=all, % link section name *and* page number from toc
 	%pdfencoding=auto, % use unicode or WTFncode in PDF tags
@@ -155,7 +196,7 @@
 %\PassOptionsToPackage{% `ntheorem`
 %	hyperref, % Support the `hyperref` package
 %		}{ntheorem}
-\fi
+}{}% \@gWhyperref
 
 %%
 % Set up `scrbase` not to argue with iftex.
@@ -166,10 +207,10 @@
 
 %%
 % Set up documentation utilities from `hyperref` documentation package.
-\ifgW@hypdoc\PassOptionsToPackage{% `hyperref`
+\bool_if:nTF \gW@hypdoc{\PassOptionsToPackage{% `hyperref`
 	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
 		}{hyperref}
-\fi
+}{}%\gW@hypdoc
 
 %%
 % Set up colors now that we have color printers and video screens...
@@ -185,7 +226,7 @@
 
 %%
 % Set up a much nicer set of theorem environments:
-\ifgW@ntheorem\PassOptionsToPackage{% `ntheorem`
+\bool_if:nTF \gW@ntheorem{\PassOptionsToPackage{% `ntheorem`
 	thmmarks, % enables the automatical placement of endmarks
 	thref, % enables the extended reference features
 	standard % load predefined environments
@@ -200,11 +241,11 @@
 \PassOptionsToClass{% `beamer`
 	noamsthm % prevent from loading `amsthm`, which conflicts with `ntheorem`
 		}{beamer}
-\fi
+}{}%\gW@ntheorem
 
 %%
 % Set up the most common mathematics package:
-\ifgW@amsmath\PassOptionsToPackage{% `amsmath`
+\bool_if:nTF \gW@amsmath{\PassOptionsToPackage{% `amsmath`
 		}{amsmath}
 %%
 % Inform *all* packages that `amsmath` is in use:
@@ -213,7 +254,7 @@
 %\PassOptionsToPackage{% `ntheorem`
 %	amsmath, % cope with `amsmath`
 %		}{ntheorem}
-\fi
+}{}
 
 %%
 % Set up formatting for telephone numbers:
@@ -282,10 +323,8 @@
 \let\@classoptionslist\gW@classoptionslist
 %% ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
 %% ref: https://www.latex-project.org/help/documentation/clsguide.pdf
-\newif\ifgW@accessibility
-\DeclareOption{accessibility}{\gW@accessibilitytrue\requirePDFTeX}
-\newif\ifgW@axessibility
-\DeclareOption{axessibility}{\gW@axessibilitytrue}
+\bool_if:nTF \gW@accessibility{\DeclareOption{accessibility}{\gW@accessibilitytrue\requirePDFTeX}}{}
+\bool_if:nTF \gW@axessibility{\DeclareOption{axessibility}{\gW@axessibilitytrue}}{}
 
 \DeclareOption{course}{\OptionNotUsed} % root document
 \DeclareOption{syllabus}{\OptionNotUsed} %
@@ -295,31 +334,22 @@
 %\DeclareOption{videolecture}{\OptionNotUsed} % Adaptation for use with Show Me
 \DeclareOption{handout}{\OptionNotUsed} % Passed out to students during lecture
 
-\newif\ifgW@videolecture% create a flag for this option
-\DeclareOption{videolecture}{\gW@videolecturetrue}% if the option is set, then raise the flag
+\bool_if:nTF \gW@videolecture{\DeclareOption{videolecture}{\gW@videolecturetrue}}{}
 
 %declare option for setting margin to 1"
-\newif\ifgW@oneinch% create a flag for this option
-\DeclareOption{1in}{\gW@oneinchtrue}% if the option is set, then raise the flag
+\bool_if:nTF \gW@oneinch{\DeclareOption{1in}{\gW@oneinchtrue}}{}
 
 
-\newif\ifgW@myoption% create a flag for this option
-\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
+% The \LaTeX2e way:
+%\newif\ifgW@myoption% create a flag for this option
+%\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
 
 
-%\ExecuteOption{videolecture}
+%\ExplSyntaxOff
 
-%\gW@videolecturetrue
+\ProcessKeysOptions{gWmaths}
 
-\ifgW@videolecture
-	\providecommand\gWclassToLoad{beamer}
-	%\usetheme{Madrid}
-\else % Inherit from LaTeX `Article` class
-	\providecommand\gWclassToLoad{article}
-	%\RequirePackage{beamerarticle}
-\fi
-
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{\gW@documentClass}}
 \ProcessOptions\relax
 
 \ifpdf
@@ -327,19 +357,11 @@
 \fi
 
 
-\RequirePackage%
-	%[2020/05/05] %Request the \LaTeX format in effect as of this date
-	%[current]%Use the \LaTeX format as-is.
-	%[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the active format
-		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
 %\RequirePackage% Automatically configure package load order.
-	%[2018/04/29]{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
-%xparse
-%l3keys2e
-%lt3graph
-%withargs
+	%[2018/04/29]
+%		{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
 %%
-%%%\LoadPackagesNow
+\providecommand{\LoadPackagesNow}{}% reduce code churn by providing a stub for running without `pkgloader`
 
 
 \ifTUTeX\else%pdfTeX
@@ -351,10 +373,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the base document class
-%\ifgW@report\LoadClass{report} \fi
-\ifgW@article\LoadClass{article} \fi
-%\ifgW@slides\LoadClass{slides} \fi
-%\else\ClassError{wat}
+\LoadClass{\gW@documentClass}
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Begin actually loading packages
@@ -377,25 +396,25 @@
 
 
 
-\ifgW@ntheorem\RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
+\bool_if:nTF \gW@ntheorem{\RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
 	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf 
 		}	%https://tex.stackexchange.com/a/5633
-\fi
+}{}%\gW@ntheorem
 
 
 
-\ifgW@oneinch % if the flag is set, then do some thing
+\bool_if:nTF \gW@oneinch{ % if the flag is set, then do some thing
 	\AtEndOfClass{
 		\geometry{
 			%letterpaper, % screen % try to get this to auto-detect or something so \documentclass[a4paper,landscape]{gWmaths} works
 			margin=1in
 				}
 			}
-\fi
+}{}%\gW@oneinch
 
-\ifgW@myoption % if the flag is set, then do some thing
-   code active only for this option
-\fi
+%\ifgW@myoption % if the flag is set, then do some thing
+%   code active only for this option
+%\fi
 
 \ifXeTeX
 	%% docs: http://mirrors.ctan.org/info/xetexref/xetex-reference.pdf
@@ -458,7 +477,7 @@
 \RequirePackage% `fancyhdr` may have issues with `accessibility`, must load *before* `hyperref`
 	{fancyhdr} % http://mirrors.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
 
-\ifgW@videolecture\else
+\bool_if:nTF \gW@videolecture{}{
 	\RequirePackage% `paralist` redefines {itemize}, {enumerate} environments
 		{paralist} % http://mirrors.ctan.org/macros/latex/contrib/paralist/paralist.pdf
 %\RequirePackage[ % `enumitem` redefines {itemize}, {enumerate} environments
@@ -467,7 +486,7 @@
 	%shortlabels, % compatible with `enumerate`
 	%unboxed % avoid problems nesting environments
 		%]{enumitem}
-\fi
+}%\gW@videolecture
 
 
 
@@ -487,19 +506,19 @@
 	filemod,		% http://mirrors.ctan.org/macros/latex/contrib/filemod/filemod.pdf
 		}
 
-\ifgW@videolecture\else
+\bool_if:nTF \gW@videolecture{}{
 	\RequirePackage% un-dumb \maketitle
 		{titling} % http://mirrors.ctan.org/macros/latex/contrib/titling/titling.pdf
-\fi
+}%\gW@videolecture
 
 %define new \listofXs
 %% docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
-\ifgW@accessibility %\ifPDFTeX % not XeTeX nor LuaTeX
+\bool_if:nTF \gW@accessibility{ %\ifPDFTeX % not XeTeX nor LuaTeX
 	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
 	\requirePDFTEX % `accessibility` is badly hacked together and quite old...
 	\RequirePackage[tagged]{accessibility}
-\fi
+}{}%\gW@accessibility
 
 \ifXeTeX\else% seems like XeTeX is actually kind of a hack and maybe not much future...
 	\RequirePackage[
@@ -518,10 +537,10 @@
 	pdfcomment,	% http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 		}% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
-\ifgW@videolecture\else
+\bool_if:nTF \gW@videolecture{}{
 	\RequirePackage%
 		{hypdoc} % http://mirrors.ctan.org/macros/latex/contrib/oberdiek/hypdoc.pdf
-\fi
+}%\gW@videolecture
 
 %\RequirePackage[ % `pdfcomment` requires `hyperref` to be loaded first
 	%% docs: http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
@@ -549,19 +568,20 @@
 % Ugly hack, because of the unfortunate deprecation of 'n' to 'c' conversion,
 % plus the fact that kernel errors, even non-fatal ones, cannot be redirected.
 % Will think of a better solution at some point, but not now.
-\ExplSyntaxOn
-\let\__withargs_docs_old_kernel_msg_error:nnnnnn\__kernel_msg_error:nnnnnn
-\def\__kernel_msg_error:nnnnnn#1#2{
-  \str_if_eq:nnTF { #1/#2 } { kernel/deprecated-variant }{
-    \__kernel_msg_warning:nnnnnn{#1}{#2}
-  }{
-    \__withargs_docs_old_kernel_msg_error:nnnnnn{#1}{#2}
-  }
-}
-\ExplSyntaxOff
+%\ExplSyntaxOn
+%\let\__withargs_docs_old_kernel_msg_error:nnnnnn\__kernel_msg_error:nnnnnn
+%\def\__kernel_msg_error:nnnnnn#1#2{
+%  \str_if_eq:nnTF { #1/#2 } { kernel/deprecated-variant }{
+%    \__kernel_msg_warning:nnnnnn{#1}{#2}
+%  }{
+%    \__withargs_docs_old_kernel_msg_error:nnnnnn{#1}{#2}
+%  }
+%}
+%\fi
+%\ExplSyntaxOff
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\LoadPackagesNow% `pkgloader`
+\LoadPackagesNow% `pkgloader`
 
 
 \@ifundefined{GetFileInfo}{}{% https://tex.stackexchange.com/a/30486
@@ -675,10 +695,16 @@
 
 
 
-\ifgW@videolecture
+\bool_if:nTF \gW@videolecture{
 	\providecommand*{\theorembreak}{\usebeamertemplate{theorem end}\framebreak\usebeamertemplate{theorem begin}}
-\fi
+}{}%\gW@videolecture
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\ExplSyntaxOff
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
