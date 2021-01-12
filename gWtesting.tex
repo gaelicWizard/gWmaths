@@ -63,7 +63,22 @@
 	\maketitle
 		%} 
 
-
+\paragraph{Package `newtxmath`:} The option osf instructs the text fonts to use old-style figures 1234567890 rather than the default lining figures 1234567890. If you use the babel package, you should load it before newtxtext—for example: 
+\begin{verbatim}
+\usepackage[<babel options>]{babel}
+\usepackage[osf]{newtxtext}
+\end{verbatim}
+More generally, the pattern of the preamble should be:
+\begin{verbatim}
+<encoding options>
+[optional] \usepackage{substitutefont} % so you can change babel's fonts
+[optional] \usepackage[<babel options>]{babel}
+\usepackage[p,osf]{newtxtext}% osf in text, lining figures in math
+[optional] redefine the plain theorem style if necessary
+<other font loading commands>
+\usepackage{newtxmath}
+<substitutefont commands>
+\end{verbatim}
 
 \begin{argument}
 
