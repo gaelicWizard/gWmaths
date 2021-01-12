@@ -1,13 +1,11 @@
-\ProvidesClass{gWmaths}[2020/01/09 v0.2.5 %
-	COVID19 Quarantine Accessible TeX Project] 
+\ProvidesExplClass{gWmaths}{2020/01/09}{0.2.6}%
+	{COVID-19 Quarantine Accessible TeX Project}
 \NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
-\RequirePackage{iftex, l3keys2e, xparse, expl3}% Use \LaTeX3 facilities
-%\RequirePackage{l3bootstrap}
-%\GetIdInfo $Id$ %
-%\ProvidesExplPackage{\ExplFileName}
-%	{\ExplFileDate}{\ExplFileVersion}{\ExplFileDescription}
+\RequirePackage{iftex, l3keys2e, gWtex, ifdraft}%xparse, expl3
+\GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\iffalse%\if\ExplFileName\jobname
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifx\filename\jobname%\iffalse
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%
@@ -23,6 +21,14 @@
 %!TEX spellcheck = en-US
 %!TeX root = COURSE_MAIN.TEX
 %!TeX BiB program = biber
+%%
+\author{YOUR NAME HERE}
+\title{TITLE OF DOCUMENT}
+\date{Fall 2020}  % LaTeX uses \today if you don't specify any \date{}
+%%
+\addto\captionsenglish{%
+	\renewcommand{\abstractname}{What To Expect}% Heading of Intro section
+}
 
 
 
@@ -40,6 +46,7 @@
 \RequireeTeX%necessarily true for all modern \LaTeX
 %\RequirePackage{fixltx2e}[2015/01/01]
 \ifpdf{}
+%TODO: use \eTeX's \unless form
 	%\RequirePDF%invalid macro
 \fi
 \RequirePackage%
@@ -71,56 +78,16 @@
 %%% \newbool & \newtoggle
 %% http://mirrors.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf
 %% http://mirrors.ctan.org/macros/latex/contrib/noindentafter/noindentafter.pdf
+%% http://ctan.math.washington.edu/tex-archive/support/latexmk/latexmk.pdf
+%% http://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf
+%% https://tex.stackexchange.com/a/31658 use \ifdefined\foo\else\fi
+%% https://tex.stackexchange.com/a/472044 \string fuckery
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up our options and defaults
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ExplSyntaxOn
-\keys_define:nn { gWmaths / gWexample }
-{
-%	gWsomeMultipleChoice	= .choice:	,
-%	gWsomeMultipleChoice / gWsomeKeyOptionaA	.bool_set:N	= \gW@someMultipleChoiceKeyOptionA		,
-%	gWsomeMultipleChoice / gWsomeKeyOptionaB	.code:n	= {dome complicated shit}	,
-%	gWsomeMultipleChoice	.value_required	,
-
-	gWsomeBooleanFlag	.bool_set:N	=	\l_gW_someFlag	,
-	gWsomeBooleanFlag	.default:n		=	true	,
-
-	gWsomeMiscArgument	.code:n = {curly-braces are actually optional, but that's dumb.}	,
-%	gWsomeMiscArgument	.value_forbidden:	,
-
-%	gWuseBaseClass	.choice_code:n	= {
-%		Do something using either
-%		\l_keys_choice_tl or
-%		\l_keys_choice_int.
-		%The name of the current choice (for example choice-b) is assigned to \l_keys_choice_tl, its numeric position in the list (for example 1 for choice-b) is assigned to \l_keys_choice_int. Notice that this is indexed from 0!
-%			}	,
-
-%	gWuseBaseClass	.generate_choices:n	=	{
-%		article, % Choice 0
-%		report, % Choice 1
-%		beamer, % Choice 2
-%			}	,
-
-	gWuseHyperDoc	.code:n	= Something with #1 ,
-	gWuseAMSmath	.code:n	= Other thing #1 ,
-	gWhyperTeX	.meta:n	=	{
-		gWuseHyperDoc	= #1 ,
-		gWuseAMSmath = #1 ,
-			}	,
-
-	gWsomeDIMvalue .dim_set:N = \l_gW_gWsomeDIMvalue	,
-	gWsomeInteger .int_set:N = \l_gW_maxCounter	,
-	gWwtfIsSkipType .skip_set:N = \l_gW_skip_yourself	,
-	gWtehTokenList .tl_set:N = \l_gW_block_of_text_or_code_or_whatever	,
-
-	unknown	.code:n	=	{%'unknown' is hardcoded the "default case"
-		\msg_error:nnx { gWmaths }
-		{ unknown-key } { \l_keys_key_tl }
-			}
-}
 
 \keys_define:nn { gWmaths }
 {
@@ -142,13 +109,23 @@
 
 	videolecture	.bool_set:N	= \gW@videolecture	,
 	oneinch	.bool_set:N	= \gW@oneinch	,
+	
+	titlesec	.bool_set:N	= \gW@titlesec	,
+	%http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf
 
 	documentClass	.tl_set:N	= \gW@documentClass	,
 	documentClass .default:n	= article	,
-	article	.meta:n	= {
+	syllabus	.meta:n	= {
 		documentClass	= article	,
-			}
-%	article	.value_forbidden:
+			}	,
+	syllabus	.value_forbidden:n	= true	,
+	exam	.meta:n	= {
+		documentClass	= exam	,
+			}	,
+	exam	.value_forbidden:n	= true	,
+	lecture	.meta:n	= {
+		documentClass	= article
+			}	,
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -156,7 +133,7 @@
 	hyperref, 
 	ntheorem,
 	hypdoc,
-	article,
+	documentClass=article,
 	amsmath,
 		}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,11 +153,36 @@
 		}{mmap} % Allows copy/pasta from PDF.
 
 %%
+\ifdraft{\PassOptionsToPackage{%
+	draft
+		}{bookmark}%TODO: replace this with just a damn \DeclareOption
+}{}% \ifdraft
+
+\PassOptionsToPackage{%
+	atend,%
+		}{bookmark}
+
+%%
 % Set up Hyper\TeX (hyperref, et al), which is basically the structural core of the document:
 \bool_if:nTF \gW@hyperref{\PassOptionsToPackage{% `hyperref`
+	implicit, % Redefine \LaTeX internals, already default
+	hypertexnames, % Use guessable names for anchors, already default
+	bookmarks, % Write TOC as PDF bookmarks
+	driverfallback=hypertex, % if can't autodetect, then just use the most basic
+
+	%hyperfigures, % make figures hyper links
+	%hyperfootnotes, % set up hyperlinked footnotes, already default
+	%hyperindex, % set up hyperlinked indices, already default
+
 	colorlinks, % set hyperlinks in color
+	linkcolor=blue, % default is fucking 'red'
+
+	%hyperindex, % links index entries back to main text, conflicts with hypdoc
 	linktoc=all, % link section name *and* page number from toc
-	%pdfencoding=auto, % use unicode or WTFncode in PDF tags
+	%backref, % link back from bib entries to main text
+
+	%pdfencoding=unicode, % set 'auto' to prefer PDFEncoding over UTF-16; default for \TUTeX
+	%pdflang=en-us, % `hyperxmp` automatically sets this from the language of `babel`
 	pdfusetitle, % use \title{} for PDF metadata
 	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
 	pdfpagelabels, % tag pages with page numbers from \LaTeX ("ii" or whatever) 
@@ -275,6 +277,14 @@
 
 
 
+\PassOptionsToPackage{% `currfile`
+	abspath, %-recorder (default in latexmk)
+	realmainfile,
+	parent,
+	%parents,
+		}{currfile}
+
+
 
 \PassOptionsToClass{% `beamer`
 	t % ?
@@ -327,10 +337,7 @@
 \bool_if:nTF \gW@axessibility{\DeclareOption{axessibility}{\gW@axessibilitytrue}}{}
 
 \DeclareOption{course}{\OptionNotUsed} % root document
-\DeclareOption{syllabus}{\OptionNotUsed} %
-\DeclareOption{exam}{\OptionNotUsed} % 
 \DeclareOption{quiz}{\OptionNotUsed} % 
-\DeclareOption{lecture}{\OptionNotUsed} % Notes for lecturer / overhead
 %\DeclareOption{videolecture}{\OptionNotUsed} % Adaptation for use with Show Me
 \DeclareOption{handout}{\OptionNotUsed} % Passed out to students during lecture
 
@@ -345,7 +352,6 @@
 %\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
 
 
-%\ExplSyntaxOff
 
 \ProcessKeysOptions{gWmaths}
 
@@ -354,6 +360,8 @@
 
 \ifpdf
 	\pdfminorversion=6 %fucking hack for `accessibility`
+	%\pdf_version_gset:n {6}
+	%\pdf_version_min_gset:n {6}
 \fi
 
 
@@ -394,7 +402,9 @@
 %%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
 		}%
 
-
+\RequirePackage{%
+	venndiagram
+		}%https://tex.stackexchange.com/a/381249
 
 \bool_if:nTF \gW@ntheorem{\RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
 	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf 
@@ -422,7 +432,9 @@
 
 
 \RequirePackage% load *before* `fontspec`
-	{graphics,graphicx} % http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf
+	{graphicx} % http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf
+		% docs say to only load one, and package/classes should  `s` not `x` as the user may s->x but not back
+		% literally the only difference is the `keyval` package, therefore just use `x`.
 
 \ifTUTeX % "Unicode TeX" matches LuaTeX and/or XeTeX
 	\RequirePackage% must load *after* maths fonts (specifically euler)
@@ -534,6 +546,7 @@
 \RequirePackage{% `hyperref` claims to be about hypertext, but it's actually a significant structural support!
 	%% NOTE: https://tex.stackexchange.com/q/1863
 	hyperref,		% http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.pdf
+	bookmark,		% http://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf
 	pdfcomment,	% http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 		}% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
@@ -560,6 +573,11 @@
 
 
 
+\RequirePackage%
+	{filehook,currfile}%
+		[2020/09/29]%
+
+
 
 %\RequirePackage%
 	%{ifthen} % http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
@@ -568,7 +586,6 @@
 % Ugly hack, because of the unfortunate deprecation of 'n' to 'c' conversion,
 % plus the fact that kernel errors, even non-fatal ones, cannot be redirected.
 % Will think of a better solution at some point, but not now.
-%\ExplSyntaxOn
 %\let\__withargs_docs_old_kernel_msg_error:nnnnnn\__kernel_msg_error:nnnnnn
 %\def\__kernel_msg_error:nnnnnn#1#2{
 %  \str_if_eq:nnTF { #1/#2 } { kernel/deprecated-variant }{
@@ -578,7 +595,6 @@
 %  }
 %}
 %\fi
-%\ExplSyntaxOff
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \LoadPackagesNow% `pkgloader`
@@ -592,10 +608,10 @@
 			}
 
 	\AtEndOfClass{%
-		\GetFileInfo{\jobname.tex} % read \ProvidesFile{}[] from the ultimate TeX
+		%\GetFileInfo{\jobname.tex} % read \ProvidesFile{}[] from the ultimate TeX
 		%\listfiles % track loaded files in this job
 		%\@getclass
-		\date{\filemodprintdate{\jobname.tex}}
+		\date{\filemodprintdate{\filename}}
 			}
 		}% \GetFileInfo
 
@@ -625,14 +641,15 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\AtBeginDocument{%
-%	\makeatletter
-%	\let\thetitle\@title
-%	\let\theauthor\@author
-%	\let\thethanks\@thanks
-%	\let\thedate\@date
-%	\makeatother
-%		}
+%% preserve document metadata...
+\AtEndPreamble
+{
+	%\let\doctitle\@title
+	%\let\docauthor\@author
+	%\let\docthanks\@thanks % this is bjorked due to missing macros
+	%\let\docdate\@date
+}
+
 
 
 
@@ -659,15 +676,6 @@
 			}
 		}
 
-\providecommand	{\tex}		{\hologo{TeX}\xspace}
-\providecommand	{\etex}	{\hologo{eTeX}\xspace}
-\providecommand	{\xetex}	{\hologo{XeTeX}\xspace}
-\providecommand	{\pdftex}	{\hologo{pdfTeX}\xspace}
-\providecommand	{\luatex}	{\hologo{LuaTeX}\xspace}
-%\providecommand	{\latex}	{\hologo{LaTeX}\xspace}
-\providecommand	{\latex}	{\hologo{LaTeX2e}\xspace}
-%\providecommand{\latex2e}	{\hologo{LaTeX2e}\xspace}
-%\providecommand{\latex3}		{\hologo{LaTeX3}\xspace}
 
 \RequirePackage[%
 	%% docs: http://mirrors.ctan.org/macros/latex/contrib/layouts/layman.pdf
@@ -702,6 +710,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+\let\IfPackageLoaded\@ifpackageloaded
+%\let\IfPackageLoaded\ltx@ifpackageloaded
+%https://tex.stackexchange.com/a/484092
+%http://mirrors.ctan.org/macros/generic/ltxcmds/ltxcmds.pdf
+
+
+\NewDocumentCommand \gWmathssetup { m } {
+	\keys_set:nn { gWmaths } { #1 }
+}
 
 
 \ExplSyntaxOff
@@ -788,11 +805,39 @@
 
 
 
-
-
-
 %\begin{filecontents*}{latexmkrc}
 %\end{filecontents}
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifx\filename\jobname%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tagpdfsetup{}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+		}%\hypersetup
+\urlstyle{
+	%same, % Use the 'same' style as surrounding text, default is monospace font
+		}%\urlstyle
+\bookmarksetup{}
+\geometry{}
+\graphicspath{}
+
+\GetFileInfo{\CurrentFile}
+\title{\fileinfo}
+\date{\filedate}
+
+
+
+\begin{document}
+
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
