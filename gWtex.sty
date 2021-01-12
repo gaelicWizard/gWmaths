@@ -19,11 +19,11 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% current file / job name / expansion shenanigans
-\cs_generate_variant:Nn \tl_set_rescan:Nnn { NnV }
-\ProvideDocumentCommand{\definenormaljobname}{O{\normaljobname}}
-{
-  \tl_set_rescan:NnV #1 { } \c_sys_jobname_str
-}
+%\cs_generate_variant:Nn \tl_set_rescan:Nnn { NnV }
+%\ProvideDocumentCommand{\definenormaljobname}{O{\normaljobname}}
+%{
+%	\tl_set_rescan:NnV #1 { } \c_sys_jobname_str
+%}
 % https://tex.stackexchange.com/a/117895
 
 \GetFileInfo{\CurrentFile}
