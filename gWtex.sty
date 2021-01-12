@@ -111,9 +111,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define \ifLaTeX3
-\ProvideDocumentCommand\ifLaTeXx{}
+\ProvideDocumentCommand \ifLaTeXx { O{} O{} }
 {
-	\ifcsdef{ExplSyntaxOn}{true}{false}
+	\ifcsdef {ExplSyntaxOn} {#1} {#2}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
