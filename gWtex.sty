@@ -95,16 +95,16 @@
      }
   }
 
-\ProvideDocumentCommand\ifClassLoaded{m}
+\ProvideDocumentCommand{\ifClassLoaded}{m}
 {
 	\seq_if_in:NnTF \l_pclist_classes_seq { #1 }
 		{ \msg_term:x { The~class~`#1'~is~loaded } }
 		{ \msg_term:x { The~class~`#1'~is~NOT~loaded } }
 }
 
-\ProvideDocumentCommand\showclassesloaded{}{\seq_show:N \l_pclist_classes_seq}
-\ProvideDocumentCommand\showpackagesloaded{}{\seq_show:N \l_pclist_packages_seq}
-\ProvideDocumentCommand\showfilesloaded{}{\seq_show:N \l_pclist_other_seq}
+\ProvideDocumentCommand{\showclassesloaded}{}{\seq_show:N \l_pclist_classes_seq}
+\ProvideDocumentCommand{\showpackagesloaded}{}{\seq_show:N \l_pclist_packages_seq}
+\ProvideDocumentCommand{\showfilesloaded}{}{\seq_show:N \l_pclist_other_seq}
 
 
 
