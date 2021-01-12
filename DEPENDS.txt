@@ -1,0 +1,44 @@
+#http://tug.org/texlive/pkgcontrib.html#deps
+#package gWmaths
+hard hyperxmp mmap phonenumbers
+ntheorem paralist csquotes titling tagpdf filemod pdfcomment layouts
+soulutf8
+
+package pdfcomment
+hard datetime2 tracklang
+hyperref zref xkeyval etoolbox luatex85 ifpdf iflatex ifthen 
+calc marginnote datetime2 refcount soulpos 
+
+package axessibility
+hard amsmath amssymb xstring tagpdf
+soft contspec luacode accsupp
+
+package tagpdf
+hard etoolbox atbegshi zref l3pdf xparse expl3
+
+package zref-base
+hard ltxcmds infwarerr kvsetkeys kvdefinekeys pdftexcmds etexcmds auxhook
+
+package csquotes
+hard etoolbox
+soft hyperref babel polyglossia
+
+package hyperxmp
+hard ifmtarg totpages
+
+package totpages
+hard everyshi keyval
+
+package phonenumbers
+hard l3keys2e xparse expl3
+hard ltxcmds
+
+package filemod
+soft pdftexcmds # required for \LuaTeX
+
+package ntheorem
+hard ifthen
+latexsym amssymb
+
+#package gWtex
+#none
