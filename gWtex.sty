@@ -31,9 +31,9 @@
 
 % '\the' expands a "token variable", whatever that is... something \newdimen
 
-\newtoks\gWtoks
-\edef\test{\CurrentFile}
-\gWtoks\expandafter{\test}% \gWtoks holds 'stuff' as letters
+%\newtoks\gWtoks
+%\edef\test{\CurrentFile}
+%\gWtoks\expandafter{\test}% \gWtoks holds 'stuff' as letters
 %y\detokenize\expandafter{\filename}y% Ouputs 'stuff' as 'other' tokens
 
 %\GetFileInfo{\gWtoks}
@@ -46,13 +46,13 @@
 
 
 
-\xdef\omgfile{\filename}%{\{\value{\CurrentFile}}
-\xdef\omgversion{\fileversion}
-\xdef\omgdate{\filedate}
-\xdef\omginfo{\fileinfo}
+%\xdef\omgfile{\filename}%{\{\value{\CurrentFile}}
+%\xdef\omgversion{\fileversion}
+%\xdef\omgdate{\filedate}
+%\xdef\omginfo{\fileinfo}
 
-\edef\omgcurr{\expanded{\CurrentFile}}
-\edef\omgname{\detokenize\expandafter{\omgcurr}}
+%\edef\omgcurr{\expanded{\CurrentFile}}
+%\edef\omgname{\detokenize\expandafter{\omgcurr}}
 
 
 
