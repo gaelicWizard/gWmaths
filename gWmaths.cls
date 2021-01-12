@@ -1,4 +1,4 @@
-\ProvidesExplClass{gWmaths}{2020/01/09}{0.2.6}%
+\ProvidesExplClass{gWmaths}{2021/01/09}{0.2.6}%
 	{COVID-19 Quarantine Accessible TeX Project}
 \NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
 \RequirePackage{iftex, l3keys2e, gWtex, ifdraft}%xparse, expl3
