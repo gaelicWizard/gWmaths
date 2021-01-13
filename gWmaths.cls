@@ -1,6 +1,6 @@
-\ProvidesExplClass{gWmaths}{2021/01/09}{0.2.6}%
+\ProvidesExplClass{gWmaths}{2021/01/12}{0.2.7}%
 	{COVID-19 Quarantine Accessible TeX Project}
-\NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
+\NeedsTeXFormat{LaTeX2e}[2020/02/02] % 2015/01/01 fixltx2e. 2017/01/01 \RequireeTeX. 2018/04/01 UTF-8. 2019/10/01 Robustify, UTF-8. 2020/02/02 L3. 2020/10/01 xparse, hooks.
 \RequirePackage{iftex, l3keys2e, gWtex, ifdraft}%xparse, expl3
 \GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -206,6 +206,11 @@
 	internalonly % don't define macros to conflict with `iftex`
 		}{scrbase} % KOMA-Script base package
 
+%%
+%
+\PassOptionsToPackage{% `varioref`
+	nospace, % https://www.latex-project.org/news/latex2e-news/ltnews30.pdf
+		}{varioref} % 
 
 %%
 % Set up documentation utilities from `hyperref` documentation package.
@@ -479,6 +484,8 @@
 %The command \setjobnamebeamerversion{main.beamer} tells the article version where to find the presentation version. This is necessary if you wish to include slides from the presentation version in an article as figures.
 %By adjusting the frame template, you can “mimic” the appearance of frames typeset by beamer in your articles.
 
+
+%Note that it has become standard practice to check for Unicode-aware engines by using the existence of the \Umathcode primitive.
 
 %https://tex.stackexchange.com/a/5231
 
