@@ -51,8 +51,8 @@
 \fi
 \RequirePackage%
 	%[2020/05/05] %Request the \LaTeX format in effect as of this date
-	[current]%Use the \LaTeX format as-is.
-	%[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the in-box format
+	%[current]%Use the \LaTeX format as-is.
+	[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the in-box format
 		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,7 +210,7 @@
 %
 \PassOptionsToPackage{% `varioref`
 	nospace, % https://www.latex-project.org/news/latex2e-news/ltnews30.pdf
-		}{varioref} % 
+		}{varioref} % must load /after/ `babel`
 
 %%
 % Set up documentation utilities from `hyperref` documentation package.
