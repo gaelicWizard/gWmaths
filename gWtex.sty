@@ -1,8 +1,8 @@
 \ProvidesExplPackage{gWtex}{2020/01/09}{0.2}{Utility macros for gWmaths}
-\NeedsTeXFormat{LaTeX2e}[2018/03/24]% \LaTeX3 is now an in-box upgrade to \LaTeXe
-\RequirePackage{etoolbox}% \eTeX is already long ago required by \LaTeX2e
+\NeedsTeXFormat{LaTeX2e}[2020/02/02]% \LaTeX3 is now an in-box upgrade to \LaTeXe
+\RequirePackage{iftex,etoolbox,xparse} % \eTeX has been standard for almost 20 years
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ExplSyntaxOn
+\RequireeTeX\ExplSyntaxOn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define \GetFileInfo %%% Copy/pasta directly from `doc` package
 \def\GetFileInfo#1{%
@@ -145,6 +145,41 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Notes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% With the previous LATEX 2ε release, several user-level
+% commands were made robust, so the need for a way
+% to create copies of these commands (often to redefine
+% them) increased, and the LATEX 2ε kernel didn’t have a
+% way to do so. Previously this functionality was provided
+% in part by Heiko Oberdiek’s letltxmacro package, which
+% allows a robust command \foo to be copied to \bar
+% with \LetLtxMacro\bar\foo.
+% From this release onwards, the LATEX 2ε kernel
+% provides \NewCommandCopy (and \Renew... and
+% \Declare... variants) which functions almost like
+% \LetLtxMacro. To the end user, both should work the
+% same way, and one shouldn’t need to worry about the
+% definition of the command: \NewCommandCopy should do
+% the hard work.
+
+
+% To show the actual command the user needed to notice that
+% the real definition of \frac is in the \frac␣ macro and do
+% \expandafter\show\csname frac\space\endcsname.
+% But with the machinery for copying robust commands
+% in place it is already possible to examine a command
+% and detect (as far as a macro expansion language allows)
+% how it was defined. \ShowCommand knows that and with
+% \ShowCommand\frac the terminal will show
+
+%command name(s) math text
+%\, \thinspace x x x x
+%\! \negthinspace xx xx
+%\: \> \medspace x x x x
+%\negmedspace xx xx
+%\; \thickspace x x x x
+%\negthickspace xx xx
 
 
 \keys_define:nn { gWmaths / gWexample }
