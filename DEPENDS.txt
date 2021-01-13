@@ -1,7 +1,7 @@
 #http://tug.org/texlive/pkgcontrib.html#deps
 #package gWmaths
 hard hyperxmp mmap phonenumbers
-ntheorem paralist csquotes titling tagpdf filemod pdfcomment layouts
+ntheorem paralist csquotes titling tagpdf filemod pdfcomment layouts titlesec
 soulutf8
 
 package pdfcomment
