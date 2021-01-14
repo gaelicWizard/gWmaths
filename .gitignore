@@ -279,4 +279,4 @@ TSWLatexianTemp*
 
 # other stuff too
 *.hd
-*.pdf
+#*.pdf
