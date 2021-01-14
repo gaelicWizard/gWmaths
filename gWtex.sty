@@ -68,6 +68,19 @@
 
 
 
+%\ifx\ExplSyntaxOn\undefined
+%  where is L3?
+%\else
+%  L3 :-) 
+%\fi
+
+
+% Only load once (not needed in LaTeX, but does no harm).
+%\csname IFTEX\string @loaded\endcsname
+%\expandafter\let\csname IFTEX\string @loaded\endcsname\endinput
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define functions to get lists of classes, packages, files loaded % https://tex.stackexchange.com/a/43568
