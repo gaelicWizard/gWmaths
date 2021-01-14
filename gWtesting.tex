@@ -48,7 +48,7 @@
 	\section*{\IfNoValueTF{#1}{\abstractname}{#1}}
 	%\displayquote
 }
-{\section*{}
+{%\section*{}
 %\enddisplayquote
 }%\NewDocumentEnvironment{abstract}
 
@@ -57,11 +57,32 @@
   {\scshape\center\bfseries}{\thesection}{1em}{}
 
 %\DeclareUnicodeCharacter{00A0}{~}
+
+
 \begin{document}
 %\begin{titlingpage}
 %\frame{
 	\maketitle
 		%} 
+
+%\XeTeXrevision
+%\pdftexversion
+%\TexpadTeXMode
+\ifpdf
+ % PDF
+\fi
+
+%\begingroup
+%  \hypersetup{linkfileprefix={}}%
+%  \href{../foo/bar.html}{bar.html}
+%\endgroup
+
+%\pdf@ifdraftmode of pdftexcmds
+
+%\bookmarksetup
+%\bookmarksetupnext (sets option after *next* bookmark)
+%\bookmark[options]{title}
+
 
 \paragraph{Package `newtxmath`:} The option osf instructs the text fonts to use old-style figures 1234567890 rather than the default lining figures 1234567890. If you use the babel package, you should load it before newtxtext—for example: 
 \begin{verbatim}
@@ -80,6 +101,7 @@ More generally, the pattern of the preamble should be:
 <substitutefont commands>
 \end{verbatim}
 
+
 \begin{argument}
 
 \subparagraph{displayquote} \meaning\displayquote
@@ -95,7 +117,7 @@ More generally, the pattern of the preamble should be:
 \begin{abstract}
 
 English. %\foreignlanguage{russian}{Русский}.
-\foreignlanguage{spanish}{Español}
+%\foreignlanguage{spanish}{Espa\UTF{00F1}ol}
 
 \if\jobis{gWtesting}
   This is \textcolor{BurntOrange}{\jobname}.
@@ -125,29 +147,29 @@ strings equal
 %\newtoks\mytoks
 %\edef\test{\omgfile}
 %z\mytoks\expandafter{\test}z% \mytoks holds 'stuff' as letters
-y\detokenize\expandafter{\test}y% Ouputs 'stuff' as 'other' tokens
+%y\detokenize\expandafter{\test}y% Ouputs 'stuff' as 'other' tokens
 
 
 The Current File: \CurrentFile (\meaning\CurrentFile)!
 
 %\omgjob{asklfgj} (from: \meaning\omgjob)
 
-\edef\className{\detokenize\expandafter{\filename}}
+%\edef\className{\detokenize\expandafter{\filename}}
 
-\className
+%\className
 
 xx
 
-\definenormaljobname
-\normaljobname (from: \meaning\normaljobname)
+%\definenormaljobname
+%\normaljobname (from: \meaning\normaljobname)
 
-\omgname (from: \meaning\omgname)
-\jobname (from: \meaning\jobname)
-\def\omglet{omglet}
-\omglet (from: \meaning\omglet)
-\if\omgname\jobname
-TEST NAME
-\fi
+%\omgname (from: \meaning\omgname)
+%\jobname (from: \meaning\jobname)
+%\def\omglet{omglet}
+%\omglet (from: \meaning\omglet)
+%\if\omgname\jobname
+%TEST NAME
+%\fi
 
 \globalClassOptions 
 
@@ -157,7 +179,7 @@ TEST NAME
 	\RequireeTeX%\eTeX% LaTeX requires eTeX now
 \fi
 
-OMG: \omgfile\ (\omgversion) on \omgdate: \omginfo\
+%OMG: \omgfile\ (\omgversion) on \omgdate: \omginfo\
 
 Job: \jobname (\meaning\jobname)
 
@@ -165,7 +187,7 @@ File: \filename (\meaning\filename)
 
 Current File: \CurrentFile (\meaning\CurrentFile)
 
-gWmaths File: \omgfile (\meaning\omgfile)
+%gWmaths File: \omgfile (\meaning\omgfile)
 
 \def\tehfilename{\detokenize{\filename}}
 filename: \meaning\filename
@@ -235,7 +257,7 @@ Get File Info of (\jobname) dot \TeX: \filename\space\filedate\space\fileversion
 
 
 
-%\begin[label=myimage⟨]{frame}
+%\begin[label=myimage\UTF{27E8}]{frame}
 %	\begin{figure}
 		% In the article, this is a floating figure,
 		% In the presentation, this figure is shown in the first frame
@@ -276,6 +298,8 @@ Examples, \emph{definitions, \emph{exercises}}, %\strong{theorems (sub: \strong{
 
 Multiple choice exam: question, four answers. Directions at top. Blanks for student name, date, \&c. 
 
+
+\tableofcontents
 
 \end{document}
 anything after \end{document} is entirely ignored. \LaTeX literally stops when it gets to \end{document}
