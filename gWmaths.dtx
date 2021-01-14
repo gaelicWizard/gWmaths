@@ -8,17 +8,17 @@
 	\usedir{tex/latex/\jobname}	\UseTDS	%
 }	\nopreamble	\nopostamble
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
-  \file{gWmaths.ins}{\from{gWmaths.dtx}{installer}}
-  \file{gWmaths.sty}{\from{gWmaths.dtx}{package}}
-  \file{gWmaths.cls}{\from{gWmaths.dtx}{class}}
+  \file{\jobname.ins}{\from{\jobname.dtx}{installer}}
+  \file{\jobname.sty}{\from{\jobname.dtx}{package}}
+  \file{\jobname.cls}{\from{\jobname.dtx}{class}}
 }	\ifToplevel{	\ReportTotals	\endbatchfile	}%
 \endgroup
 %</installer>
 %<class>\ProvidesExplClass%
 %<package>\ProvidesExplPackage%
-%<*tex>
+%<*!package&!class>
 \ProvidesExplFile%
-%</tex>
+%</!package&!class>
 %<*class|tex>
 %</class|tex>
 %%<dfgspackage>	{gWtex}
