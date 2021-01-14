@@ -1,8 +1,9 @@
 #http://tug.org/texlive/pkgcontrib.html#deps
 #package gWmaths
-hard hyperxmp mmap phonenumbers
+hard hyperxmp mmap phonenumbers venndiagram currfile
 ntheorem paralist csquotes titling tagpdf filemod pdfcomment layouts
 soulutf8
+soft blindtext
 
 package pdfcomment
 hard datetime2 tracklang
