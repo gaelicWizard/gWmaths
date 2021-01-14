@@ -3,7 +3,7 @@
 hard hyperxmp mmap phonenumbers venndiagram currfile
 ntheorem paralist csquotes titling tagpdf filemod pdfcomment layouts
 soulutf8
-soft blindtext
+soft blindtext gitinfo2
 
 package pdfcomment
 hard datetime2 tracklang
