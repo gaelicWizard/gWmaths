@@ -2,7 +2,7 @@
 	{COVID-19 Quarantine Accessible TeX Project}
 \NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
 \RequirePackage{iftex, l3keys2e, gWtex, ifdraft}%xparse, expl3
-\GetFileInfo{\CurrentFile}
+\RequireeTeX\GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifx\filename\jobname%\iffalse
@@ -24,7 +24,7 @@
 %%
 \author{YOUR NAME HERE}
 \title{TITLE OF DOCUMENT}
-\date{Fall 2020}  % LaTeX uses \today if you don't specify any \date{}
+\date{Fall 2020}  % \LaTeXe uses \today if you don't specify any \date{}
 %%
 \addto\captionsenglish{%
 	\renewcommand{\abstractname}{What To Expect}% Heading of Intro section
@@ -547,7 +547,7 @@
 	%% NOTE: https://tex.stackexchange.com/q/1863
 	hyperref,		% http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.pdf
 	bookmark,		% http://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf
-	pdfcomment,	% http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
+	%pdfcomment,	% http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 		}% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
 \bool_if:nTF \gW@videolecture{}{
