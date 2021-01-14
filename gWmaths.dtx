@@ -1,9 +1,126 @@
-\ProvidesExplClass{gWmaths}{2021/01/09}{0.2.6}%
-	{COVID-19 Quarantine Accessible TeX Project}
-\NeedsTeXFormat{LaTeX2e}[2018/03/24] %  2020/10/01
-\RequirePackage{iftex, l3keys2e, gWtex, ifdraft}%xparse, expl3
-\RequireeTeX\GetFileInfo{\CurrentFile}
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]
+\RequirePackage{iftex}	\RequireeTeX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*installer>
+\RequirePDFTeX % ASCII 9 (tab) becomes \TeX ^^I in \XeTeX
+\begingroup	\input docstrip	\ifToplevel{%
+	\askforoverwritefalse	%\keepsilent	%
+	\usedir{tex/latex/\jobname}	\UseTDS	%
+}	\nopreamble	\nopostamble
+\generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
+  \file{gWmaths.ins}{\from{gWmaths.dtx}{installer}}
+  \file{gWmaths.sty}{\from{gWmaths.dtx}{package}}
+  \file{gWmaths.cls}{\from{gWmaths.dtx}{class}}
+}	\ifToplevel{	\ReportTotals	\endbatchfile	}%
+\endgroup
+%</installer>
+%<class>\ProvidesExplClass%
+%<package>\ProvidesExplPackage%
+%<*tex>
+\ProvidesExplFile%
+%</tex>
+%<*class|tex>
+%</class|tex>
+%%<dfgspackage>	{gWtex}
+%<*class|package|tex>
+ 	{gWmaths}	{2021/01/13}	{0.3.0}%
+ 		{COVID-19 Quarantine Accessible TeX Project}
+%</class|package|tex>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*package>
+\RequirePackage{etoolbox}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProvideDocumentCommand\TeX{}	{\hologo{TeX}\xspace}
+\ProvideDocumentCommand\eTeX{}	{\hologo{eTeX}\xspace}
+\ProvideDocumentCommand\XeTeX{}	{\hologo{XeTeX}\xspace}
+\ProvideDocumentCommand\pdfTeX{}	{\hologo{pdfTeX}\xspace}
+\ProvideDocumentCommand\LuaTeX{}	{\hologo{LuaTeX}\xspace}
+\ProvideDocumentCommand\LaTeX{}	{\hologo{LaTeX}\xspace}
+\ProvideDocumentCommand\LaTeXe{}	{\hologo{LaTeX2e}\xspace}
+\ProvideDocumentCommand\LaTeXx{}	{\hologo{LaTeX3}\xspace}
+\AtEndPreamble{
+	\RequirePackage{hologo}	% Define logos for the \TeX family
+		}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hack up global package options list: 
+\def\gW@classoptionslist{\@classoptionslist}
+\providecommand\gW@addGlobalOption[1]{%
+   \xdef\gW@classoptionslist{\gW@classoptionslist,#1}%
+}%
+%\AtEndOfClass{
+%	%\let\gWoptions\gW@classoptionslist
+%	\let\@classoptionslist\gW@classoptionslist
+%		}
+\AtEndPreamble{
+%	\makeatletter
+	\let\globalClassOptions\@classoptionslist
+%	\makeatother
+		}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define \GetFileInfo %%% Copy/pasta directly from `doc` package
+\def\GetFileInfo#1{%
+  \edef\filename{#1}%
+  \def\@tempb##1 ##2 ##3\relax##4\relax{%
+    \def\filedate{##1}%
+    \def\fileversion{##2}%
+    \def\fileinfo{##3}}%
+  \edef\@tempa{\csname ver@#1\endcsname}%
+  \expandafter\@tempb\@tempa\relax? ? \relax\relax}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%http://www.texfaq.org/FAQ-compjobnam
+\def\jobis#1{FF\fi
+  \edef\predicate{#1}%
+  \edef\predicate{\expandafter\strip@prefix\meaning\predicate}%
+  \edef\job{\jobname}%
+  \ifx\job\predicate
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define functions to get lists of classes, packages, files loaded % https://tex.stackexchange.com/a/43568
+\seq_new:N \l_pclist_classes_seq
+\seq_new:N \l_pclist_packages_seq
+\seq_new:N \l_pclist_other_seq
+\clist_map_inline:cn { @filelist }
+  {
+   \tl_if_in:nnTF { #1 } { .cls }
+     {
+      \tl_set:Nn \l_tmpa_tl { #1 }
+      \tl_remove_once:Nn \l_tmpa_tl { .cls }
+      \seq_put_right:NV \l_pclist_classes_seq \l_tmpa_tl
+     }
+     {
+      \tl_if_in:nnTF { #1 } { .sty }
+       {
+        \tl_set:Nn \l_tmpa_tl { #1 }
+        \tl_remove_once:Nn \l_tmpa_tl { .sty }
+        \seq_put_right:NV \l_pclist_packages_seq \l_tmpa_tl
+       }
+       {
+        \seq_put_right:Nn \l_pclist_other_seq { #1 }
+       }
+     }
+  }
+%%
+\ProvideDocumentCommand{\ifClassLoaded}{m}
+{
+	\seq_if_in:NnTF \l_pclist_classes_seq { #1 }
+		{ \msg_term:x { The~class~`#1'~is~loaded } }
+		{ \msg_term:x { The~class~`#1'~is~NOT~loaded } }
+}
+%%
+\ProvideDocumentCommand{\showclassesloaded}{}{\seq_show:N \l_pclist_classes_seq}
+\ProvideDocumentCommand{\showpackagesloaded}{}{\seq_show:N \l_pclist_packages_seq}
+\ProvideDocumentCommand{\showfilesloaded}{}{\seq_show:N \l_pclist_other_seq}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define \ifLaTeX3
+\ProvideDocumentCommand \ifLaTeXx { O{} O{} }
+{
+	\ifcsdef {ExplSyntaxOn} {#1} {#2}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%</package>
+%<*class>
+\RequirePackage{l3keys2e, gWmaths, ifdraft}%xparse, expl3
+\RequireeTeX\GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifx\filename\jobname%\iffalse
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,35 +159,25 @@
 %%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Specify some requirements, but this is mostly redundant...
-\RequireeTeX%necessarily true for all modern \LaTeX
-%\RequirePackage{fixltx2e}[2015/01/01]
-\ifpdf{}
-%TODO: use \eTeX's \unless form
-	%\RequirePDF%invalid macro
-\fi
-\RequirePackage%
-	%[2020/05/05] %Request the \LaTeX format in effect as of this date
-	[current]%Use the \LaTeX format as-is.
-	%[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the in-box format
-		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Hack up global package options list: 
-\def\gW@classoptionslist{\@classoptionslist}
-\providecommand\gW@addGlobalOption[1]{%
-   \xdef\gW@classoptionslist{\gW@classoptionslist,#1}%
-}
-\AtEndOfClass{
-	%\let\gWoptions\gW@classoptionslist
-	\let\@classoptionslist\gW@classoptionslist
-		}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \gW@addGlobalOption{utf8} % All documents are UTF-8 in the 21st century. If not, fix your document.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Specify some requirements, but this is mostly redundant...
+%\RequireeTeX%necessarily true for all modern \LaTeX
+%\RequirePackage{fixltx2e}[2015/01/01]
+%\ifpdf{}
+%TODO: use \eTeX's \unless form
+%\RequirePDF%invalid macro
+%\fi
+%\RequirePackage%
+%	%[2020/05/05] %Request the \LaTeX format in effect as of this date
+%	[current]%Use the \LaTeX format as-is.
+%	%[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the in-box format
+%		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
+%%
 
 
-%TODO:
+
+%%%TODO:
 %% http://mirrors.ctan.org/macros/latex/base/slides.pdf
 %% http://mirrors.ctan.org/macros/latex209/contrib/eslides/eslides.pdf
 %%hypcap
@@ -105,6 +212,7 @@
 	amsthm	.bool_set:N	= \gW@amsthm	,
 
 	accessibility	.bool_set:N	= \gW@accessibility	,
+
 	axessibility	.bool_set:N	= \gW@axessibility	,
 
 	videolecture	.bool_set:N	= \gW@videolecture	,
@@ -114,7 +222,7 @@
 	%http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf
 
 	documentClass	.tl_set:N	= \gW@documentClass	,
-	documentClass .default:n	= article	,
+	documentClass	.default:n	= article	,
 	syllabus	.meta:n	= {
 		documentClass	= article	,
 			}	,
@@ -126,6 +234,21 @@
 	lecture	.meta:n	= {
 		documentClass	= article
 			}	,
+	lecture	.value_forbidden:n	= true	,
+	course	.meta:n	= {
+		documentClass	= article
+			}	,
+	course	.value_forbidden:n	= true	,
+	quiz	.meta:n	= {
+		documentClass	= article
+			}	,
+	quiz	.value_forbidden:n	= true	,
+	handout	.meta:n	= {
+		documentClass	= article
+			}	,
+	handout	.value_forbidden:n	= true	,
+
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,32 +262,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prepare arguments for all the packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%
-% Set up modern defaults for encodings:
-%\PassOptionsToPackage{% `inputenc`
-	%utf8 % All documents are UTF-8 in the 21st century. If not, fix your document.
-		%}{inputenc}
+%% Set up modern defaults for encodings:
+\PassOptionsToPackage{% `inputenc`
+	utf8 % All documents are UTF-8 in the 21st century. If not, fix your document.
+		}{inputenc}
 \PassOptionsToPackage{% `fontenc`
 	T1		% T1 fonts extend the old OT1 format to allow greater than 128 characters
 		}{fontenc}
+% 
 \PassOptionsToPackage{% `mmap`
 	noTeX % use unicode codepoints, not TeX names. 
 		}{mmap} % Allows copy/pasta from PDF.
-
-%%
-\ifdraft{\PassOptionsToPackage{%
+% 
+\ifdraft{
+\PassOptionsToPackage{%
 	draft
 		}{bookmark}%TODO: replace this with just a damn \DeclareOption
 }{}% \ifdraft
-
+% 
 \PassOptionsToPackage{%
 	atend,%
 		}{bookmark}
-
-%%
-% Set up Hyper\TeX (hyperref, et al), which is basically the structural core of the document:
-\bool_if:nTF \gW@hyperref{\PassOptionsToPackage{% `hyperref`
+% 
+%% Set up \HyperTeX (hyperref, et al), which is basically the structural core of the document:
+\bool_if:nTF \gW@hyperref{
+\PassOptionsToPackage{% `hyperref`
 	implicit, % Redefine \LaTeX internals, already default
 	hypertexnames, % Use guessable names for anchors, already default
 	bookmarks, % Write TOC as PDF bookmarks
@@ -188,8 +310,8 @@
 	pdfpagelabels, % tag pages with page numbers from \LaTeX ("ii" or whatever) 
 	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
 		}{hyperref}
-%%
-% Inform *all* packages that `hyperref` is in use:
+%
+%% Inform *all* packages that `hyperref` is in use:
 \gW@addGlobalOption{hyperref}
 %%
 %\PassOptionsToPackage{% `xcolor`
@@ -200,22 +322,23 @@
 %		}{ntheorem}
 }{}% \@gWhyperref
 
-%%
-% Set up `scrbase` not to argue with iftex.
+%
+%% Set up `scrbase` not to argue with iftex.
 \PassOptionsToPackage{% `scrbase`
 	internalonly % don't define macros to conflict with `iftex`
 		}{scrbase} % KOMA-Script base package
 
 
-%%
-% Set up documentation utilities from `hyperref` documentation package.
-\bool_if:nTF \gW@hypdoc{\PassOptionsToPackage{% `hyperref`
+%
+%% Set up documentation utilities from `hyperref` documentation package.
+\bool_if:nTF \gW@hypdoc{
+\PassOptionsToPackage{% `hyperref`
 	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
 		}{hyperref}
 }{}%\gW@hypdoc
 
-%%
-% Set up colors now that we have color printers and video screens...
+%
+%% Set up colors now that we have color printers and video screens...
 \PassOptionsToPackage{% `xcolor`
 	xcdraw, % use PS/PDF commands to draw frames and boxes, in dvips, pdftex, dvipdfm
 	fixinclude, % prevents dvips from explicitly resetting current color to black before actually inserting an .eps file
@@ -226,15 +349,16 @@
 	table, % Load the `colortbl` package
 		}{xcolor}
 
-%%
-% Set up a much nicer set of theorem environments:
-\bool_if:nTF \gW@ntheorem{\PassOptionsToPackage{% `ntheorem`
+%
+%% Set up a much nicer set of theorem environments:
+\bool_if:nTF \gW@ntheorem{
+\PassOptionsToPackage{% `ntheorem`
 	thmmarks, % enables the automatical placement of endmarks
 	thref, % enables the extended reference features
 	standard % load predefined environments
 		}{ntheorem}
-%%
-% Inform *all* packages that `ntheorem` is in use:
+%
+%% Inform *all* packages that `ntheorem` is in use:
 \gW@addGlobalOption{ntheorem}
 %%
 %\PassOptionsToPackage{% `empheq`
@@ -245,12 +369,14 @@
 		}{beamer}
 }{}%\gW@ntheorem
 
-%%
-% Set up the most common mathematics package:
-\bool_if:nTF \gW@amsmath{\PassOptionsToPackage{% `amsmath`
+%
+%% Set up the most common mathematics package:
+\bool_if:nTF \gW@amsmath{
+\PassOptionsToPackage{% `amsmath`
 		}{amsmath}
-%%
-% Inform *all* packages that `amsmath` is in use:
+
+%
+%% Inform *all* packages that `amsmath` is in use:
 \gW@addGlobalOption{amsmath}
 %%
 %\PassOptionsToPackage{% `ntheorem`
@@ -258,8 +384,8 @@
 %		}{ntheorem}
 }{}
 
-%%
-% Set up formatting for telephone numbers:
+%
+%% Set up formatting for telephone numbers:
 \PassOptionsToPackage{% `phonenumbers`
 	country=US, % switch defaults from DE to US.
 	foreign=international, % Use sensible defaults for full ITU numbers.
@@ -268,8 +394,8 @@
 	link=on % clickable tel: link (default).
 		}{phonenumbers}
 
-%%
-% Set up a nicer quotation package:
+%
+%% Set up a nicer quotation package:
 \PassOptionsToPackage{% `csquotes`
 	autostyle=try, % use `babel` if available
 	%autopunct % look ahead for trailing punctuation to move inside marks
@@ -326,31 +452,27 @@
 %% https://tex.stackexchange.com/a/202301
 
 
-%%todo etoolbox http://mirrors.ctan.org/macros/latex/contrib/etoolbox/etoolbox.pdf
+%todo etoolbox http://mirrors.ctan.org/macros/latex/contrib/etoolbox/etoolbox.pdf
 
-%%todo ifthen http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
+%todo ifthen http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
 
 \let\@classoptionslist\gW@classoptionslist
-%% ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
-%% ref: https://www.latex-project.org/help/documentation/clsguide.pdf
-\bool_if:nTF \gW@accessibility{\DeclareOption{accessibility}{\gW@accessibilitytrue\requirePDFTeX}}{}
-\bool_if:nTF \gW@axessibility{\DeclareOption{axessibility}{\gW@axessibilitytrue}}{}
+% ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
+% ref: https://www.latex-project.org/help/documentation/clsguide.pdf
 
-\DeclareOption{course}{\OptionNotUsed} % root document
-\DeclareOption{quiz}{\OptionNotUsed} % 
-%\DeclareOption{videolecture}{\OptionNotUsed} % Adaptation for use with Show Me
-\DeclareOption{handout}{\OptionNotUsed} % Passed out to students during lecture
-
-\bool_if:nTF \gW@videolecture{\DeclareOption{videolecture}{\gW@videolecturetrue}}{}
+\bool_if:nTF \gW@accessibility{
+	\requirePDFTeX
+}{}
+%\bool_if:nTF \gW@axessibility{}{}
+%\bool_if:nTF \gW@videolecture{}{}
 
 %declare option for setting margin to 1"
-\bool_if:nTF \gW@oneinch{\DeclareOption{1in}{\gW@oneinchtrue}}{}
+%\bool_if:nTF \gW@oneinch{}{}
 
 
 % The \LaTeX2e way:
 %\newif\ifgW@myoption% create a flag for this option
 %\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
-
 
 
 \ProcessKeysOptions{gWmaths}
@@ -360,31 +482,33 @@
 
 \ifpdf
 	\pdfminorversion=6 %fucking hack for `accessibility`
-	%\pdf_version_gset:n {6}
-	%\pdf_version_min_gset:n {6}
+%	\pdf_version_gset:n {6}
+%	\pdf_version_min_gset:n {6}
 \fi
 
 
 %\RequirePackage% Automatically configure package load order.
-	%[2018/04/29]
+%	[2018/04/29]
 %		{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
-%%
+%
 \providecommand{\LoadPackagesNow}{}% reduce code churn by providing a stub for running without `pkgloader`
 
 
-\ifTUTeX\else%pdfTeX
+\ifTUTeX\else% engine is not unicode-native
 	\RequirePackage[utf8]{inputenc}[2015/01/01]
 	% When using older engines, this tells the engine to read all files as UTF-8.
 	% XeTeX and LuaTeX always read UTF-8 and ignore this package. 
 	% LaTeX circa 2018 and newer default to UTF-8 as well. 
 \fi
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Load the base document class
+%% Load the base document class
 \LoadClass{\gW@documentClass}
 %%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Begin actually loading packages
+%% Begin actually loading packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % See https://github.com/mhelvens/latex-pkgloader/blob/master/pkgloader-recommended.sty
 %%
@@ -406,7 +530,8 @@
 	venndiagram
 		}%https://tex.stackexchange.com/a/381249
 
-\bool_if:nTF \gW@ntheorem{\RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
+\bool_if:nTF \gW@ntheorem{
+\RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
 	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf 
 		}	%https://tex.stackexchange.com/a/5633
 }{}%\gW@ntheorem
@@ -508,14 +633,14 @@
 \fi
 
 %\RequirePackage% `pdfpages` improves inserting PDF clippings over graphicx
-	%{pdfpages} % http://mirrors.ctan.org/macros/latex/contrib/pdfpages/pdfpages.pdf
+%	{pdfpages} % http://mirrors.ctan.org/macros/latex/contrib/pdfpages/pdfpages.pdf
 
 \RequirePackage{%
-	xcolor,		% http://mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
+	xcolor,	% http://mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
 	phonenumbers,	% http://mirrors.ctan.org/macros/latex/contrib/phonenumbers/doc/phonenumbers-en.pdf
-	csquotes,		% http://mirrors.ctan.org/macros/latex/contrib/csquotes/csquotes.pdf
-	geometry,		% http://mirrors.ctan.org/macros/latex/contrib/geometry/geometry.pdf
-	filemod,		% http://mirrors.ctan.org/macros/latex/contrib/filemod/filemod.pdf
+	csquotes,	% http://mirrors.ctan.org/macros/latex/contrib/csquotes/csquotes.pdf
+	geometry,	% http://mirrors.ctan.org/macros/latex/contrib/geometry/geometry.pdf
+	filemod,	% http://mirrors.ctan.org/macros/latex/contrib/filemod/filemod.pdf
 		}
 
 \bool_if:nTF \gW@videolecture{}{
@@ -524,7 +649,7 @@
 }%\gW@videolecture
 
 %define new \listofXs
-%% docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
+% docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
 \bool_if:nTF \gW@accessibility{ %\ifPDFTeX % not XeTeX nor LuaTeX
 	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
@@ -565,10 +690,10 @@
 \ifLuaTeX\geometry{luatex}\fi% 
 
 %\RequirePackage% \currfilename
-	%{currfile} % http://mirrors.ctan.org/macros/latex/contrib/currfile/currfile.pdf
+%	{currfile} % http://mirrors.ctan.org/macros/latex/contrib/currfile/currfile.pdf
 
 \ifLuaTeX
-	%\RequirePackage{pdftexcmds}
+%	\RequirePackage{pdftexcmds}
 \fi
 
 
@@ -580,7 +705,7 @@
 
 
 %\RequirePackage%
-	%{ifthen} % http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
+%	{ifthen} % http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Ugly hack, because of the unfortunate deprecation of 'n' to 'c' conversion,
@@ -667,9 +792,6 @@
 \RequirePackage[%
 	%% docs: http://mirrors.ctan.org/macros/latex/required/tools/xspace.pdf
 		]{xspace}
-\RequirePackage[%
-	%% docs: http://mirrors.ctan.org/macros/latex/contrib/hologo/hologo.pdf
-		]{hologo}
 \AtBeginDocument{%
 	\hologoSetup{%
 		break=false
