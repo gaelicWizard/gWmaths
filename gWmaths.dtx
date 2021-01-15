@@ -1,35 +1,53 @@
+%    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2020/10/01]
-\RequirePackage{iftex}	\RequireeTeX
+\RequirePackage{iftex,etoolbox,l3keys2e}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%<*installer>
+%<*ins>%|tex>
 \RequirePDFTeX % ASCII 9 (tab) becomes \TeX ^^I in \XeTeX
-\begingroup	\input docstrip	\ifToplevel{%
+%</ins>%|tex>
+%<*ins>
+\begingroup	\input l3docstrip	\ifToplevel{%
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
-}	\nopreamble	\nopostamble
+}	\nopreamble	\nopostamble	%
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
-  \file{\jobname.ins}{\from{\jobname.dtx}{installer}}
-  \file{\jobname.sty}{\from{\jobname.dtx}{package}}
-  \file{\jobname.cls}{\from{\jobname.dtx}{class}}
-}	\ifToplevel{	\ReportTotals	\endbatchfile	}%
-\endgroup
-%</installer>
-%<class>\ProvidesExplClass%
-%<package>\ProvidesExplPackage%
-%<*!package&!class>
+  \file{\jobname.ins}{\from{\jobname.dtx}{ins}}
+  \file{\jobname.sty}{\from{\jobname.dtx}{sty}}
+  \file{\jobname.cls}{\from{\jobname.dtx}{cls}}
+  \file{\jobname.tex}{\from{\jobname.dtx}{tex}}
+}	\ifToplevel{	\ReportTotals
+%<ins>\endbatchfile
+}\endgroup
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%</ins>
+%    \end{macrocode}
+%<cls>\ProvidesExplClass%
+%<sty>\ProvidesExplPackage%
+%<*!sty&!cls>
 \ProvidesExplFile%
-%</!package&!class>
-%<*class|tex>
-%</class|tex>
-%%<dfgspackage>	{gWtex}
-%<*class|package|tex>
- 	{gWmaths}	{2021/01/13}	{0.3.0}%
+%</!sty&!cls>
+%<*cls|tex>
+%</cls|tex>
+ 	{gWmaths}	{2021/01/14}	{0.3.0}%
  		{COVID-19 Quarantine Accessible TeX Project}
-%</class|package|tex>
+%<*tex>
+\documentclass{l3doc}
+\AtBeginDocument{\OnlyDescription}
+%%\AtBeginDocument{\CodelineIndex\EnableCrossrefs\RecordChanges}
+\begin{document}
+	%%\RenewDocumentCommand\NeedsTeXFormat{mo}{}
+	%%\RenewDocumentCommand\RequirePackage{omo}{}
+	\DocInput{\jobname.dtx}
+\end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%<*package>
-\RequirePackage{etoolbox}
+%</tex>
+%<*dtx>% If we're in the original DTX, 
+%%%\endinput% then stop all further processing.
+%</dtx>
+%<*sty>
+%\RequirePackage{etoolbox}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define logos for the \TeX family, w/ hyp
 \ProvideDocumentCommand\TeX{}	{\hologo{TeX}\xspace}
 \ProvideDocumentCommand\eTeX{}	{\hologo{eTeX}\xspace}
 \ProvideDocumentCommand\XeTeX{}	{\hologo{XeTeX}\xspace}
@@ -38,9 +56,9 @@
 \ProvideDocumentCommand\LaTeX{}	{\hologo{LaTeX}\xspace}
 \ProvideDocumentCommand\LaTeXe{}	{\hologo{LaTeX2e}\xspace}
 \ProvideDocumentCommand\LaTeXx{}	{\hologo{LaTeX3}\xspace}
-\AtEndPreamble{
-	\RequirePackage{hologo}	% Define logos for the \TeX family
-		}
+\AtEndPreamble{%
+	\RequirePackage{hologo}%
+		}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hack up global package options list: 
 \def\gW@classoptionslist{\@classoptionslist}
@@ -117,9 +135,13 @@
 	\ifcsdef {ExplSyntaxOn} {#1} {#2}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%</package>
-%<*class>
-\RequirePackage{l3keys2e, gWmaths, ifdraft}%xparse, expl3
+%% Hack up loaded package list 
+% https://tex.stackexchange.com/a/491456
+\expandafter\def\csname ver@l3regex.sty\endcsname{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%</sty>
+%<*cls>
+\RequirePackage{gWmaths, ifdraft}%xparse, expl3
 \RequireeTeX\GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifx\filename\jobname%\iffalse
@@ -743,7 +765,7 @@
 
 \hypersetup{%
 	%pdflang={en-US}, % `hyperxmp` will ask `babel` for the language code!
-	hyperindex % turn this shit back on, JFC.
+	%hyperindex % turn this shit back on, JFC.
 		}
 
 \AtBeginDocument{%
