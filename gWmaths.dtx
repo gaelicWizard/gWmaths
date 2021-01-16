@@ -1,51 +1,73 @@
-%    \begin{macrocode}
-\NeedsTeXFormat{LaTeX2e}[2020/10/01]
-\RequirePackage{iftex,etoolbox,l3keys2e}
+%\begin{abstract}
+%<*readme>
+%% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe\ lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
+%% With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeX3. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control. \cs{tehMacro} %\marg{m} \oarg{p} \parg{picture mode argument}. \file{\jobname} / \env{\jobname} / \pkg{\jobname} / \cls{\jobname}. \NB{tehNote}{some notes}
+%%
+%</readme>
+%\end{abstract}
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]%
+\RequirePackage{iftex,etoolbox,l3keys2e}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%<*ins>%|tex>
-\RequirePDFTeX % ASCII 9 (tab) becomes \TeX ^^I in \XeTeX
-%</ins>%|tex>
+%    \begin{macrocode}
 %<*ins>
+\RequirePDFTeX % ASCII 9 (tab) becomes \TeX ^^I in \XeTeX
 \begingroup	\input l3docstrip	\ifToplevel{%
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
-}	\nopreamble	\nopostamble	%
+	\nopreamble	\nopostamble	}%
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
-  \file{\jobname.ins}{\from{\jobname.dtx}{ins}}
-  \file{\jobname.sty}{\from{\jobname.dtx}{sty}}
-  \file{\jobname.cls}{\from{\jobname.dtx}{cls}}
-  \file{\jobname.tex}{\from{\jobname.dtx}{tex}}
+  \file{README.md}{\from{\jobname.dtx}{readme}}
+  \filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
+  \file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
+  \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
+  \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
+  \filename@parse{\jobname.tex}
+  \file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
 }	\ifToplevel{	\ReportTotals
+ % \@currext \@currname \@currenvir \@currenvline \@currentlabel %\@onlypreamble{\tehMacro} % \g@addto@macro\tehMacro{\tehStuff{}}
+ % TODO: figure out how to make <*ins> open an environment and </ins> close it
 %<ins>\endbatchfile
-}\endgroup
+}	\endgroup
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</ins>
-%    \end{macrocode}
 %<cls>\ProvidesExplClass%
 %<sty>\ProvidesExplPackage%
 %<*!sty&!cls>
 \ProvidesExplFile%
 %</!sty&!cls>
-%<*cls|tex>
-%</cls|tex>
  	{gWmaths}	{2021/01/14}	{0.3.0}%
  		{COVID-19 Quarantine Accessible TeX Project}
 %<*tex>
 \documentclass{l3doc}
+\usepackage{gWmaths}
 \AtBeginDocument{\OnlyDescription}
 %%\AtBeginDocument{\CodelineIndex\EnableCrossrefs\RecordChanges}
+\GetFileInfo{\jobname}
+	\title{\fileinfo}
+	\date{\filedate}
+	\author{\pkg{\filename}~\thanks{\url{https://github.com/gaelicWizard/gWmaths}}~\fileversion}
+\AtEndPreamble{\ExplSyntaxOff}
 \begin{document}
-	%%\RenewDocumentCommand\NeedsTeXFormat{mo}{}
-	%%\RenewDocumentCommand\RequirePackage{omo}{}
+	\maketitle
+\begingroup	\catcode`\<=\catcode`\%
 	\DocInput{\jobname.dtx}
+	\ExplSyntaxOn
+	%\clist_map_inline:cn {g_gWpkgs_clist} {\file{\jobname}~requires~\pkg{#1}. }
+	\file{\jobname}~requires~the~following~packages:~\clist_use:cn {g_gWpkgs_clist}{,~}.
+	%\clist_show:c {g_gWpkgs_clist}
+	\ExplSyntaxOff
+	%\IndexInput{}
+	%\MakeShortVerb{\<}
+\endgroup
 \end{document}
+%    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</tex>
-%<*dtx>% If we're in the original DTX, 
-%%%\endinput% then stop all further processing.
+% \StopEventually{END OF LINE} % must put \Finale at the bottom
+%<*dtx>%%% If we're in the original DTX,
+%% \endinput% then stop all further processing.
 %</dtx>
 %<*sty>
-%\RequirePackage{etoolbox}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define logos for the \TeX family, w/ hyp
 \ProvideDocumentCommand\TeX{}	{\hologo{TeX}\xspace}
@@ -56,9 +78,35 @@
 \ProvideDocumentCommand\LaTeX{}	{\hologo{LaTeX}\xspace}
 \ProvideDocumentCommand\LaTeXe{}	{\hologo{LaTeX2e}\xspace}
 \ProvideDocumentCommand\LaTeXx{}	{\hologo{LaTeX3}\xspace}
+ %% \Web \AmSTeX \BibTeX \SliTeX \PlainTeX
 \AtEndPreamble{%
 	\RequirePackage{hologo}%
 		}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Fix up \NeedsTeXFormat to work from within {document}
+\clist_gclear_new:c {g_gWpkgs_clist}
+\AfterEndPreamble{%
+\ifClassLoadedTF{l3doc}
+{
+	\RenewDocumentCommand\NeedsTeXFormat{ m O{\filedate} }
+	{
+		\file{\jobname}~requires~\hologo{#1},~dated~#2~or~newer.
+	}
+	\RenewDocumentCommand\RequirePackage{ o m O{\filedate} }
+	{ % TODO: make \RequirePackage add packages to a list, rather than print
+	%% \clist_new:N \g_docinput_clist
+		\file{\jobname}~requires~~\pkg{#2},~dated~#3~or~newer.
+	}
+\RenewDocumentCommand \RequirePackage { o m o }
+  {
+    \clist_map_inline:nn {#2}
+      {
+        \clist_put_right:Nn \g_gWpkgs_clist {##1}
+      }
+  }
+}
+{}
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hack up global package options list: 
 \def\gW@classoptionslist{\@classoptionslist}
@@ -76,7 +124,7 @@
 		}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define \GetFileInfo %%% Copy/pasta directly from `doc` package
-\def\GetFileInfo#1{%
+\ProvideDocumentCommand\GetFileInfo{m}{%
   \edef\filename{#1}%
   \def\@tempb##1 ##2 ##3\relax##4\relax{%
     \def\filedate{##1}%
@@ -118,11 +166,13 @@
      }
   }
 %%
-\ProvideDocumentCommand{\ifClassLoaded}{m}
+\ProvideDocumentCommand{\ifClassLoadedTF}{ m m m }
 {
 	\seq_if_in:NnTF \l_pclist_classes_seq { #1 }
-		{ \msg_term:x { The~class~`#1'~is~loaded } }
-		{ \msg_term:x { The~class~`#1'~is~NOT~loaded } }
+		{ %\msg_term:x { The~class~`#1'~is~loaded } 
+		#2 }
+		{ %\msg_term:x { The~class~`#1'~is~NOT~loaded } 
+		#3 }
 }
 %%
 \ProvideDocumentCommand{\showclassesloaded}{}{\seq_show:N \l_pclist_classes_seq}
@@ -130,9 +180,24 @@
 \ProvideDocumentCommand{\showfilesloaded}{}{\seq_show:N \l_pclist_other_seq}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define \ifLaTeX3
-\ProvideDocumentCommand \ifLaTeXx { O{} O{} }
+% \begin{macro}{\ifLaTeXxTF}
+% \begin{arguments}
+%   \item Code to run if the format is \LaTeXx.
+%   \item Code to run if the format is not \LaTeXx.
+% \end{arguments}
+% Note that this macro is defined in \LaTeXx{} syntax, so failure is impossible.
+%   \begin{macrocode}
+\ProvideDocumentCommand \ifLaTeXxTF { O{} O{} }
 {
 	\ifcsdef {ExplSyntaxOn} {#1} {#2}
+}
+%   \end{macrocode}
+% \end{macro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+\ProvideDocumentCommand\mail{m}
+{
+	\href{mailto:#1}{\texttt{#1}}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hack up loaded package list 
@@ -221,13 +286,10 @@
 \keys_define:nn { gWmaths }
 {
 	hyperref	.bool_set:N	= \gW@hyperref	,
-%	hyperref	.default:n	= true	,
 
 	ntheorem	.bool_set:N	= \gW@ntheorem	,
-%	ntheorem	.default	= true	,
 
 	amsmath	.bool_set:N	= \gW@amsmath	,
-%	amsmath	.default	= true	,
 
 	hypdoc	.bool_set:N	= \gW@hypdoc	,
 
