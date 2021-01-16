@@ -277,6 +277,16 @@ TSWLatexianTemp*
 
 
 
-# other stuff too
+# other junk too
 *.hd
-#*.pdf
+
+
+# Since this is all generated from DTX, exclude generated files.
+#  The generated files can be checked in (for release versioning) by using `git add -f teh.file`.
+*.ins
+*.cls
+*.sty
+*.ltx
+*.tex
+*.pdf
+
