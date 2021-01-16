@@ -11,6 +11,7 @@
 %    \begin{macrocode}
 %<*ins>
 \RequirePDFTeX % ASCII 9 (tab) becomes \TeX ^^I in \XeTeX
+\def\@docextension{ltx}
 \begingroup	\input l3docstrip	\ifToplevel{%
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
@@ -21,8 +22,7 @@
   \file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
   \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
   \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
-  \filename@parse{\jobname.tex}
-  \file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
+  \file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
 }	\ifToplevel{	\ReportTotals
  % \@currext \@currname \@currenvir \@currenvline \@currentlabel %\@onlypreamble{\tehMacro} % \g@addto@macro\tehMacro{\tehStuff{}}
  % TODO: figure out how to make <*ins> open an environment and </ins> close it
