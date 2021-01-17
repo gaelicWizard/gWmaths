@@ -6,7 +6,7 @@
 %%
 %</readme>
 %\end{abstract}
-\RequirePackage{iftex,etoolbox,l3keys2e}%
+\RequirePackage{ iftex, etoolbox,	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %    \begin{macrocode}
 %<*ins>
@@ -27,7 +27,7 @@
  % \@currext \@currname \@currenvir \@currenvline \@currentlabel %\@onlypreamble{\tehMacro} % \g@addto@macro\tehMacro{\tehStuff{}}
  % TODO: figure out how to make <*ins> open an environment and </ins> close it
 %<ins>\endbatchfile
-}	\endgroup
+}	\endgroup	% \end{docstrip}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</ins>
 %<cls>\ProvidesExplClass%
@@ -206,7 +206,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</sty>
 %<*cls>
-\RequirePackage{gWmaths, ifdraft}%xparse, expl3
+\RequirePackage{ gWmaths, l3keys2e, ifdraft,	}%xparse, expl3
 \RequireeTeX\GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifx\filename\jobname%\iffalse
