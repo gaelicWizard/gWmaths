@@ -1,40 +1,62 @@
-\NeedsTeXFormat{LaTeX2e}[2020/10/01]%
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{iftex,xparse}	\RequireeTeX%
 %\ifcsundef{DocInput}{
 %!TEX program = pdflatexmk
-%!TEX encoding = UTF-8
+%%!TEX encoding = UTF-8
+%<*!ltx>
+%%!TEX root = gWmaths.dtx
+%</!ltx>
 %!TEX spellcheck = en-US
-%!TEX root = gWmaths.dtx
 %!TeX BiB program = biber	}{%
 %\begin{abstract}
-%<*readme>
+%<*README>
+%% 
 %% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe\ lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
 %% With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeX3. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control. \cs{tehMacro} %\marg{m} \oarg{p} \parg{picture mode argument}. \file{\jobname} / \env{\jobname} / \pkg{\jobname} / \cls{\jobname}. \NB{tehNote}{some notes}
 %%
-%</readme>
+%</README>
 %\end{abstract}	}%
-\RequirePackage{ iftex, etoolbox,	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%    \begin{macrocode}
 %<*ins>
-\RequirePDFTeX % ASCII 9 (tab) becomes \TeX ^^I in \XeTeX
-\begingroup	\input l3docstrip	\ifToplevel{%
+% \section{Installer job file}	\label{ins}
+% \begin{macro}{l3docstrip}
+% \begin{macro}{RequirePDFTeX}
+% The ASCII character 9 (tab) becomes |^^I| in \XeTeX, so require \pdfTeX\ for now.
+% Set our build defaults, define the file extension for our documentation root, and set `tab' category code to character (instead of space).
+%    \begin{macrocode}
+\begingroup	\RequirePDFTeX	\input l3docstrip	\ifToplevel{%
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
 	\nopreamble	\nopostamble	}%
 \def\@docextension{ltx}
+%    \end{macrocode}
+% \begin{macro}{generate} \begin{macro}{file}
+% For each of \file{README}, \file{ins}, \file{sty}, \file{cls}, \file{ltx} 
+%  run \pkg{l3docstrip} to generate the distributables.
+%    \begin{macrocode}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
-  \file{README.md}{\from{\jobname.dtx}{readme}}
+  \file{README.md}{\from{\jobname.dtx}{README}}
   \filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
   \file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
   \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
   \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
   \file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
+%    \end{macrocode}
+% \begin{macro}{ReportTotals}
+% Print some stats to the terminal, then \cs{endgroup} to escape from \pkg{docstrip}.
+%    \begin{macrocode}
 }	\ifToplevel{	\ReportTotals
  % \@currext \@currname \@currenvir \@currenvline \@currentlabel %\@onlypreamble{\tehMacro} % \g@addto@macro\tehMacro{\tehStuff{}}
  % TODO: figure out how to make <*ins> open an environment and </ins> close it
 %<ins>\endbatchfile
-}	\endgroup	% \end{docstrip}
+}	\endgroup	% \end{l3docstrip}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%    \begin{macrocode}
 %</ins>
 %<cls>\ProvidesExplClass%
 %<sty>\ProvidesExplPackage%
@@ -43,7 +65,8 @@
 %</!sty&!cls>
  	{gWmaths}	{2021/01/14}	{0.3.0}%
  		{COVID-19 Quarantine Accessible TeX Project}
-%<*tex>
+\RequirePackage{ iftex, etoolbox,	}%
+%<*ltx>
 \documentclass{l3doc}
 \usepackage{gWmaths}
 \AtBeginDocument{\OnlyDescription}
@@ -51,24 +74,27 @@
 \GetFileInfo{\jobname}
 	\title{\fileinfo}
 	\date{\filedate}
-	\author{\pkg{\filename}~\thanks{\url{https://github.com/gaelicWizard/gWmaths}}~\fileversion}
+	\author{\pkg{\filename} 
+		\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } } 
+		~ \fileversion }
+
 \AtEndPreamble{\ExplSyntaxOff}
 \begin{document}
 	\maketitle
 \begingroup	\catcode`\<=\catcode`\%
-	\DocInput{\jobname.dtx}
 	\ExplSyntaxOn
 	%\clist_map_inline:cn {g_gWpkgs_clist} {\file{\jobname}~requires~\pkg{#1}. }
-	\file{\jobname}~requires~the~following~packages:~\clist_use:cn {g_gWpkgs_clist}{,~}.
+	%\file{\jobname}~requires~the~following~packages:~\clist_use:cn {g_gWpkgs_clist}{,~}.
 	%\clist_show:c {g_gWpkgs_clist}
 	\ExplSyntaxOff
+	\DocInput{\jobname.dtx}
 	%\IndexInput{}
 	%\MakeShortVerb{\<}
 \endgroup
 \end{document}
 %    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%</tex>
+%</ltx>
 % \StopEventually{END OF LINE} % must put \Finale at the bottom
 %<*dtx>%%% If we're in the original DTX,
 %% \endinput% then stop all further processing.
@@ -86,7 +112,7 @@
 \ProvideDocumentCommand\LaTeXx{}	{\hologo{LaTeX3}\xspace}
  %% \Web \AmSTeX \BibTeX \SliTeX \PlainTeX
 \AtEndPreamble{%
-	\RequirePackage{hologo}%
+	\RequirePackage{hologo, xspace}%
 		}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Fix up \NeedsTeXFormat to work from within {document}
@@ -97,6 +123,15 @@
 	\RenewDocumentCommand\NeedsTeXFormat{ m O{\filedate} }
 	{
 		\file{\jobname}~requires~\hologo{#1},~dated~#2~or~newer.
+	}
+	\RenewDocumentCommand\ProvidesExplFile{ m m m m }
+	{
+		\author{\pkg{#1} 
+			\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } } 
+			~ #3 }
+		\date{#2}
+		\title{#4}
+
 	}
 	\RenewDocumentCommand\RequirePackage{ o m O{\filedate} }
 	{ % TODO: make \RequirePackage add packages to a list, rather than print
