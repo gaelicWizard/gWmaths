@@ -1059,10 +1059,12 @@
 
 
 
+
 %\begin{filecontents*}{latexmkrc}
 %\end{filecontents*}
  %% git update-index --assume-unchanged from https://stackoverflow.com/a/10755704
  %% BUT WAIT: https://stackoverflow.com/a/13631525
+ %% git update-index --skip-worktree gWmaths.cls gWmaths.sty README.md gWmaths.ltx
 %<*ins>
 \begin{filecontents*}{.git/hooks/post-commit}
 #!/bin/sh
