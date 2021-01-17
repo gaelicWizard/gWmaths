@@ -1,0 +1,140 @@
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ iftex, xparse, l3keys2e, }%
+%%!TEX root = gWmaths.dtx
+%%!TEX encoding = UTF-8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProvidesExplPackage%
+ 	{gWmaths}	{2021/01/14}	{0.3.0}%
+ 		{COVID-19 Quarantine Accessible TeX Project}
+\RequirePackage{ iftex, etoolbox,	}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define logos for the \TeX family, w/ hyp
+\ProvideDocumentCommand\TeX{}	{\hologo{TeX}\xspace}
+\ProvideDocumentCommand\eTeX{}	{\hologo{eTeX}\xspace}
+\ProvideDocumentCommand\XeTeX{}	{\hologo{XeTeX}\xspace}
+\ProvideDocumentCommand\pdfTeX{}	{\hologo{pdfTeX}\xspace}
+\ProvideDocumentCommand\LuaTeX{}	{\hologo{LuaTeX}\xspace}
+\ProvideDocumentCommand\LaTeX{}	{\hologo{LaTeX}\xspace}
+\ProvideDocumentCommand\LaTeXe{}	{\hologo{LaTeX2e}\xspace}
+\ProvideDocumentCommand\LaTeXx{}	{\hologo{LaTeX3}\xspace}
+ %% \Web \AmSTeX \BibTeX \SliTeX \PlainTeX
+\AtEndPreamble{%
+	\RequirePackage{hologo, xspace}%
+		}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Fix up \NeedsTeXFormat to work from within {document}
+\clist_gclear_new:c {g_gWpkgs_clist}
+\AfterEndPreamble{%
+\ifClassLoadedTF{l3doc}
+{
+	\RenewDocumentCommand\NeedsTeXFormat{ m O{\filedate} }
+	{
+		\file{\jobname}~requires~\hologo{#1},~dated~#2~or~newer.
+	}
+	\RenewDocumentCommand\ProvidesExplFile{ m m m m }
+	{
+		\author{\pkg{#1}
+			\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } }
+			~ #3 }
+		\date{#2}
+		\title{#4}
+
+	}
+	\RenewDocumentCommand\RequirePackage{ o m O{\filedate} }
+	{ % TODO: make \RequirePackage add packages to a list, rather than print
+	%% \clist_new:N \g_docinput_clist
+		\file{\jobname}~requires~~\pkg{#2},~dated~#3~or~newer.
+	}
+\RenewDocumentCommand \RequirePackage { o m o }
+  {
+    \clist_map_inline:nn {#2}
+      {
+        \clist_put_right:Nn \g_gWpkgs_clist {##1}
+      }
+  }
+}
+{}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hack up global package options list:
+\def\gW@classoptionslist{\@classoptionslist}
+\providecommand\gW@addGlobalOption[1]{%
+   \xdef\gW@classoptionslist{\gW@classoptionslist,#1}%
+}%
+\AtEndPreamble{
+	\let\globalClassOptions\@classoptionslist
+		}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define \GetFileInfo %%% Copy/pasta directly from `doc` package
+\ProvideDocumentCommand\GetFileInfo{m}{%
+  \edef\filename{#1}%
+  \def\@tempb##1 ##2 ##3\relax##4\relax{%
+    \def\filedate{##1}%
+    \def\fileversion{##2}%
+    \def\fileinfo{##3}}%
+  \edef\@tempa{\csname ver@#1\endcsname}%
+  \expandafter\@tempb\@tempa\relax? ? \relax\relax}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define file extension constant to match \@clsextension and \@pkgextension
+\def\@docextension{ltx}
+\@onlypreamble\@docextension
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\jobis#1{FF\fi
+  \edef\predicate{#1}%
+  \edef\predicate{\expandafter\strip@prefix\meaning\predicate}%
+  \edef\job{\jobname}%
+  \ifx\job\predicate
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define functions to get lists of classes, packages, files loaded % https://tex.stackexchange.com/a/43568
+\seq_new:N \l_pclist_classes_seq
+\seq_new:N \l_pclist_packages_seq
+\seq_new:N \l_pclist_other_seq
+\clist_map_inline:cn { @filelist }
+  {
+   \tl_if_in:nnTF { #1 } { .cls }
+     {
+      \tl_set:Nn \l_tmpa_tl { #1 }
+      \tl_remove_once:Nn \l_tmpa_tl { .cls }
+      \seq_put_right:NV \l_pclist_classes_seq \l_tmpa_tl
+     }
+     {
+      \tl_if_in:nnTF { #1 } { .sty }
+       {
+        \tl_set:Nn \l_tmpa_tl { #1 }
+        \tl_remove_once:Nn \l_tmpa_tl { .sty }
+        \seq_put_right:NV \l_pclist_packages_seq \l_tmpa_tl
+       }
+       {
+        \seq_put_right:Nn \l_pclist_other_seq { #1 }
+       }
+     }
+  }
+%%
+\ProvideDocumentCommand{\ifClassLoadedTF}{ m m m }
+{
+	\seq_if_in:NnTF \l_pclist_classes_seq { #1 }
+		{ %\msg_term:x { The~class~`#1'~is~loaded }
+		#2 }
+		{ %\msg_term:x { The~class~`#1'~is~NOT~loaded }
+		#3 }
+}
+%%
+\ProvideDocumentCommand{\showclassesloaded}{}{\seq_show:N \l_pclist_classes_seq}
+\ProvideDocumentCommand{\showpackagesloaded}{}{\seq_show:N \l_pclist_packages_seq}
+\ProvideDocumentCommand{\showfilesloaded}{}{\seq_show:N \l_pclist_other_seq}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define \ifLaTeX3
+\ProvideDocumentCommand \ifLaTeXxTF { O{} O{} }
+{
+	\ifcsdef {ExplSyntaxOn} {#1} {#2}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+\ProvideDocumentCommand\mail{m}
+{
+	\href{mailto:#1}{\texttt{#1}}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hack up loaded package list
+\expandafter\def\csname ver@l3regex.sty\endcsname{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
