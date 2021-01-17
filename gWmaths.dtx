@@ -1,13 +1,9 @@
-\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{iftex,xparse}	\RequireeTeX%
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ iftex, xparse, l3keys2e, }%
 %\ifcsundef{DocInput}{
 %!TEX program = pdflatexmk
-%%!TEX encoding = UTF-8
-%<*!ltx>
 %%!TEX root = gWmaths.dtx
-%</!ltx>
-%!TEX spellcheck = en-US
-%!TeX BiB program = biber	}{%
-%\begin{abstract}
+%%!TEX encoding = UTF-8
+%}{\begin{abstract}
 %<*README>
 %% 
 %% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe\ lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
@@ -251,8 +247,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</sty>
 %<*cls>
-\RequirePackage{ gWmaths, l3keys2e, ifdraft, gitinfo2	}%xparse, expl3
-\RequireeTeX\GetFileInfo{\CurrentFile}
+\RequirePackage{ gWmaths,	}%xparse, expl3
+\GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifx\filename\jobname%\iffalse
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -401,11 +397,11 @@
 	noTeX % use unicode codepoints, not TeX names. 
 		}{mmap} % Allows copy/pasta from PDF.
 % 
-\ifdraft{
-\PassOptionsToPackage{%
-	draft
-		}{bookmark}%TODO: replace this with just a damn \DeclareOption
-}{}% \ifdraft
+%\ifdraft{
+%\PassOptionsToPackage{%
+%	draft
+%		}{bookmark}%TODO: replace this with just a damn \DeclareOption
+%}{}% \ifdraft
 % 
 \PassOptionsToPackage{%
 	atend,%
@@ -470,7 +466,7 @@
 	xcdraw, % use PS/PDF commands to draw frames and boxes, in dvips, pdftex, dvipdfm
 	fixinclude, % prevents dvips from explicitly resetting current color to black before actually inserting an .eps file
 	%fixpdftex % Load the `pdfcolmk` package; useless stub
-	dvipsnames, % Load a set of predefined colors.
+	dvipsnames, % Load a set of predefined colors according to \TeX.
 	svgnames, % Load a set of predefined colors according to SVG 1.1.
 	x11names*, % Load a set of predefined colors according to Unix/X11, delayed.
 	table, % Load the `colortbl` package
@@ -768,6 +764,7 @@
 	csquotes,	% http://mirrors.ctan.org/macros/latex/contrib/csquotes/csquotes.pdf
 	geometry,	% http://mirrors.ctan.org/macros/latex/contrib/geometry/geometry.pdf
 	filemod,	% http://mirrors.ctan.org/macros/latex/contrib/filemod/filemod.pdf
+	ifdraft,
 		}
 
 \bool_if:nTF \gW@videolecture{}{
@@ -778,11 +775,12 @@
 %define new \listofXs
 % docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
-\bool_if:nTF \gW@accessibility{ %\ifPDFTeX % not XeTeX nor LuaTeX
+\ifPDFTeX%\ifPDFTeX % not XeTeX nor LuaTeX
 	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
-	\requirePDFTEX % `accessibility` is badly hacked together and quite old...
-	\RequirePackage[tagged]{accessibility}
-}{}%\gW@accessibility
+	\RequirePackage[% `accessibility` is badly hacked together and quite old...
+		tagged
+			]{accessibility}
+\fi%\ifPDFTeX
 
 \ifXeTeX\else% seems like XeTeX is actually kind of a hack and maybe not much future...
 	\RequirePackage[
@@ -829,7 +827,14 @@
 	{filehook,currfile}%
 		[2020/09/29]%
 
-
+% \begin{macro}{gitinfo2}
+% \pkg{gitinfo2} loads several other packages, including \pkg{xstring} and \pkg{xcolor},
+% so throw it at the end for now. 
+%    \begin{macrocode}
+\RequirePackage%
+	{gitinfo2}%
+%    \end{macrocode}
+%\end{macro}
 
 %\RequirePackage%
 %	{ifthen} % http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
@@ -1055,9 +1060,10 @@
 
 
 %\begin{filecontents*}{latexmkrc}
-%\end{filecontents}
-
-
+%\end{filecontents*}
+ %% git update-index --assume-unchanged from https://stackoverflow.com/a/10755704
+ %% BUT WAIT: https://stackoverflow.com/a/13631525
+%<*ins>
 \begin{filecontents*}{.git/hooks/post-commit}
 #!/bin/sh
 # Copyright 2015 Brent Longborough
@@ -1090,7 +1096,8 @@ git --no-pager log -1 --date=short --decorate=short \
         firsttagdescribe={$FIRSTTAG},
         reltag={$RELTAG}
     ]{gitexinfo}" HEAD > .git/gitHeadInfo.gin
-\end{filecontents}
+\end{filecontents*}
+%</ins>
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
