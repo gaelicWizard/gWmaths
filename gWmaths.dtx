@@ -1,4 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}[2020/10/01]%
+%!TEX program = pdflatexmk
+%!TEX encoding = UTF-8
+%!TEX spellcheck = en-US
+%!TeX root = COURSE_MAIN.TEX
+%!TeX BiB program = biber
 %\begin{abstract}
 %<*readme>
 %% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe\ lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
@@ -11,11 +16,11 @@
 %    \begin{macrocode}
 %<*ins>
 \RequirePDFTeX % ASCII 9 (tab) becomes \TeX ^^I in \XeTeX
-\def\@docextension{ltx}
 \begingroup	\input l3docstrip	\ifToplevel{%
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
 	\nopreamble	\nopostamble	}%
+\def\@docextension{ltx}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
   \file{README.md}{\from{\jobname.dtx}{readme}}
   \filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
@@ -133,7 +138,11 @@
   \edef\@tempa{\csname ver@#1\endcsname}%
   \expandafter\@tempb\@tempa\relax? ? \relax\relax}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%http://www.texfaq.org/FAQ-compjobnam
+%% Define file extension constant to match \@clsextension and \@pkgextension
+\def\@docextension{ltx}
+\@onlypreamble\@docextension
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %http://www.texfaq.org/FAQ-compjobnam
 \def\jobis#1{FF\fi
   \edef\predicate{#1}%
   \edef\predicate{\expandafter\strip@prefix\meaning\predicate}%
@@ -220,11 +229,6 @@
 
 
 \documentclass[english,lecture]{gWmaths}
-%!TEX program = pdflatexmk
-%!TEX encoding = UTF-8
-%!TEX spellcheck = en-US
-%!TeX root = COURSE_MAIN.TEX
-%!TeX BiB program = biber
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Now we're ready to start
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1017,6 +1021,40 @@
 %\begin{filecontents*}{latexmkrc}
 %\end{filecontents}
 
+
+\begin{filecontents*}{.git/hooks/post-commit}
+#!/bin/sh
+# Copyright 2015 Brent Longborough
+# Part of gitinfo2 package Version 2
+# Release 2.0.7 2015-11-22
+# Please read gitinfo2.pdf for licencing and other details
+# -----------------------------------------------------
+# Post-{commit,checkout,merge} hook for the gitinfo2 package
+#
+# Get the first tag found in the history from the current HEAD
+FIRSTTAG=$(git describe --tags --always --dirty='-*' 2>/dev/null)
+# Get the first tag in history that looks like a Release
+RELTAG=$(git describe --tags --long --always --dirty='-*' --match '[0-9]*.*' 2>/dev/null)
+# Hoover up the metadata
+git --no-pager log -1 --date=short --decorate=short \
+    --pretty=format:"\usepackage[%
+        shash={%h},
+        lhash={%H},
+        authname={%an},
+        authemail={%ae},
+        authsdate={%ad},
+        authidate={%ai},
+        authudate={%at},
+        commname={%cn},
+        commemail={%ce},
+        commsdate={%cd},
+        commidate={%ci},
+        commudate={%ct},
+        refnames={%d},
+        firsttagdescribe={$FIRSTTAG},
+        reltag={$RELTAG}
+    ]{gitexinfo}" HEAD > .git/gitHeadInfo.gin
+\end{filecontents}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
