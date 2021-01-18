@@ -286,7 +286,6 @@ TSWLatexianTemp*
 *.ins
 *.cls
 *.sty
-*.ltx
-*.tex
+*.drv
 *.pdf
 README.md
