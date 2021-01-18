@@ -477,11 +477,11 @@
 
 %
 %% Set up documentation utilities from `hyperref` documentation package.
-\bool_if:nTF \gW@hypdoc{
+\bool_if:nT \gW@hypdoc{
 \PassOptionsToPackage{% `hyperref`
 	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
 		}{hyperref}
-}{}%\gW@hypdoc
+}%\gW@hypdoc
 
 %
 %% Set up colors now that we have color printers and video screens...
@@ -497,7 +497,7 @@
 
 %
 %% Set up a much nicer set of theorem environments:
-\bool_if:nTF \gW@ntheorem{
+\bool_if:nT \gW@ntheorem{
 \PassOptionsToPackage{% `ntheorem`
 	thmmarks, % enables the automatical placement of endmarks
 	thref, % enables the extended reference features
@@ -513,11 +513,11 @@
 \PassOptionsToClass{% `beamer`
 	noamsthm % prevent from loading `amsthm`, which conflicts with `ntheorem`
 		}{beamer}
-}{}%\gW@ntheorem
+}%\gW@ntheorem
 
 %
 %% Set up the most common mathematics package:
-\bool_if:nTF \gW@amsmath{
+\bool_if:nT \gW@amsmath{
 \PassOptionsToPackage{% `amsmath`
 		}{amsmath}
 
@@ -528,7 +528,7 @@
 %\PassOptionsToPackage{% `ntheorem`
 %	amsmath, % cope with `amsmath`
 %		}{ntheorem}
-}{}
+}
 
 %
 %% Set up formatting for telephone numbers:
@@ -610,9 +610,9 @@
 % ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
 % ref: https://www.latex-project.org/help/documentation/clsguide.pdf
 
-\bool_if:nTF \gW@accessibility{
+\bool_if:nT \gW@accessibility{
 	\requirePDFTeX
-}{}
+}
 %\bool_if:nTF \gW@axessibility{}{}
 %\bool_if:nTF \gW@videolecture{}{}
 
@@ -680,22 +680,22 @@
 	venndiagram
 		}%https://tex.stackexchange.com/a/381249
 
-\bool_if:nTF \gW@ntheorem{
+\bool_if:nT \gW@ntheorem{
 \RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
 	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf 
 		}	%https://tex.stackexchange.com/a/5633
-}{}%\gW@ntheorem
+}%\gW@ntheorem
 
 
 
-\bool_if:nTF \gW@oneinch{ % if the flag is set, then do some thing
+\bool_if:nT \gW@oneinch{ % if the flag is set, then do some thing
 	\AtEndOfClass{
 		\geometry{
 			%letterpaper, % screen % try to get this to auto-detect or something so \documentclass[a4paper,landscape]{gWmaths} works
 			margin=1in
 				}
 			}
-}{}%\gW@oneinch
+}%\gW@oneinch
 
 %\ifgW@myoption % if the flag is set, then do some thing
 %   code active only for this option
@@ -764,7 +764,7 @@
 \RequirePackage% `fancyhdr` may have issues with `accessibility`, must load *before* `hyperref`
 	{fancyhdr} % http://mirrors.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
 
-\bool_if:nTF \gW@videolecture{}{
+\bool_if:nF \gW@videolecture{
 	\RequirePackage% `paralist` redefines {itemize}, {enumerate} environments
 		{paralist} % http://mirrors.ctan.org/macros/latex/contrib/paralist/paralist.pdf
 %\RequirePackage[ % `enumitem` redefines {itemize}, {enumerate} environments
@@ -794,7 +794,7 @@
 	ifdraft,
 		}
 
-\bool_if:nTF \gW@videolecture{}{
+\bool_if:nF \gW@videolecture{
 	\RequirePackage% un-dumb \maketitle
 		{titling} % http://mirrors.ctan.org/macros/latex/contrib/titling/titling.pdf
 }%\gW@videolecture
@@ -827,7 +827,7 @@
 	%pdfcomment,	% http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 		}% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
-\bool_if:nTF \gW@videolecture{}{
+\bool_if:nF \gW@videolecture{
 	\RequirePackage%
 		{hypdoc} % http://mirrors.ctan.org/macros/latex/contrib/oberdiek/hypdoc.pdf
 }%\gW@videolecture
@@ -984,9 +984,9 @@
 
 
 
-\bool_if:nTF \gW@videolecture{
+\bool_if:nT \gW@videolecture{
 	\providecommand*{\theorembreak}{\usebeamertemplate{theorem end}\framebreak\usebeamertemplate{theorem begin}}
-}{}%\gW@videolecture
+}%\gW@videolecture
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
