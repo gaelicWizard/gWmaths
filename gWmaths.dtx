@@ -255,13 +255,13 @@
 %   \end{macrocode}
 % \end{macro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 
+%%
 \ProvideDocumentCommand\mail{m}
 {
-	\href{mailto:#1}{\texttt{#1}}
+	\href{mailto:#1}{\nolinkurl{#1}}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Hack up loaded package list 
+%% Hack up loaded package list
 % https://tex.stackexchange.com/a/491456
 \expandafter\def\csname ver@l3regex.sty\endcsname{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
