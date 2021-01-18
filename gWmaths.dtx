@@ -111,7 +111,7 @@
 
 %% Define logos for the \TeX/ family, w/ hyp
 \DeclareDocumentCommand\TeX{}	{\texorpdfstring{\hologo{TeX}}{TeX}}
-\requiredelimiter[/]{\TeX}
+\requiredelimiter[/]{\TeX}	% \cs{TeX} is abused by \pkg{babel}, but no problems yet
 \DeclareDocumentCommand\eTeX{}	{\texorpdfstring{\hologo{eTeX}}{eTeX}}
 \requiredelimiter[/]{\eTeX}
 \DeclareDocumentCommand\XeTeX{}	{\texorpdfstring{\hologo{XeTeX}}{XeTeX}}
@@ -121,7 +121,7 @@
 \DeclareDocumentCommand\LuaTeX{}	{\texorpdfstring{\hologo{LuaTeX}}{LuaTeX}}
 \requiredelimiter[/]{\LuaTeX}
 \DeclareDocumentCommand\LaTeX{}	{\texorpdfstring{\hologo{LaTeX}}{LaTeX}}
-\requiredelimiter[/]{\LaTeX}
+\requiredelimiter{\LaTeX}	% \cs{LaTeX} is abused by \pkg{babel}, and separately also used on the extra-page page...
 \DeclareDocumentCommand\LaTeXe{}	{\texorpdfstring{\hologo{LaTeX2e}}{LaTeX2e}}
 \requiredelimiter[/]{\LaTeXe}
 \DeclareDocumentCommand\LaTeXx{}	{\texorpdfstring{\hologo{LaTeX3}}{LaTeX3}}
