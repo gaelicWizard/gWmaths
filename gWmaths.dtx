@@ -5,7 +5,7 @@
 %%!TEX encoding = UTF-8
 %}{\begin{abstract}
 %<*README>
-%% 
+%%
 %% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe/ lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
 %% With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeXx/. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control. \cs{tehMacro} %\marg{m} \oarg{p} \parg{picture mode argument}. \file{\jobname} / \env{\jobname} / \pkg{\jobname} / \cls{\jobname}. \NB{tehNote}{some notes}
 %%
@@ -26,7 +26,7 @@
 \def\@docextension{ltx}
 %    \end{macrocode}
 % \begin{macro}{generate} \begin{macro}{file}
-% For each of \file{README}, \file{ins}, \file{sty}, \file{cls}, \file{ltx} 
+% For each of \file{README}, \file{ins}, \file{sty}, \file{cls}, \file{ltx}
 %  run \pkg{l3docstrip} to generate the distributables.
 %    \begin{macrocode}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
@@ -70,8 +70,8 @@
 \GetFileInfo{\jobname}
 	\title{\fileinfo}
 	\date{\filedate}
-	\author{\pkg{\filename} 
-		\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } } 
+	\author{\pkg{\filename}
+		\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } }
 		~ \fileversion }
 
 \AtEndPreamble{\ExplSyntaxOff}
@@ -142,8 +142,8 @@
 	}
 	\RenewDocumentCommand\ProvidesExplFile{ m m m m }
 	{
-		\author{\pkg{#1} 
-			\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } } 
+		\author{\pkg{#1}
+			\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } }
 			~ #3 }
 		\date{#2}
 		\title{#4}
@@ -165,7 +165,7 @@
 {}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Hack up global package options list: 
+%% Hack up global package options list:
 \def\gW@classoptionslist{\@classoptionslist}
 \providecommand\gW@addGlobalOption[1]{%
    \xdef\gW@classoptionslist{\gW@classoptionslist,#1}%
@@ -230,9 +230,9 @@
 \ProvideDocumentCommand{\ifClassLoadedTF}{ m m m }
 {
 	\seq_if_in:NnTF \l_pclist_classes_seq { #1 }
-		{ %\msg_term:x { The~class~`#1'~is~loaded } 
+		{ %\msg_term:x { The~class~`#1'~is~loaded }
 		#2 }
-		{ %\msg_term:x { The~class~`#1'~is~NOT~loaded } 
+		{ %\msg_term:x { The~class~`#1'~is~NOT~loaded }
 		#3 }
 }
 %%
@@ -399,7 +399,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \keys_set:nn { gWmaths }{% Set our default options
 	autodate,
-	hyperref, 
+	hyperref,
 	ntheorem,
 	hypdoc,
 	documentClass=article,
@@ -415,21 +415,21 @@
 \PassOptionsToPackage{% `fontenc`
 	T1		% T1 fonts extend the old OT1 format to allow greater than 128 characters
 		}{fontenc}
-% 
+%
 \PassOptionsToPackage{% `mmap`
 	noTeX % use unicode codepoints, not \TeX/ names.
 		}{mmap} % Allows copy/pasta from PDF.
-% 
+%
 %\ifdraft{
 %\PassOptionsToPackage{%
 %	draft
 %		}{bookmark}%TODO: replace this with just a damn \DeclareOption
 %}{}% \ifdraft
-% 
+%
 \PassOptionsToPackage{%
 	atend,%
 		}{bookmark}
-% 
+%
 %% Set up \HyperTeX/ (hyperref, et al), which is basically the structural core of the document:
 \bool_if:nT \gW@hyperref{
 \PassOptionsToPackage{% `hyperref`
@@ -571,7 +571,7 @@
 
 \PassOptionsToPackage{%
 	%heightrounded % round off to avoid overfull alrgn;earujs
-		}{geometry} 
+		}{geometry}
 
 
 %\PassOptionsToPackage{%
@@ -590,7 +590,7 @@
 %% ref: https://tex.stackexchange.com/a/677
 %% ref: https://tex.stackexchange.com/a/147206
 %% ref: https://tex.stackexchange.com/a/2869
-%% ref: https://tex.stackexchange.com/a/44701 
+%% ref: https://tex.stackexchange.com/a/44701
 %% ref: https://tex.stackexchange.com/a/413046
 %% ref: https://tex.stackexchange.com/a/54077
 %% ref: http://www.texfaq.org/FAQ-why-inp-font
@@ -682,7 +682,7 @@
 
 \bool_if:nT \gW@ntheorem{
 \RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
-	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf 
+	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf
 		}	%https://tex.stackexchange.com/a/5633
 }%\gW@ntheorem
 
@@ -716,7 +716,7 @@
 		{fontspec} % http://mirrors.ctan.org/macros/unicodetex/latex/fontspec/fontspec.pdf
 	\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
 	
-	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1) 
+	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1)
 	%% Post-2017, don't use xunicode package
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
 \else % \pdfTeX/ or older
@@ -725,7 +725,7 @@
 		fontenc,	% `fontenc` must load *after* `mmap`/`cmap`	% `fontenc` specifies which font format to import.
 			}%
 	% T1 fonts extend the old OT1 format to allow greater than 128 characters
-	% `mmap` is `cmap` plus some math-specifics. 
+	% `mmap` is `cmap` plus some math-specifics.
 	% `cmap` extends default character mapping to include unicode codepoints.
 	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
 \fi
@@ -740,7 +740,7 @@
 %\standaloneconfig{}
 
 %\RequirePackage[%
-	%activeospeccharacters, % don't fuck with < and > 
+	%activeospeccharacters, % don't fuck with < and >
 	%notheorems?
 		%]{beamerarticle}
 %\documentclass[ignorenonframetext]{beamer}
@@ -811,7 +811,7 @@
 
 \ifXeTeX\else% seems like \XeTeX/ is actually kind of a hack and maybe not much future...
 	\RequirePackage[
-		%% docs: 
+		%% docs:
 			]{tagpdf} % official work-in-progress package for future integrated tagging
 	\RequirePackage[%
 		%% docs: http://mirrors.ctan.org/macros/latex/contrib/axessibility/axessibility.pdf
@@ -838,8 +838,8 @@
 		%]{pdfcomment} % http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 
 %hack for some releases of \TeXLive/ which disable auto-detection
-\ifXeTeX\geometry{xetex}\fi% 
-\ifLuaTeX\geometry{luatex}\fi% 
+\ifXeTeX\geometry{xetex}\fi%
+\ifLuaTeX\geometry{luatex}\fi%
 
 %\RequirePackage% \currfilename
 %	{currfile} % http://mirrors.ctan.org/macros/latex/contrib/currfile/currfile.pdf
@@ -856,7 +856,7 @@
 
 % \begin{macro}{gitinfo2}
 % \pkg{gitinfo2} loads several other packages, including \pkg{xstring} and \pkg{xcolor},
-% so throw it at the end for now. 
+% so throw it at the end for now.
 %    \begin{macrocode}
 \RequirePackage%
 	{gitinfo2}%
@@ -1136,7 +1136,7 @@ git --no-pager log -1 --date=short --decorate=short \
 \hypersetup{
 	colorlinks=true,
 	linkcolor=blue,
-	filecolor=magenta,      
+	filecolor=magenta,
 	urlcolor=cyan,
 		}%\hypersetup
 \urlstyle{
