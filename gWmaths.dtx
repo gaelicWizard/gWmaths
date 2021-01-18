@@ -344,6 +344,8 @@
 
 \keys_define:nn { gWmaths }
 {
+	autodate	.bool_set:N	= \gW@autodate	,
+
 	hyperref	.bool_set:N	= \gW@hyperref	,
 
 	ntheorem	.bool_set:N	= \gW@ntheorem	,
@@ -396,6 +398,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \keys_set:nn { gWmaths }{% Set our default options
+	autodate,
 	hyperref, 
 	ntheorem,
 	hypdoc,
@@ -574,6 +577,10 @@
 %\PassOptionsToPackage{%
 %\PassOptionsToPackage{%
 
+
+\bool_if:nT \gW@autodate{\AtEndOfClass{
+	\date{ \filemodprintdate{ \jobname.tex } }%
+}}%
 
 
 
@@ -888,7 +895,7 @@
 		%\GetFileInfo{\jobname.tex} % read \ProvidesFile{}[] from the ultimate TeX
 		%\listfiles % track loaded files in this job
 		%\@getclass
-		\date{\filemodprintdate{\filename}}
+		%\date{\filemodprintdate{\filename}}
 			}
 		}% \GetFileInfo
 
