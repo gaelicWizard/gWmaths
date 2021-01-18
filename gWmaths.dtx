@@ -23,10 +23,10 @@
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
 	\nopreamble	\nopostamble	}%
-\def\@docextension{ltx}
+\def\@docextension{drv}
 %    \end{macrocode}
 % \begin{macro}{generate} \begin{macro}{file}
-% For each of \file{README}, \file{ins}, \file{sty}, \file{cls}, \file{ltx}
+% For each of \file{README}, \file{ins}, \file{sty}, \file{cls}, \file{drv}
 %  run \pkg{l3docstrip} to generate the distributables.
 %    \begin{macrocode}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
@@ -62,7 +62,7 @@
  	{gWmaths}	{2021/01/14}	{0.3.1}%
 		{COVID-19 Quarantine Accessible \TeX/ Project}
 \RequirePackage{ etoolbox,	}%
-%<*ltx>
+%<*drv>
 \documentclass{l3doc}
 \usepackage{gWmaths}
 \AtBeginDocument{\OnlyDescription}
@@ -90,7 +90,7 @@
 \end{document}
 %    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%</ltx>
+%</drv>
 % \StopEventually{END OF LINE} % must put \Finale at the bottom
 %<*dtx>%%% If we're in the original DTX,
 %% \endinput% then stop all further processing.
@@ -191,7 +191,7 @@
   \expandafter\@tempb\@tempa\relax? ? \relax\relax}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define file extension constant to match \@clsextension and \@pkgextension
-\def\@docextension{ltx}
+\def\@docextension{drv}
 \@onlypreamble\@docextension
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %http://www.texfaq.org/FAQ-compjobnam
@@ -282,7 +282,7 @@
 		\nopreamble
 		\nopostamble
 	}%
-	\def\@docextension{ltx}
+	\def\@docextension{drv}
 
 	\generate{
 		\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
@@ -1122,7 +1122,7 @@
 %\end{filecontents*}
  %% git update-index --assume-unchanged from https://stackoverflow.com/a/10755704
  %% BUT WAIT: https://stackoverflow.com/a/13631525
- %% git update-index --skip-worktree gWmaths.cls gWmaths.sty README.md gWmaths.ltx
+ %% git update-index --skip-worktree gWmaths.cls gWmaths.sty README.md gWmaths.drv
 %<*ins>
 \begin{filecontents*}{.git/hooks/post-commit}
 #!/bin/sh
