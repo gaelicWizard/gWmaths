@@ -6,8 +6,8 @@
 %}{\begin{abstract}
 %<*README>
 %% 
-%% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe\ lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
-%% With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeX3. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control. \cs{tehMacro} %\marg{m} \oarg{p} \parg{picture mode argument}. \file{\jobname} / \env{\jobname} / \pkg{\jobname} / \cls{\jobname}. \NB{tehNote}{some notes}
+%% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe/ lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
+%% With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeXx/. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control. \cs{tehMacro} %\marg{m} \oarg{p} \parg{picture mode argument}. \file{\jobname} / \env{\jobname} / \pkg{\jobname} / \cls{\jobname}. \NB{tehNote}{some notes}
 %%
 %</README>
 %\end{abstract}	}%
@@ -16,7 +16,7 @@
 % \section{Installer job file}	\label{ins}
 % \begin{macro}{l3docstrip}
 % \begin{macro}{RequirePDFTeX}
-% The ASCII character 9 (tab) becomes |^^I| in \XeTeX, so require \pdfTeX\ for now.
+% The ASCII character 9 (tab) becomes |^^I| in \XeTeX/, so require \pdfTeX/ for now.
 % Set our build defaults, define the file extension for our documentation root, and set `tab' category code to character (instead of space).
 %    \begin{macrocode}
 \begingroup	\RequirePDFTeX	\input l3docstrip	\ifToplevel{%
@@ -60,7 +60,7 @@
 \ProvidesExplFile%
 %</!sty&!cls>
  	{gWmaths}	{2021/01/14}	{0.3.1}%
- 		{COVID-19 Quarantine Accessible TeX Project}
+		{COVID-19 Quarantine Accessible \TeX/ Project}
 \RequirePackage{ etoolbox,	}%
 %<*ltx>
 \documentclass{l3doc}
@@ -97,18 +97,38 @@
 %</dtx>
 %<*sty>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Define logos for the \TeX family, w/ hyp
-\ProvideDocumentCommand\TeX{}	{\hologo{TeX}\xspace}
-\ProvideDocumentCommand\eTeX{}	{\hologo{eTeX}\xspace}
-\ProvideDocumentCommand\XeTeX{}	{\hologo{XeTeX}\xspace}
-\ProvideDocumentCommand\pdfTeX{}	{\hologo{pdfTeX}\xspace}
-\ProvideDocumentCommand\LuaTeX{}	{\hologo{LuaTeX}\xspace}
-\ProvideDocumentCommand\LaTeX{}	{\hologo{LaTeX}\xspace}
-\ProvideDocumentCommand\LaTeXe{}	{\hologo{LaTeX2e}\xspace}
-\ProvideDocumentCommand\LaTeXx{}	{\hologo{LaTeX3}\xspace}
- %% \Web \AmSTeX \BibTeX \SliTeX \PlainTeX
+%\makeatletter
+\newcommand\requiredelimiter[2][########]{%
+  \ifdefined#2%
+    \def\@temp{\def#2#1}%
+    \expandafter\@temp\expandafter{#2}%
+  \else
+    \@latex@error{\noexpand#2undefined}\@ehc
+  \fi
+}
+\@onlypreamble\requiredelimiter
+%\makeatother
+
+%% Define logos for the \TeX/ family, w/ hyp
+\DeclareDocumentCommand\TeX{}	{\texorpdfstring{\hologo{TeX}}{TeX}}
+\requiredelimiter[/]{\TeX}
+\DeclareDocumentCommand\eTeX{}	{\texorpdfstring{\hologo{eTeX}}{eTeX}}
+\requiredelimiter[/]{\eTeX}
+\DeclareDocumentCommand\XeTeX{}	{\texorpdfstring{\hologo{XeTeX}}{XeTeX}}
+\requiredelimiter[/]{\XeTeX}
+\DeclareDocumentCommand\pdfTeX{}	{\texorpdfstring{\hologo{pdfTeX}}{pdfTeX}}
+\requiredelimiter[/]{\pdfTeX}
+\DeclareDocumentCommand\LuaTeX{}	{\texorpdfstring{\hologo{LuaTeX}}{LuaTeX}}
+\requiredelimiter[/]{\LuaTeX}
+\DeclareDocumentCommand\LaTeX{}	{\texorpdfstring{\hologo{LaTeX}}{LaTeX}}
+\requiredelimiter[/]{\LaTeX}
+\DeclareDocumentCommand\LaTeXe{}	{\texorpdfstring{\hologo{LaTeX2e}}{LaTeX2e}}
+\requiredelimiter[/]{\LaTeXe}
+\DeclareDocumentCommand\LaTeXx{}	{\texorpdfstring{\hologo{LaTeX3}}{LaTeX3}}
+\requiredelimiter[/]{\LaTeXx}
+ %% \Web/ \AmSTeX/ \BibTeX/ \SliTeX/ \PlainTeX/
 \AtEndPreamble{%
-	\RequirePackage{hologo, xspace}%
+	\RequirePackage{hologo}%
 		}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Fix up \NeedsTeXFormat to work from within {document}
@@ -223,10 +243,10 @@
 %% Define \ifLaTeX3
 % \begin{macro}{\ifLaTeXxTF}
 % \begin{arguments}
-%   \item Code to run if the format is \LaTeXx.
-%   \item Code to run if the format is not \LaTeXx.
+%   \item Code to run if the format is \LaTeXx/.
+%   \item Code to run if the format is not \LaTeXx/.
 % \end{arguments}
-% Note that this macro is defined in \LaTeXx{} syntax, so failure is impossible.
+% Note that this macro is defined in \LaTeXx/ syntax, so failure is impossible.
 %   \begin{macrocode}
 \ProvideDocumentCommand \ifLaTeXxTF { O{} O{} }
 {
@@ -254,7 +274,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%
-%% Copy the following lines to the *top* of your \LaTeX document
+%% Copy the following lines to the *top* of your \LaTeX/ document
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -265,7 +285,7 @@
 % Now we're ready to start
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-\date{Fall 2020}  % \LaTeXe uses \today if you don't specify any \date{}
+\date{Fall 2020}  % \LaTeXe/ uses \today if you don't specify any \date{}
 \author{Diana Pell}
 \title{TITLE OF DOCUMENT}
 %%
@@ -277,7 +297,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-\fi%		Copy the *above* lines to the top of your \LaTeX document
+\fi%		Copy the *above* lines to the top of your \LaTeX/ document
 %%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -288,16 +308,16 @@
 \gW@addGlobalOption{utf8} % All documents are UTF-8 in the 21st century. If not, fix your document.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Specify some requirements, but this is mostly redundant...
-%\RequireeTeX%necessarily true for all modern \LaTeX
+%\RequireeTeX%necessarily true for all modern \LaTeX/
 %\RequirePackage{fixltx2e}[2015/01/01]
 %\ifpdf{}
-%TODO: use \eTeX's \unless form
+%TODO: use \eTeX/'s \unless form
 %\RequirePDF%invalid macro
 %\fi
 %\RequirePackage%
-%	%[2020/05/05] %Request the \LaTeX format in effect as of this date
-%	[current]%Use the \LaTeX format as-is.
-%	%[latest]%Use the latest \LaTeX format, even if `latexrelease` is newer than the in-box format
+%	%[2020/05/05] %Request the \LaTeX/ format in effect as of this date
+%	[current]%Use the \LaTeX/ format as-is.
+%	%[latest]%Use the latest \LaTeX/ format, even if `latexrelease` is newer than the in-box format
 %		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
 %%
 
@@ -394,7 +414,7 @@
 		}{fontenc}
 % 
 \PassOptionsToPackage{% `mmap`
-	noTeX % use unicode codepoints, not TeX names. 
+	noTeX % use unicode codepoints, not \TeX/ names.
 		}{mmap} % Allows copy/pasta from PDF.
 % 
 %\ifdraft{
@@ -407,10 +427,10 @@
 	atend,%
 		}{bookmark}
 % 
-%% Set up \HyperTeX (hyperref, et al), which is basically the structural core of the document:
-\bool_if:nTF \gW@hyperref{
+%% Set up \HyperTeX/ (hyperref, et al), which is basically the structural core of the document:
+\bool_if:nT \gW@hyperref{
 \PassOptionsToPackage{% `hyperref`
-	implicit, % Redefine \LaTeX internals, already default
+	implicit, % Redefine \LaTeX/ internals, already default
 	hypertexnames, % Use guessable names for anchors, already default
 	bookmarks, % Write TOC as PDF bookmarks
 	driverfallback=hypertex, % if can't autodetect, then just use the most basic
@@ -426,11 +446,11 @@
 	linktoc=all, % link section name *and* page number from toc
 	%backref, % link back from bib entries to main text
 
-	%pdfencoding=unicode, % set 'auto' to prefer PDFEncoding over UTF-16; default for \TUTeX
+	%pdfencoding=unicode, % set 'auto' to prefer PDFEncoding over UTF-16; default for \TUTeX/
 	%pdflang=en-us, % `hyperxmp` automatically sets this from the language of `babel`
 	pdfusetitle, % use \title{} for PDF metadata
 	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
-	pdfpagelabels, % tag pages with page numbers from \LaTeX ("ii" or whatever) 
+	pdfpagelabels, % tag pages with page numbers from \LaTeX/ ("ii" or whatever)
 	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
 		}{hyperref}
 %
@@ -443,7 +463,7 @@
 %\PassOptionsToPackage{% `ntheorem`
 %	hyperref, % Support the `hyperref` package
 %		}{ntheorem}
-}{}% \@gWhyperref
+}% \@gWhyperref
 
 %
 %% Set up `scrbase` not to argue with iftex.
@@ -466,7 +486,7 @@
 	xcdraw, % use PS/PDF commands to draw frames and boxes, in dvips, pdftex, dvipdfm
 	fixinclude, % prevents dvips from explicitly resetting current color to black before actually inserting an .eps file
 	%fixpdftex % Load the `pdfcolmk` package; useless stub
-	dvipsnames, % Load a set of predefined colors according to \TeX.
+	dvipsnames, % Load a set of predefined colors according to \TeX/.
 	svgnames, % Load a set of predefined colors according to SVG 1.1.
 	x11names*, % Load a set of predefined colors according to Unix/X11, delayed.
 	table, % Load the `colortbl` package
@@ -593,7 +613,7 @@
 %\bool_if:nTF \gW@oneinch{}{}
 
 
-% The \LaTeX2e way:
+% The \LaTeXe/ way:
 %\newif\ifgW@myoption% create a flag for this option
 %\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
 
@@ -620,8 +640,8 @@
 \ifTUTeX\else% engine is not unicode-native
 	\RequirePackage[utf8]{inputenc}[2015/01/01]
 	% When using older engines, this tells the engine to read all files as UTF-8.
-	% XeTeX and LuaTeX always read UTF-8 and ignore this package. 
-	% LaTeX circa 2018 and newer default to UTF-8 as well. 
+	% \XeTeX/ and \LuaTeX/ always read UTF-8 and ignore this package.
+	% \LaTeX/ circa 2018 and newer default to UTF-8 as well.
 \fi
 
 
@@ -684,7 +704,7 @@
 		% docs say to only load one, and package/classes should  `s` not `x` as the user may s->x but not back
 		% literally the only difference is the `keyval` package, therefore just use `x`.
 
-\ifTUTeX % "Unicode TeX" matches LuaTeX and/or XeTeX
+\ifTUTeX % "Unicode \TeX/" matches \LuaTeX/ and/or \XeTeX/
 	\RequirePackage% must load *after* maths fonts (specifically euler)
 		{fontspec} % http://mirrors.ctan.org/macros/unicodetex/latex/fontspec/fontspec.pdf
 	\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
@@ -692,7 +712,7 @@
 	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1) 
 	%% Post-2017, don't use xunicode package
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
-\else % pdfTeX or older
+\else % \pdfTeX/ or older
 	\RequirePackage{%
 		mmap,	% `mmap` must load *after* `hyperref` % https://ctan.org/pkg/mmap
 		fontenc,	% `fontenc` must load *after* `mmap`/`cmap`	% `fontenc` specifies which font format to import.
@@ -750,7 +770,7 @@
 
 
 
-\ifTUTeX % Unicode TeX
+\ifTUTeX % Unicode \TeX/
 	\RequirePackage % Use unicode symbols
 		{unicode-math} % http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unicode-math.pdf
 \fi
@@ -775,14 +795,14 @@
 %define new \listofXs
 % docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
-\ifPDFTeX%\ifPDFTeX % not XeTeX nor LuaTeX
+\ifPDFTeX%\ifPDFTeX % not \XeTeX/ nor \LuaTeX/
 	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
 	\RequirePackage[% `accessibility` is badly hacked together and quite old...
 		tagged
 			]{accessibility}
 \fi%\ifPDFTeX
 
-\ifXeTeX\else% seems like XeTeX is actually kind of a hack and maybe not much future...
+\ifXeTeX\else% seems like \XeTeX/ is actually kind of a hack and maybe not much future...
 	\RequirePackage[
 		%% docs: 
 			]{tagpdf} % official work-in-progress package for future integrated tagging
@@ -810,7 +830,7 @@
 	%linewidth = 1 % TODO: what is `linewidth` for?
 		%]{pdfcomment} % http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 
-%hack for some releases of TeX Live which disable auto-detection
+%hack for some releases of \TeXLive/ which disable auto-detection
 \ifXeTeX\geometry{xetex}\fi% 
 \ifLuaTeX\geometry{luatex}\fi% 
 
