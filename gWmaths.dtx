@@ -265,6 +265,37 @@
 % https://tex.stackexchange.com/a/491456
 \expandafter\def\csname ver@l3regex.sty\endcsname{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Wrap \pkg{l3docstrip} as \env{l3docstrip}
+\ExplSyntaxOff
+\NewDocumentEnvironment{gWdocstrip}{ m o +b }
+{	%% https://tex.stackexchange.com/a/227179/233148
+
+	\RequirePDFTeX
+	\begingroup	\ExplSyntaxOff
+	\input l3docstrip
+
+	\ifToplevel{%
+		\usedir{tex/latex/\jobname}
+		\IfNoValueF{#2}{#2}
+		%\askforoverwritefalse
+		%\keepsilent%
+		\UseTDS%
+		\nopreamble
+		\nopostamble
+	}%
+	\def\@docextension{ltx}
+
+	\generate{
+		\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
+		#3
+	}
+	%\ifToplevel{%
+		%\ReportTotals%
+	%}%
+	\endgroup
+}{}%
+\ExplSyntaxOn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</sty>
 %<*cls>
 \RequirePackage{ gWmaths,	}%xparse, expl3
