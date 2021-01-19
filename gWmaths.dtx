@@ -117,14 +117,14 @@
 % Define a function which takes \marg{the name of a logo}, and optionally \oarg{a name to define instead of the logo's regular name, and defines a control word to expand to the properly typeset logo. Additionally, be clever and require the word to end with an asterisk as a "weird" argument delimiter.
 %
 %    \begin{macrocode}
-\NewDocumentCommand	\DeclareHologo	{ m O{#1} }
+\NewDocumentCommand	\DeclareHologo	{ m O{#1} O{*} }
 {
 %    \end{macrocode}
 %
 % Use \LaTeXx*'s \cs{cs_gset:cpn} to define a control sequence named \oarg{#2}, with a trailing parameter delimiter \meta{/} (without any parameters, just the trailing delimiter), which simply expands through to calling \cs{hologo} with the named logo.
 %
 %    \begin{macrocode} 
-	\cs_gset:cpn	{#2} *	{\hologo{#1}}
+	\cs_gset:cpn	{#2} #3	{\hologo{#1}}
 %    \end{macrocode}
 %    \uninteresting\begin{macrocode}
 }
