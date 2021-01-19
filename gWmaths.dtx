@@ -131,10 +131,28 @@
 %    \end{macrocode}
 % \end{macro}
 
+% \begin{macro}{DeclareHologos}
+%
+% Define a function which takes a /list/ of logos to ask \pkg{hologo} for. Specify this as \marg{a single mandatory parameter}, and use \cs{SplitList} (from \pkg{xparse}) to transform it to a list. 
+%
+%    \begin{macrocode}
 \NewDocumentCommand	\DeclareHologos	{>{\SplitList{,}}m}
 {
+%    \end{macrocode}
+%
+% Use \cs{ProcessList} to pass each item from the parameter list to \cs{DeclareHologo}.
+%
+%    \begin{macrocode}
 	\ProcessList{#1}{\DeclareHologo}%
+%    \end{macrocode}
+%    \uninteresting\begin{macrocode}
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+
+
 %% Define logos for the \TeX* family, w/ hyp
 \DeclareHologos
 {
@@ -153,29 +171,18 @@
 
 	LaTeX,
 	LaTeXTeX,
-	%LaTeX2e, % `2' isn't a letter, so can't be in a command sequence name
-	LaTeXe, % \pkg{hologo} handles this on it's own
-	%LaTeX3, % `3' isn't a letter, so can't be in a command sequence name
+	LaTeX2e, % `2' isn't a letter, so won't function in a command sequence name
+	LaTeXe, % \pkg{hologo} interprets this as "LaTeX2e"
+	LaTeX3, % `3' isn't a letter, so won't function in a command sequence name
 
 	biber,
-	bibLaTeX,
+	BibLaTeX,
+
+	NTS,
+	
 }
 
 \DeclareHologo{LaTeX3}[LaTeXx] % Map \hologo{LaTeX3} to \LaTeXx*
-
-%\requiredelimiter[/]	{\TeX}	% \cs{TeX} is abused by \pkg{babel}, but no problems yet
-%\requiredelimiter[/]	{\eTeX}
-%\requiredelimiter[/]	{\XeTeX}
-%\requiredelimiter[/]	{\pdfTeX}
-%\requiredelimiter[/]	{\LuaTeX}
-%\requiredelimiter	{\LaTeX}	% \cs{LaTeX} is abused by \pkg{babel}, and separately also used on the extra-page page...
-%\requiredelimiter[/]	{\LaTeXe}
-%\requiredelimiter[/]	{\biber}
-%\requiredelimiter[/]	{\bibLaTeX}
-
-%\DeclareDocumentCommand	\LaTeXx	{}	{\hologo{LaTeX3}}
-%\requiredelimiter[/]	{\LaTeXx}
- %% \Web/ \AmSTeX* \BibTeX* \SliTeX* \PlainTeX*
 
 \AtEndPreamble{%
 	\RequirePackage{hologo}%
