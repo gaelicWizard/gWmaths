@@ -26,22 +26,37 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
 % \section{Installer job file}	\label{ins}
-% \begin{macro}{l3docstrip}
-% \begin{macro}{RequirePDFTeX}
-% The ASCII character 9 (tab) becomes |^^I| in \XeTeX*, so require \pdfTeX* for now.
-% Set our build defaults, define the file extension for our documentation root, and set `tab' category code to character (instead of space).
+%
+% \begin{macro}{l3docstrip, RequirePDFTeX}
+%
+% The ASCII character 9 (tab) becomes |^^I| in \XeTeX*, unless \meta{-8bit} is passed on the command line.
+%
 %    \begin{macrocode}
 %\RequirePDFTeX%
-\begingroup	\input l3docstrip	\ifToplevel{%
+%    \end{macrocode}
+%
+% Begin a \TeX* group so the unprotected input doesn't jack up too much stuff, then input \LaTeXx*'s edition of \pkg{docstrip}.
+%
+%    \begin{macrocode}
+\begingroup	\input l3docstrip
+%    \end{macrocode}
+%
+% Set our build defaults, define the file extension for our documentation driver, and set `tab' category code to character (instead of space) so it makes it through to the stripped files.
+%
+%    \begin{macrocode}
+\ifToplevel{%
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
 	\nopreamble	\nopostamble	}%
 \def\@docextension{drv}%
 \def\@stripextension{ins}%
 %    \end{macrocode}
-% \begin{macro}{generate} \begin{macro}{file}
+%
+% \begin{macro}{generate,file}
+%
 % For each of \file{README}, \file{ins}, \file{sty}, \file{cls}, \file{drv}
-%  run \pkg{l3docstrip} to generate the distributables.
+%  ask \pkg{l3docstrip} to generate the distributables.
+%
 %    \begin{macrocode}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
   %\file{README.txt}{\from{\jobname.dtx}{README}}
@@ -52,22 +67,21 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
   \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
   \file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
 %    \end{macrocode}
+%
 % \begin{macro}{ReportTotals}
-% Print some stats to the terminal, then \cs{endgroup} to escape from \pkg{docstrip}.
+%
+% Print some stats to the terminal, then \cs{endgroup} to escape from \pkg{l3docstrip}.
+%
 %    \begin{macrocode}
 }	\ifToplevel{	\ReportTotals
- % \@currext \@currname \@currenvir \@currenvline \@currentlabel %\@onlypreamble{\tehMacro} % \g@addto@macro\tehMacro{\tehStuff{}}
- % TODO: figure out how to make <*ins> open an environment and </ins> close it
+%
 %<ins>\endbatchfile
 }	\endgroup	% \end{l3docstrip}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
 % \end{macro}
-% \end{macro}
-% \end{macro}
-%    \begin{macrocode}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</ins>
 %<cls>\ProvidesExplClass%
 %<sty>\ProvidesExplPackage%
@@ -76,6 +90,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %</!sty&!cls>
  	{gWmaths}	{2021/01/22}	{0.4.0}%
 		{COVID-19 Quarantine Accessible \TeX* Project}
+% \section{ Documentation driver file }
+%
+% Load \LaTeXx*'s documentation class, load ourselves (utility package), set the document title \etc., then \cs{DocInput} this very file.
+%
+%    \begin{macrocode}
 \RequirePackage{ etoolbox, xparse, ifmtarg	}%
 %<*drv>
 \documentclass{l3doc}
@@ -102,7 +121,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	%\file{\jobname}~requires~the~following~packages:~\clist_use:cn {g_gWpkgs_clist}{,~}.
 	%\clist_show:c {g_gWpkgs_clist}
 	\ExplSyntaxOff%
+	%\part{\jobname.dtx}%
 	\DocInput{\jobname.dtx}%
+	%\endpart%{\jobname.dtx}%
 	%\IndexInput{}
 	%\MakeShortVerb{\<}
 \endgroup
@@ -110,22 +131,44 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</drv>
-% \StopEventually{END OF LINE} % must put \Finale at the bottom
-%<*dtx>%%% If we're in the original DTX,
-%% \endinput% then stop all further processing.
-%</dtx>
 %<*sty>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \part{ \pkg{ gWmaths } utilities package }
+% \section{ \pkg{gWmaths} utilities package }
+%
+% \begin{macro}{endpart}
+%
+% Convenience function to \emph{end} a \cs{part}, but without starting another. This is useful for hierarchy breaks like in PDF bookmarks / TOC.
+%
+%    \begin{macrocode}
 \ProvideDocumentCommand\endpart{}
 { % \@ifpackageloaded{bookmark}{}{}
 	\ifdefined\bookmarksetup
 		\bookmarksetup{startatroot}% this does whatever to end a \cs{part} 
 	\fi
 }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{etc}
+%
+% Convenience function for \emph{et cetera}, using my preferred historical ligature.
+%
+%    \begin{macrocode}
+%\def\vs.{vs.\spacefactor=\the\sfcode`\v}
+%\def\etc.{etc.\spacefactor=\the\sfcode`\c}
+\def\etc.{\&c\@ifnextchar{.}{}{.}\spacefactor=\the\sfcode`\c}
+\ProvideDocumentCommand{\etcs}{}%
+{%
+    \@ifnextchar{.}%
+        {\&c}%
+        {\&c.\@\xspace}%
+}%
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{DeclareHologo}
 %
-% This implementation began as the apendix from \href{https://tex.stackexchange.com/a/290504/233148}{Space after LaTeX commands}, reproduced here:
+% This implementation began as the appendix from \href{https://tex.stackexchange.com/a/290504/233148}{Space after LaTeX commands}, reproduced here:
 %
 %    \begin{macrocode}
 % \newcommand\requiredelimiter[2][########]{%
@@ -139,23 +182,24 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % \@onlypreamble\requiredelimiter
 %    \end{macrocode}
 %
-% Define a function which takes \marg{the name of a logo}, and optionally \oarg{a name to define instead of the logo's regular name, and defines a control word to expand to the properly typeset logo. Additionally, be clever and require the word to end with an asterisk as a "weird" argument delimiter.
+% Define a function which takes \marg{the name of a logo}, and optionally \oarg{a name to define} instead of the logo's regular name, and defines a control word to expand to the properly typeset logo. Additionally, be clever and require the word to end with an asterisk as a "weird" argument delimiter.
 %
 %    \begin{macrocode}
 \NewDocumentCommand	\DeclareHologo	{ m O{#1} O{*} }
-{
+{	%\RequestPackage{hologo}
 %    \end{macrocode}
 %
-% Use \LaTeXx*'s \cs{cs_gset:cpn} to define a control sequence named \oarg{#2}, with a trailing parameter delimiter \meta{/} (without any parameters, just the trailing delimiter), which simply expands through to calling \cs{hologo} with the named logo.
+% Use \LaTeXx*'s \cs{cs_gset:cpn} to define a control sequence named \oarg{2}, with a trailing parameter delimiter \meta{/} (without any parameters, just the trailing delimiter), which simply expands through to calling \cs{hologo} with the named logo.
 %
 %    \begin{macrocode} 
 	\cs_gset:cpn	{#2} #3	{\hologo{#1}}
 %    \end{macrocode}
-%    \uninteresting\begin{macrocode}
+%    \ uninteresting
+%    \begin{macrocode}
 }
 %    \end{macrocode}
 % \end{macro}
-
+%
 % \begin{macro}{DeclareHologos}
 %
 % Define a function which takes a /list/ of logos to ask \pkg{hologo} for. Specify this as \marg{a single mandatory parameter}, and use \cs{SplitList} (from \pkg{xparse}) to transform it to a list. 
@@ -170,18 +214,28 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 	\ProcessList{#1}{\DeclareHologo}%
 %    \end{macrocode}
-%    \uninteresting\begin{macrocode}
+%    \ uninteresting
+%    \begin{macrocode}
 }
 %    \end{macrocode}
 % \end{macro}
 %
+
+
+%
+% \StopEventually{END OF LINE} % must put \Finale at the bottom
+%<*dtx>%%% If we're in the original DTX,
+%% \endinput% then stop all further processing.
+%</dtx>
 %
 
-
+%%TODO: MOVE TO CLASS:
+% problem is that these are used in the dtx, which doesn't load the class
+%
 %% Define logos for the \TeX* family, w/ hyp
 \DeclareHologos
 {
-	TeX,
+	%TeX,
 	eTeX,
 	hyperTeX, % not defined
 
@@ -196,7 +250,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	XeLaTeX,
 	LuaLaTeX,
 
-	LaTeX,
+	%LaTeX,
 	LaTeXTeX,
 	LaTeX2e, % `2' isn't a letter, so won't function in a command sequence name
 	LaTeXe, % \pkg{hologo} interprets this as "LaTeX2e"
@@ -251,7 +305,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 			~ #3 }
 		\date{#2}
 		\title{#4}
-
 	}
 	\RenewDocumentCommand\ProvidesExplPackage{ m m m m }
 	{ % \cs_map to \ProvidesExplFile
@@ -541,12 +594,19 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 % \begin{macro}{DeclarePackageOrdering}
 %
+% \begin{arguments}
+%  \item \marg{ package~to~order }
+%  \item \marg{ before~or~after }
+%  \item \marg{ list~of~other~packages }
+%  \item \oarg{ reason~why~ordering }
+% \end{arguments}
+%
 %    \begin{macrocode}
-\NewDocumentCommand{\DeclarePackageOrdering}{ m m >{\SplitList{,}}m }
+\NewDocumentCommand{\DeclarePackageOrdering}{ m m >{\SplitList{,}}m o}
 {
 	\tl_map_inline:nn{ #3 }
 	{\@ifnotmtarg{##1}{
-		\PackageInfo{gWpkgs}{ Request~to~order~ #1 ~ #2 ~ ##1 }
+		\PackageInfo{gWpkgs}{ Request~to~order~ #1 ~ #2 ~ ##1 }%~ because~ #4 
 		\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{ #2 }{ ##1 }
 	}}
 }
@@ -654,10 +714,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 \PassOptionsToPackage{% \pkg{cmap}
 	resetfonts,	% Clear any already-loaded fonts and reload
-}{cmap}% maps font glyphs back to unicode characters
+}{cmap}% maps font glyphs back to unicode characters (allows copy/pasta from PDF).
 \PassOptionsToPackage{% `mmap`
 	noTeX % use unicode codepoints, not \TeX* names, [2008/08/11]
-}{mmap} % Allows copy/pasta from PDF.
+}{mmap} % \pkg{mmap} extends \pkg{cmap} with math mappings.
 \RequirePackageBefore{cmap}{mmap} % \pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\RequirePDFTeX})
 %
 \RequestPackage[% \pkg{url}
@@ -1436,3 +1496,5 @@ git --no-pager log -1 --date=short --decorate=short \
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%% docs: http://mirrors.ctan.org/info/xetexref/xetex-reference.pdf
+ % \@currext \@currname \@currenvir \@currenvline \@currentlabel %\@onlypreamble{\tehMacro} % \g@addto@macro\tehMacro{\tehStuff{}}
+ % TODO: figure out how to make <*ins> open an environment and </ins> close it
