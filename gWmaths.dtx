@@ -557,41 +557,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %</sty>
 %<*cls>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \part{ \cls{ gWmaths } document class }
+% \part{ \cls{ gWmaths } ~ document ~ class }
 \RequirePackage{ gWmaths, 	}%
 \GetFileInfo{\CurrentFile}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ifx\filename\jobname%\iffalse
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%%
-%% Copy the following lines to the *top* of your \LaTeX* document
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-\documentclass[english,lecture]{gWmaths}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Now we're ready to start
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-\date{Fall 2020}  % \LaTeXe* uses \today if you don't specify any \date{}
-\author{Diana Pell}
-\title{TITLE OF DOCUMENT}
-%%
-\addto\captionsenglish{%
-	\renewcommand{\abstractname}{What To Expect}% Heading of Intro section
-}
-%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-\fi%		Copy the *above* lines to the top of your \LaTeX* document
-%%
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%
@@ -1434,37 +1402,6 @@ git --no-pager log -1 --date=short --decorate=short \
 %</ins>
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ifx\filename\jobname%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\tagpdfsetup{}
-\hypersetup{
-	colorlinks=true,
-	linkcolor=blue,
-	filecolor=magenta,
-	urlcolor=cyan,
-		}%\hypersetup
-\urlstyle{
-	%same, % Use the 'same' style as surrounding text, default is monospace font
-		}%\urlstyle
-\bookmarksetup{}
-\geometry{}
-\graphicspath{}
-
-\GetFileInfo{\CurrentFile}
-\title{\fileinfo}
-\date{\filedate}
-
-
-
-\begin{document}
-
-
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
