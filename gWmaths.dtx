@@ -1,16 +1,28 @@
-\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ iftex, xparse, l3keys2e, }%
-%\ifcsundef{DocInput}{
-%!TEX program = pdflatexmk
-%%!TEX root = gWmaths.dtx
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ iftex, l3keys2e, scontents, }%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \ifcsundef{DocInput}{
+%!TeX program = pdflatexmk
 %%!TEX encoding = UTF-8
-%}{\begin{abstract}
-%<*README>
-%%
-%% During the great pandemic of 2020, \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe* lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
-%% With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeXx*. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control. \cs{tehMacro} %\marg{m} \oarg{p} \parg{picture mode argument}. \file{\jobname} / \env{\jobname} / \pkg{\jobname} / \cls{\jobname}. \NB{tehNote}{some notes}
-%%
-%</README>
-%\end{abstract}	}%
+%%!TEX root = gWmaths.dtx
+%!TEX spellcheck = en-US
+%!BIB program = biber
+%!TEX parameter = -8bit
+%--enable-8bit-chars
+%-interaction=batchmode
+%<*dtx|README>
+\begin{scontents}[ overwrite, force-eol, store-env=README, write-env=README, ]
+During the great pandemic of 2020, the \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe* lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
+
+With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeXx*. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control.
+
+This work has the LPPL maintenance status `maintained'.
+
+The Current Maintainer of this work is \author{John Pell\thanks{\url{https://github.com/gaelicWizard/gWmaths}}}.
+
+The list of all files belonging to `gWmaths' is given in the file `manifest.txt'.
+\end{scontents}
+%</dtx|README>
+% }{}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
 % \section{Installer job file}	\label{ins}
@@ -19,20 +31,23 @@
 % The ASCII character 9 (tab) becomes |^^I| in \XeTeX*, so require \pdfTeX* for now.
 % Set our build defaults, define the file extension for our documentation root, and set `tab' category code to character (instead of space).
 %    \begin{macrocode}
-\begingroup	\RequirePDFTeX	\input l3docstrip	\ifToplevel{%
+%\RequirePDFTeX%
+\begingroup	\input l3docstrip	\ifToplevel{%
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
 	\nopreamble	\nopostamble	}%
-\def\@docextension{drv}
+\def\@docextension{drv}%
+\def\@stripextension{ins}%
 %    \end{macrocode}
 % \begin{macro}{generate} \begin{macro}{file}
 % For each of \file{README}, \file{ins}, \file{sty}, \file{cls}, \file{drv}
 %  run \pkg{l3docstrip} to generate the distributables.
 %    \begin{macrocode}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
-  \file{README.md}{\from{\jobname.dtx}{README}}
-  \filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
-  \file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
+  %\file{README.txt}{\from{\jobname.dtx}{README}}
+  %\filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
+  %\file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
+  \file{\jobname.\@stripextension}{\from{\jobname.dtx}{\@stripextension}}
   \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
   \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
   \file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
@@ -59,9 +74,9 @@
 %<*!sty&!cls>
 \ProvidesExplFile%
 %</!sty&!cls>
- 	{gWmaths}	{2021/01/14}	{0.3.1}%
+ 	{gWmaths}	{2021/01/22}	{0.4.0}%
 		{COVID-19 Quarantine Accessible \TeX* Project}
-\RequirePackage{ etoolbox,	}%
+\RequirePackage{ etoolbox, xparse, ifmtarg	}%
 %<*drv>
 \documentclass{l3doc}
 \usepackage{gWmaths}
@@ -71,19 +86,23 @@
 	\title{\fileinfo}
 	\date{\filedate}
 	\author{\pkg{\filename}
-		\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } }
+		\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } } ~
 		~ \fileversion }
 
 \AtEndPreamble{\ExplSyntaxOff}
 \begin{document}
 	\maketitle
+	\begin{abstract}%
+		\getstored{README}%
+	\end{abstract}%
+
 \begingroup	\catcode`\<=\catcode`\%
 	\ExplSyntaxOn
 	%\clist_map_inline:cn {g_gWpkgs_clist} {\file{\jobname}~requires~\pkg{#1}. }
 	%\file{\jobname}~requires~the~following~packages:~\clist_use:cn {g_gWpkgs_clist}{,~}.
 	%\clist_show:c {g_gWpkgs_clist}
-	\ExplSyntaxOff
-	\DocInput{\jobname.dtx}
+	\ExplSyntaxOff%
+	\DocInput{\jobname.dtx}%
 	%\IndexInput{}
 	%\MakeShortVerb{\<}
 \endgroup
@@ -97,7 +116,13 @@
 %</dtx>
 %<*sty>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% \part{ \pkg{ gWmaths } utilities package }
+\ProvideDocumentCommand\endpart{}
+{ % \@ifpackageloaded{bookmark}{}{}
+	\ifdefined\bookmarksetup
+		\bookmarksetup{startatroot}% this does whatever to end a \cs{part} 
+	\fi
+}
 % \begin{macro}{DeclareHologo}
 %
 % This implementation began as the apendix from \href{https://tex.stackexchange.com/a/290504/233148}{Space after LaTeX commands}, reproduced here:
@@ -158,6 +183,8 @@
 {
 	TeX,
 	eTeX,
+	hyperTeX, % not defined
+
 	teTeX,
 	TeXLive,
 
@@ -167,7 +194,7 @@
 
 	pdfLaTeX,
 	XeLaTeX,
-	LuaLateX,
+	LuaLaTeX,
 
 	LaTeX,
 	LaTeXTeX,
@@ -176,10 +203,9 @@
 	LaTeX3, % `3' isn't a letter, so won't function in a command sequence name
 
 	biber,
-	BibLaTeX,
+	BibLaTeX, % not defined
 
-	NTS,
-	
+	NTS, % LOL
 }
 
 \DeclareHologo{LaTeX3}[LaTeXx] % Map \hologo{LaTeX3} to \LaTeXx*
@@ -188,13 +214,34 @@
 	\RequirePackage{hologo}%
 		}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% better documentation links from \cls{l3doc} and \pkg{hypdoc}
+\ProvideDocumentCommand {\gW@CTAN} { o m }
+{ % TODO: switch on #1 for pkg, mirror, TDS
+	https://ctan.org/pkg/#2
+}
+\ProvideDocumentCommand {\CTAN} { o m }
+{
+	\href{https://ctan.org/tex-archive/#1}{\nolinkurl{CTAN:#1}}%
+% example: https://texdoc.net/pkg/hyperref
+% example: https://ctan.org/pkg/hyperref
+% example: https://ctan.org/tex-archive/macros/latex/contrib/hyperref
+% example: https://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.pdf
+% example: https://mirrors.ctan.org/install/macros/latex/contrib/hyperref.tds.zip
+}
+%\RenewDocumentCommand {\pkg} { O{CTAN:} m O{#2} }
+%{
+%	\href{\gW@CTAN{#3}}{\nolinkurl{#2}}
+%}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Fix up \NeedsTeXFormat to work from within {document}
 \clist_gclear_new:c {g_gWpkgs_clist}
 \AfterEndPreamble{%
 \ifClassLoadedTF{l3doc}
 {
 	\RenewDocumentCommand\NeedsTeXFormat{ m O{\filedate} }
-	{
+	{ % TODO: change optional arg to check if empty, then fully compute \filedate from \currfilename (so it's fresh with each run)
 		\file{\jobname}~requires~\hologo{#1},~dated~#2~or~newer.
 	}
 	\RenewDocumentCommand\ProvidesExplFile{ m m m m }
@@ -205,6 +252,12 @@
 		\date{#2}
 		\title{#4}
 
+	}
+	\RenewDocumentCommand\ProvidesExplPackage{ m m m m }
+	{ % \cs_map to \ProvidesExplFile
+	}
+	\RenewDocumentCommand\ProvidesExplClass{ m m m m }
+	{
 	}
 	\RenewDocumentCommand\RequirePackage{ o m O{\filedate} }
 	{ % TODO: make \RequirePackage add packages to a list, rather than print
@@ -237,7 +290,11 @@
 %	\makeatother
 		}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Define \GetFileInfo %%% Copy/pasta directly from `doc` package
+% \begin{macro}{GetFileInfo}
+%
+% Define \GetFileInfo %%% Copy/pasta directly from `doc` package
+%
+%    \begin{macrocode}
 \ProvideDocumentCommand\GetFileInfo{m}{%
   \edef\filename{#1}%
   \def\@tempb##1 ##2 ##3\relax##4\relax{%
@@ -246,10 +303,20 @@
     \def\fileinfo{##3}}%
   \edef\@tempa{\csname ver@#1\endcsname}%
   \expandafter\@tempb\@tempa\relax? ? \relax\relax}
+%    \end{macrocode}
+% \end{macro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Define file extension constant to match \@clsextension and \@pkgextension
-\def\@docextension{drv}
-\@onlypreamble\@docextension
+% \begin{macro}{@docextension, @stripextension}
+%
+% Define file extension constant to match \@clsextension and \@pkgextension
+%
+%    \begin{macrocode}
+\def\@docextension{drv}%
+\def\@stripextension{ins}%
+\@onlypreamble\@docextension%
+\@onlypreamble\@stripextension%
+%    \end{macrocode}
+% \end{macro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %http://www.texfaq.org/FAQ-compjobnam
 \def\jobis#1{FF\fi
@@ -313,7 +380,7 @@
 % \end{macro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-\ProvideDocumentCommand\mail{m}
+\ProvideDocumentCommand\email{m}
 {
 	\href{mailto:#1}{\nolinkurl{#1}}
 }
@@ -352,9 +419,146 @@
 }{}%
 \ExplSyntaxOn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{ Orderly Package Loading }
+%
+% \subsection{ Conditional Package Requirements }
+%
+% \begin{macro}{RequirePackageBefore, RequirePackageAfter}
+%
+% Set one package to always load another package immediately before itself. This should not be used for general package ordering, but should only be used when a particular package is absolutely required, but only if the other package is loaded at all. This isn't about ordering; this is a conditional requirement.
+%
+%    \begin{macrocode}
+\NewDocumentCommand\RequirePackageBefore{ o m o m }
+{
+	\IfValueT{ #1 }
+	{
+		\PackageInfo{ gWpkgs / RequirePackageBefore }{ Passing~#1~to~#2 }
+		\PassOptionsToPackage{ #1 }{ #2 }
+	}
+	\PackageInfo{ gWpkgs / RequirePackageBefore }{ Adding~#2~to~package/before/#4 }
+	\IfValueTF{ #3 }
+	{	\AddToHook{package/before/#4}{\RequirePackage{#2}[#3]}	}
+	{	\AddToHook{package/before/#4}{\RequirePackage{#2}}	}
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand\RequirePackageAfter{ o m o m }
+{
+	\IfValueT{ #1 }
+	{
+		\PackageInfo{ gWpkgs / RequirePackageAfter }{ Passing~#1~to~#2 }
+		\PassOptionsToPackage{ #1 }{ #2 }
+	}
+	\PackageInfo{ gWpkgs / RequirePackageAfter }{ Adding~#4~to~package/after/#2 }
+	\IfValueTF{ #3 }
+	{	\AddToHook{package/after/#4}{\RequirePackage{#2}[#3]}	}
+	{	\AddToHook{package/after/#4}{\RequirePackage{#2}}	}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{DeclarePackagePair}
+%
+% Set two packages to load each other before and after. 
+%
+% For example, \pkg{hyperxmp} is specifically an extension for \pkg{hyperref}, and must load before it. Without \pkg{hyperref}, \pkg{hyperxmp} is useless, so \pkg{hyperref} must always be loaded to be useful. Therefore \cs{DeclarePackagePair} sets \pkg{hyperref} to require \pkg{hyperxmp} immediately before it, and also sets \pkg{hyperxmp} to immediately load \pkg{hyperref} once it is. This allows us to ensure both are loaded, in order, even when loaded from within another package, and without having to patch any \LaTeX* internals.
+%
+%    \begin{macrocode}
+\NewDocumentCommand\DeclarePackagePair{ o m o m o }
+{
+	\IfValueT{ #1 }
+	{
+		\PackageInfo{ gWpkgs / DeclarePackagePair }{ Passing~#1~to~#2 }
+		\PassOptionsToPackage{ #1 }{ #2 }
+	}
+	
+	\IfValueT{ #3 }
+	{
+		\PackageInfo{ gWpkgs / DeclarePackagePair }{ Passing~#3~to~#4 }
+		\PassOptionsToPackage{ #3 }{ #4 }
+	}
+
+	\RequirePackageBefore{#2}{#4}
+	\RequirePackageAfter{#4}{#2}
+
+	%% TODO: pass #5 date to #4 (but not #2?)
+}
+%    \end{macrocode}
+%
+% \end{macro}
+%
+% If neither package is loaded elsewhere, then \cs{DeclarePackagePair} don't cause anything else to load.
+%
+% \subsection{ Package Load Ordering }
+%
+% Functions for document authors to allow them to focus on the document, not the packages.
+%
+%    \begin{macrocode}
+\NewHook{ gWpkgs / RequirePackages }
+\AtBeginDocument
+{	\UseOneTimeHook{ gWpkgs / RequirePackages }	}
+%    \end{macrocode}
+%
+% \begin{macro}{RequestPackage,LoadPackagesNow}
+%
+%    \begin{macrocode}
+\NewDocumentCommand{\RequestPackage}{ o >{\SplitList{,}}m o }
+{
+	\tl_map_inline:nn{ #2 }
+	{
+		\@ifnotmtarg{##1}{\RequestOnePackage[#1]{##1}[#3]}
+	}
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand \RequestOnePackage{ o m o}
+{
+	\IfNoValueT{#2}
+	{
+		\PackageWarning{ gWpkgs }{ Empty~arg~2:~#2 }
+	}
+
+	\PackageInfo{ gWpkgs / RequestOnePackage }{ Request~to~load~package~ #2 ~( #3 )~with~options~ #1 }
+
+	\IfValueT{#1}
+	{
+		\PackageInfo{ gWpkgs } { Passing~#1~to~#2 }
+		\PassOptionsToPackage{ #1 }{ #2 }
+	}
+
+	\IfValueTF{#3}
+	{\AddToHook{ gWpkgs / RequirePackages }[#2]{	\RequirePackage{#2}[#3]	}}
+	{\AddToHook{ gWpkgs / RequirePackages }[#2]{	\RequirePackage{#2}	}}
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\DeclareDocumentCommand{\LoadPackagesNow}{ >{\SplitList{,}}o }
+{
+	\UseHook{ gWpkgs / RequirePackages }
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{DeclarePackageOrdering}
+%
+%    \begin{macrocode}
+\NewDocumentCommand{\DeclarePackageOrdering}{ m m >{\SplitList{,}}m }
+{
+	\tl_map_inline:nn{ #3 }
+	{\@ifnotmtarg{##1}{
+		\PackageInfo{gWpkgs}{ Request~to~order~ #1 ~ #2 ~ ##1 }
+		\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{ #2 }{ ##1 }
+	}}
+}
+\RequirePackage{ gWpkgs }%
+%    \end{macrocode}
+% \end{macro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</sty>
 %<*cls>
-\RequirePackage{ gWmaths,	}%xparse, expl3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \part{ \cls{ gWmaths } document class }
+\RequirePackage{ gWmaths, 	}%
 \GetFileInfo{\CurrentFile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifx\filename\jobname%\iffalse
@@ -392,39 +596,11 @@
 %%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\gW@addGlobalOption{utf8} % All documents are UTF-8 in the 21st century. If not, fix your document.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Specify some requirements, but this is mostly redundant...
-%\RequireeTeX%necessarily true for all modern \LaTeX*
-%\RequirePackage{fixltx2e}[2015/01/01]
-%\ifpdf{}
-%TODO: use \eTeX*'s \unless form
-%\RequirePDF%invalid macro
-%\fi
-%\RequirePackage%
-%	%[2020/05/05] %Request the \LaTeX* format in effect as of this date
-%	[current]%Use the \LaTeX* format as-is.
-%	%[latest]%Use the latest \LaTeX* format, even if `latexrelease` is newer than the in-box format
-%		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
-%%
-
-
-
-%%%TODO:
-%% http://mirrors.ctan.org/macros/latex/base/slides.pdf
-%% http://mirrors.ctan.org/macros/latex209/contrib/eslides/eslides.pdf
-%%hypcap
-%% http://mirrors.ctan.org/macros/latex/contrib/etoolbox/etoolbox.pdf
-%%% \newbool & \newtoggle
-%% http://mirrors.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf
-%% http://mirrors.ctan.org/macros/latex/contrib/noindentafter/noindentafter.pdf
-%% http://ctan.math.washington.edu/tex-archive/support/latexmk/latexmk.pdf
-%% http://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf
-%% https://tex.stackexchange.com/a/31658 use \ifdefined\foo\else\fi
-%% https://tex.stackexchange.com/a/472044 \string fuckery
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% All documents are UTF-8 in the 21st century. If not, fix your document.
+%    \begin{macrocode}
+\gW@addGlobalOption{utf8}%
+\RequestPackage[utf8]{inputenc}%
+%    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up our options and defaults
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -484,46 +660,81 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\keys_set:nn { gWmaths }{% Set our default options
+\keys_set:nn { gWmaths }
+{% Set our default options
 	autodate,
 	hyperref,
 	ntheorem,
-	hypdoc,
+	%hypdoc, % this is messy
 	documentClass=article,
 	amsmath,
-		}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% hack up \pkg{lthooks} to trick it in to performing \pkg{pkgloader}
+%\keys_set:nn { gWpkg }
+%{
+	%
+%}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prepare arguments for all the packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up modern defaults for encodings:
-\PassOptionsToPackage{% `inputenc`
-	utf8 % All documents are UTF-8 in the 21st century. If not, fix your document.
-		}{inputenc}
-\PassOptionsToPackage{% `fontenc`
-	T1		% T1 fonts extend the old OT1 format to allow greater than 128 characters
-		}{fontenc}
 %
+\RequestPackage[% `fontenc`
+	T1	% T1 fonts extend the old OT1 format to allow greater than 128 characters
+]{fontenc}
+%
+\PassOptionsToPackage{% \pkg{cmap}
+	resetfonts,	% Clear any already-loaded fonts and reload
+}{cmap}% maps font glyphs back to unicode characters
 \PassOptionsToPackage{% `mmap`
-	noTeX % use unicode codepoints, not \TeX* names.
-		}{mmap} % Allows copy/pasta from PDF.
+	noTeX % use unicode codepoints, not \TeX* names, [2008/08/11]
+}{mmap} % Allows copy/pasta from PDF.
+\RequirePackageBefore{cmap}{mmap} % \pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\RequirePDFTeX})
+%
+\RequestPackage[% \pkg{url}
+	obeyspaces, % allow spaces in URLs, but be wary of backslashes 
+	hyphens, % allow line-breaks to happen in an *already* hyphenated URL
+	lowtilde, % always use math tilde \cs{sim}
+]{url}% \pkg{hyperref} loads \pkg{url} and then patches it
+%\DeclarePackagePair{url}{hyperref} % 
+%
+\PassOptionsToPackage{% \pkg{showkeys}
+	color, % allow labels to be colored by defining \meta{color}s
+	notref, % do not redefine \cs{ref} and \cs{pageref} (\pkg{varioref})
+	notcite, % do not redefine \cs{cite} et al (\pkg{natbib}
+}{showkeys} % print \cs{label} name in margin or superscript
+%
+\PassOptionsToPackage{% \pkg{varioref}
+	nospace, % documented as being required because the default from 2001 was wrong...but compatabililty...
+}{varioref} % \cs{vref} adds text indication document location
+\DeclarePackageOrdering{ varioref }{after}{ babel }
 %
 %\ifdraft{
 %\PassOptionsToPackage{%
 %	draft
-%		}{bookmark}%TODO: replace this with just a damn \DeclareOption
+%}{bookmark}%TODO: replace this with just a damn \DeclareOption
 %}{}% \ifdraft
 %
-\PassOptionsToPackage{%
-	atend,%
-		}{bookmark}
+\RequestPackage[% \pkg{bookmark} for \pkg{hyperref}
+	atend, % define \cs{BookmarksAtEnd} 
+	%color=anyshit , % PDFv1.4+
+]{bookmark}
+\DeclarePackageOrdering{ bookmark }{after}{ currfile }% uses if already loaded
+\DeclarePackageOrdering{ bookmark }{after}{ hyperref }% loads itself without options early
+%
+\PassOptionsToPackage{% \pkg{backref}
+	%hyperref, % already global option? Also, \pkg{hyperref} loads \pkg{backref} if \meta{backref} passed to it.
+	hyperpageref, % \pkg{hyperref} loads \pkg{backref} if \meta{pagebackref} passed to it
+}{backref}
 %
 %% Set up \HyperTeX* (hyperref, et al), which is basically the structural core of the document:
-\bool_if:nT \gW@hyperref{
-\PassOptionsToPackage{% `hyperref`
+%\bool_if:nT \gW@hyperref{
+\RequestPackage[% `hyperref`
 	implicit, % Redefine \LaTeX* internals, already default
 	hypertexnames, % Use guessable names for anchors, already default
 	bookmarks, % Write TOC as PDF bookmarks
-	driverfallback=hypertex, % if can't autodetect, then just use the most basic
+	%driverfallback=hypertex, % if can't autodetect, then just use the most basic
 
 	%hyperfigures, % make figures hyper links
 	%hyperfootnotes, % set up hyperlinked footnotes, already default
@@ -532,9 +743,9 @@
 	colorlinks, % set hyperlinks in color
 	linkcolor=blue, % default is fucking 'red'
 
-	%hyperindex, % links index entries back to main text, conflicts with hypdoc
+	hyperindex, % links index entries back to main text, conflicts with hypdoc
 	linktoc=all, % link section name *and* page number from toc
-	%backref, % link back from bib entries to main text
+	backref, % link back from bib entries to main text
 
 	%pdfencoding=unicode, % set 'auto' to prefer PDFEncoding over UTF-16; default for \TUTeX*
 	%pdflang=en-us, % `hyperxmp` automatically sets this from the language of `babel`
@@ -542,24 +753,25 @@
 	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
 	pdfpagelabels, % tag pages with page numbers from \LaTeX* ("ii" or whatever)
 	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
-		}{hyperref}
-%
+]{hyperref}
+% Load \pkg{hyperxmp} before \pkg{hyperref}, automatically
+\DeclarePackagePair{hyperxmp}{hyperref}
 %% Inform *all* packages that `hyperref` is in use:
 \gW@addGlobalOption{hyperref}
 %%
 %\PassOptionsToPackage{% `xcolor`
 %	hyperref % Support the `hyperref` package in terms of color expressions by defining additional keys
-%		}{xcolor}
+%}{xcolor}
 %\PassOptionsToPackage{% `ntheorem`
 %	hyperref, % Support the `hyperref` package
-%		}{ntheorem}
-}% \@gWhyperref
+%}{ntheorem}
+%}% \@gWhyperref
 
 %
 %% Set up `scrbase` not to argue with iftex.
 \PassOptionsToPackage{% `scrbase`
 	internalonly % don't define macros to conflict with `iftex`
-		}{scrbase} % KOMA-Script base package
+}{scrbase} % KOMA-Script base package
 
 
 %
@@ -567,12 +779,12 @@
 \bool_if:nT \gW@hypdoc{
 \PassOptionsToPackage{% `hyperref`
 	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
-		}{hyperref}
+}{hyperref}
 }%\gW@hypdoc
 
 %
 %% Set up colors now that we have color printers and video screens...
-\PassOptionsToPackage{% `xcolor`
+\RequestPackage[% `xcolor`
 	xcdraw, % use PS/PDF commands to draw frames and boxes, in dvips, pdftex, dvipdfm
 	fixinclude, % prevents dvips from explicitly resetting current color to black before actually inserting an .eps file
 	%fixpdftex % Load the `pdfcolmk` package; useless stub
@@ -580,8 +792,8 @@
 	svgnames, % Load a set of predefined colors according to SVG 1.1.
 	x11names*, % Load a set of predefined colors according to Unix/X11, delayed.
 	table, % Load the `colortbl` package
-		}{xcolor}
-
+]{xcolor}
+%\RequirePackageBefore{xcolor}{hyperref}
 %
 %% Set up a much nicer set of theorem environments:
 \bool_if:nT \gW@ntheorem{
@@ -589,24 +801,24 @@
 	thmmarks, % enables the automatical placement of endmarks
 	thref, % enables the extended reference features
 	standard % load predefined environments
-		}{ntheorem}
+}{ntheorem}
 %
 %% Inform *all* packages that `ntheorem` is in use:
 \gW@addGlobalOption{ntheorem}
 %%
 %\PassOptionsToPackage{% `empheq`
 %	ntheorem % cope with `ntheorem`
-%		}{empheq}
+%}{empheq}
 \PassOptionsToClass{% `beamer`
 	noamsthm % prevent from loading `amsthm`, which conflicts with `ntheorem`
-		}{beamer}
+}{beamer}
 }%\gW@ntheorem
 
 %
 %% Set up the most common mathematics package:
 \bool_if:nT \gW@amsmath{
-\PassOptionsToPackage{% `amsmath`
-		}{amsmath}
+\RequestPackage[% `amsmath`
+]{amsmath}
 
 %
 %% Inform *all* packages that `amsmath` is in use:
@@ -614,40 +826,40 @@
 %%
 %\PassOptionsToPackage{% `ntheorem`
 %	amsmath, % cope with `amsmath`
-%		}{ntheorem}
+%}{ntheorem}
 }
 
 %
 %% Set up formatting for telephone numbers:
-\PassOptionsToPackage{% `phonenumbers`
+\RequestPackage[% `phonenumbers`
 	country=US, % switch defaults from DE to US.
 	foreign=international, % Use sensible defaults for full ITU numbers.
 	home-country=none, % Do not strip the country code (default).
 	home-area-code=none, % Do *not* strip area code, ever (default).
 	link=on % clickable tel: link (default).
-		}{phonenumbers}
+]{phonenumbers}
 
 %
 %% Set up a nicer quotation package:
-\PassOptionsToPackage{% `csquotes`
+\RequestPackage[% `csquotes`
 	autostyle=try, % use `babel` if available
 	%autopunct % look ahead for trailing punctuation to move inside marks
-		}{csquotes}
+]{csquotes}
 
 
 
-\PassOptionsToPackage{% `currfile`
+\RequestPackage[% `currfile`
 	abspath, %-recorder (default in latexmk)
 	realmainfile,
 	parent,
 	%parents,
-		}{currfile}
+]{currfile}
 
 
 
 \PassOptionsToClass{% `beamer`
 	t % ?
-		}{beamer}
+}{beamer}
 
 
 
@@ -656,16 +868,12 @@
 	%english % The language can be tagged on the \documentclass declaration!
 		%}{babel}
 
-\PassOptionsToPackage{%
+\RequestPackage[%
 	%heightrounded % round off to avoid overfull alrgn;earujs
-		}{geometry}
+]{geometry}
 
 
-%\PassOptionsToPackage{%
-%\PassOptionsToPackage{%
-
-
-\bool_if:nT \gW@autodate{\AtEndOfClass{
+\bool_if:nT \gW@autodate{\AtEndOfClass{%
 	\date{ \filemodprintdate{ \jobname.tex } }%
 }}%
 
@@ -728,16 +936,21 @@
 %	[2018/04/29]
 %		{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
 %
-\providecommand{\LoadPackagesNow}{}% reduce code churn by providing a stub for running without `pkgloader`
+%\providecommand{\LoadPackagesNow}{}% reduce code churn by providing a stub for running without `pkgloader`
 
 
-\ifTUTeX\else% engine is not unicode-native
+\ifTUTeX
+	\RemoveFromHook{ gWpkgs / RequirePackages }[ inputenc ]
+\else% engine is not unicode-native
 	\RequirePackage[utf8]{inputenc}[2015/01/01]
 	% When using older engines, this tells the engine to read all files as UTF-8.
 	% \XeTeX* and \LuaTeX* always read UTF-8 and ignore this package.
 	% \LaTeX* circa 2018 and newer default to UTF-8 as well.
 \fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load the base document class
@@ -749,36 +962,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % See https://github.com/mhelvens/latex-pkgloader/blob/master/pkgloader-recommended.sty
 %%
-\RequirePackage{% `hyperxmp` required *before* `hyperref`
-	babel,		% http://mirrors.ctan.org/macros/latex/required/babel/base/babel.pdf
-	hyperxmp		% http://mirrors.ctan.org/macros/latex/contrib/hyperxmp/hyperxmp.pdf
-		}%	% babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
+\RequestPackage{
+	babel,
+	hyperxmp, % babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
 
-
-\RequirePackage{%
-	amsfonts,		% http://mirrors.ctan.org/fonts/amsfonts/doc/amsfndoc.pdf
-	amssymb,		% http://mirrors.ctan.org/fonts/amsfonts/doc/amssymb.pdf
-	amsmath,		% http://mirrors.ctan.org/macros/latex/required/amsmath/amsldoc.pdf
-	%mathtools,		%http://mirrors.ctan.org/macros/latex/contrib/mathtools/mathtools.pdf
+	amsfonts,
+	amssymb,
+	amsmath,
+	%mathtools,
 %%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
-		}%
 
-\RequirePackage{%
-	venndiagram
-		}%https://tex.stackexchange.com/a/381249
+	venndiagram,	%https://tex.stackexchange.com/a/381249
+}
 
+\DeclarePackageOrdering{ ntheorem }{after}{ babel, amsmath, mathtools, empheq, }
 \bool_if:nT \gW@ntheorem{
-\RequirePackage{% improves theorem-like environments, conflicts with `amsthm`, must load *after* `babel` and *after* amsmath and *after* mathtools/empheq
-	ntheorem		% http://mirrors.ctan.org/macros/latex/contrib/ntheorem/ntheorem.pdf
-		}	%https://tex.stackexchange.com/a/5633
-}%\gW@ntheorem
+\RequestPackage{% improves theorem-like environments, conflicts with `amsthm`
+	ntheorem,	%https://tex.stackexchange.com/a/5633
+}}%\gW@ntheorem
 
 
 
-\bool_if:nT \gW@oneinch{ % if the flag is set, then do some thing
+\bool_if:nT \gW@oneinch{
 	\AtEndOfClass{
 		\geometry{
-			%letterpaper, % screen % try to get this to auto-detect or something so \documentclass[a4paper,landscape]{gWmaths} works
+			%letterpaper, % screen % TODO: try to get this to auto-detect or something so \documentclass[a4paper,landscape]{gWmaths} works
 			margin=1in
 				}
 			}
@@ -788,28 +996,33 @@
 %   code active only for this option
 %\fi
 
-\ifXeTeX
-	%% docs: http://mirrors.ctan.org/info/xetexref/xetex-reference.pdf
-\fi
+%\DeclarePackageOrdering{ graphicx }{before}{ fontspec }
+\RequestPackage{graphicx}
+	% docs say to only load one, and package/classes should  `s' not `x' as the user may s->x but not back
+	% literally the only difference is the `keyval' package, therefore just use `x'.
+	% `x' loads `s'...
 
-
-\RequirePackage% load *before* `fontspec`
-	{graphicx} % http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf
-		% docs say to only load one, and package/classes should  `s` not `x` as the user may s->x but not back
-		% literally the only difference is the `keyval` package, therefore just use `x`.
-
+\DeclarePackageOrdering{ cmap }{after}{ hyperref }
+\DeclarePackageOrdering{ cmap }{before}{ fontenc }
+\DeclarePackageOrdering{ mmap }{after}{ hyperref }
+\DeclarePackageOrdering{ mmap }{before}{ fontenc }
+%\RequirePackageBefore{ cmap }{ fontenc }
+%\RequirePackageBefore{ mmap }{ fontenc }
 \ifTUTeX % "Unicode \TeX*" matches \LuaTeX* and/or \XeTeX*
-	\RequirePackage% must load *after* maths fonts (specifically euler)
+	\RequestPackage% must load *after* maths fonts (specifically euler)
 		{fontspec} % http://mirrors.ctan.org/macros/unicodetex/latex/fontspec/fontspec.pdf
-	\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
+	%\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
 	
 	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1)
 	%% Post-2017, don't use xunicode package
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
-\else % \pdfTeX* or older
-	\RequirePackage{%
-		mmap,	% `mmap` must load *after* `hyperref` % https://ctan.org/pkg/mmap
-		fontenc,	% `fontenc` must load *after* `mmap`/`cmap`	% `fontenc` specifies which font format to import.
+\else \RequirePDFTeX % don't even with others
+	%\DeclarePackagePair{hyperref}{mmap}
+	%\DeclarePackagePair{mmap}{fontenc}
+	\RequestPackage{%
+		%mmap,
+		cmap,
+		fontenc,	% `fontenc` specifies which font format to import.
 			}%
 	% T1 fonts extend the old OT1 format to allow greater than 128 characters
 	% `mmap` is `cmap` plus some math-specifics.
@@ -826,7 +1039,7 @@
 %\documentclass[class=gWmaths,crop=false]{standalone}
 %\standaloneconfig{}
 
-%\RequirePackage[%
+%\RequestPackage[%
 	%activeospeccharacters, % don't fuck with < and >
 	%notheorems?
 		%]{beamerarticle}
@@ -847,14 +1060,18 @@
 %pdflatex --jobname=Cookies %\jobname
 
 
+% \subsection{Required Packages}
+%
 % These packages are either required for some of our features, or are just really nice to have set up:
-\RequirePackage% `fancyhdr` may have issues with `accessibility`, must load *before* `hyperref`
-	{fancyhdr} % http://mirrors.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
+\DeclarePackageOrdering{ fancyhdr }{incompatible-warning}{ accessibility }%
+\DeclarePackageOrdering{ fancyhdr }{before}{ hyperref }%
+\RequestPackage{fancyhdr}%
+
 
 \bool_if:nF \gW@videolecture{
-	\RequirePackage% `paralist` redefines {itemize}, {enumerate} environments
+	\RequestPackage% `paralist` redefines {itemize}, {enumerate} environments
 		{paralist} % http://mirrors.ctan.org/macros/latex/contrib/paralist/paralist.pdf
-%\RequirePackage[ % `enumitem` redefines {itemize}, {enumerate} environments
+%\RequestPackage[ % `enumitem` redefines {itemize}, {enumerate} environments
 	% `enumitem` is substantially more complex than `paralist`
 	%% docs: http://mirrors.ctan.org/macros/latex/contrib/enumitem/enumitem.pdf
 	%shortlabels, % compatible with `enumerate`
@@ -865,14 +1082,16 @@
 
 
 \ifTUTeX % Unicode \TeX*
-	\RequirePackage % Use unicode symbols
+	\RequestPackage % Use unicode symbols
 		{unicode-math} % http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unicode-math.pdf
+\else
+	\RequestPackage[utf8]{inputenc}
 \fi
 
-%\RequirePackage% `pdfpages` improves inserting PDF clippings over graphicx
+%\RequestPackage% `pdfpages` improves inserting PDF clippings over graphicx
 %	{pdfpages} % http://mirrors.ctan.org/macros/latex/contrib/pdfpages/pdfpages.pdf
 
-\RequirePackage{%
+\RequestPackage{%
 	xcolor,	% http://mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
 	phonenumbers,	% http://mirrors.ctan.org/macros/latex/contrib/phonenumbers/doc/phonenumbers-en.pdf
 	csquotes,	% http://mirrors.ctan.org/macros/latex/contrib/csquotes/csquotes.pdf
@@ -882,76 +1101,74 @@
 		}
 
 \bool_if:nF \gW@videolecture{
-	\RequirePackage% un-dumb \maketitle
+	\RequestPackage% un-dumb \maketitle
 		{titling} % http://mirrors.ctan.org/macros/latex/contrib/titling/titling.pdf
 }%\gW@videolecture
 
 %define new \listofXs
 % docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
-\ifPDFTeX%\ifPDFTeX % not \XeTeX* nor \LuaTeX*
+\DeclarePackageOrdering{ tagpdf }{before}{ axessibility }% included anyway
+\ifPDFTeX% not \XeTeX* nor \LuaTeX*
 	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
-	\RequirePackage[% `accessibility` is badly hacked together and quite old...
+	\RequestPackage[% `accessibility` is badly hacked together and quite old...
 		tagged
 			]{accessibility}
-\fi%\ifPDFTeX
-
-\ifXeTeX\else% seems like \XeTeX* is actually kind of a hack and maybe not much future...
-	\RequirePackage[
-		%% docs:
-			]{tagpdf} % official work-in-progress package for future integrated tagging
-	\RequirePackage[%
-		%% docs: http://mirrors.ctan.org/macros/latex/contrib/axessibility/axessibility.pdf
-			]{axessibility}
+\else
+	\ifLuaTeX
+		\PassOptionsToPackage{tagpdf}{axessibility}
+		\RequestPackage{tagpdf} % official work-in-progress package for future integrated tagging
+	\else % \XeTeX*
+		\let\pdfcompresslevel\pdf@compress@xetex
+		\PassOptionsToPackage{accsupp}{axessibility}
+	\fi
+	%\RequestPackage{axessibility}
 \fi
 
 %http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf % too complex
 
-\RequirePackage{% `hyperref` claims to be about hypertext, but it's actually a significant structural support!
+\RequestPackage{% `hyperref` claims to be about hypertext, but it's actually a significant structural support!
 	%% NOTE: https://tex.stackexchange.com/q/1863
 	hyperref,		% http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.pdf
 	bookmark,		% http://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf
+	backref, % auto-loaded by \pkg{hyperref} already
+	nameref, % not auto-loaded by \pkg{hyperref} despite being part of the bundle...
+		% \pkg{nameref} patches a bunch of shit, including \pkg{titlesec, beamer, varioref, ifthen, listings}
 	%pdfcomment,	% http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
 		}% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
-\bool_if:nF \gW@videolecture{
-	\RequirePackage%
-		{hypdoc} % http://mirrors.ctan.org/macros/latex/contrib/oberdiek/hypdoc.pdf
-}%\gW@videolecture
+\bool_if:nT \gW@hypdoc{	\RequestPackage{hypdoc}	}%
 
-%\RequirePackage[ % `pdfcomment` requires `hyperref` to be loaded first
-	%% docs: http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
+\DeclarePackageOrdering{ pdfcomment }{after}{ hyperref }
+%\RequestPackage[
 	%linewidth = 1 % TODO: what is `linewidth` for?
-		%]{pdfcomment} % http://mirrors.ctan.org/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf
+		%]{pdfcomment}
 
-%hack for some releases of \TeXLive/ which disable auto-detection
-\ifXeTeX\geometry{xetex}\fi%
-\ifLuaTeX\geometry{luatex}\fi%
-
-%\RequirePackage% \currfilename
-%	{currfile} % http://mirrors.ctan.org/macros/latex/contrib/currfile/currfile.pdf
+%hack for some releases of \TeXLive* which disable auto-detection
+%\ifXeTeX\geometry{xetex}\fi%
+%\ifLuaTeX\geometry{luatex}\fi%
 
 \ifLuaTeX
-%	\RequirePackage{pdftexcmds}
+%	\RequestPackage{pdftexcmds}
 \fi
 
 
 
-\RequirePackage%
-	{filehook,currfile}%
-		[2020/09/29]%
+\RequestPackage{filehook,currfile}[2020/09/29]%
 
 % \begin{macro}{gitinfo2}
 % \pkg{gitinfo2} loads several other packages, including \pkg{xstring} and \pkg{xcolor},
 % so throw it at the end for now.
 %    \begin{macrocode}
-\RequirePackage%
+\DeclarePackageOrdering{ gitinfo2 }{after}{ xcolor } % uses *if* loaded
+\DeclarePackageOrdering{ gitinfo2 }{after}{ etoolbox, xstring, kvoptions, eso-pic,	}
+\RequestPackage%
 	{gitinfo2}%
 %    \end{macrocode}
 %\end{macro}
 
-%\RequirePackage%
-%	{ifthen} % http://mirrors.ctan.org/macros/latex/base/ifthen.pdf
+%\RequestPackage%
+%	{ifthen}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Ugly hack, because of the unfortunate deprecation of 'n' to 'c' conversion,
@@ -1035,9 +1252,9 @@
 	%% ref: https://tex.stackexchange.com/a/1057
 	
 
-\RequirePackage[%
+%\RequestPackage[%
 	%% docs: http://mirrors.ctan.org/macros/latex/required/tools/xspace.pdf
-		]{xspace}
+		%]{xspace}
 \AtBeginDocument{%
 	\hologoSetup{%
 		break=false
@@ -1045,7 +1262,7 @@
 		}
 
 
-\RequirePackage[%
+\RequestPackage[%
 	%% docs: http://mirrors.ctan.org/macros/latex/contrib/layouts/layman.pdf
 		]{layouts}
 \providecommand{\drawlayouts}	{%
@@ -1175,7 +1392,7 @@
 
 
 
-%\begin{filecontents*}{latexmkrc}
+%\begin{filecontents*}{platexmkrc}
 %\end{filecontents*}
  %% git update-index --assume-unchanged from https://stackoverflow.com/a/10755704
  %% BUT WAIT: https://stackoverflow.com/a/13631525
@@ -1248,3 +1465,37 @@ git --no-pager log -1 --date=short --decorate=short \
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Specify some requirements, but this is mostly redundant...
+%\RequirePackage{fixltx2e}[2015/01/01]
+%\ifpdf{}
+%TODO: use \eTeX*'s \unless form
+%\RequirePDF%invalid macro
+%\fi
+%\RequirePackage%
+%	%[2020/05/05] %Request the \LaTeX* format in effect as of this date
+%	[current]%Use the \LaTeX* format as-is.
+%	%[latest]%Use the latest \LaTeX* format, even if `latexrelease` is newer than the in-box format
+%		{latexrelease} % http://mirrors.ctan.org/macros/latex/base/latexrelease.pdf
+%%
+
+
+
+%%%TODO:
+%% http://mirrors.ctan.org/macros/latex/base/slides.pdf
+%% http://mirrors.ctan.org/macros/latex209/contrib/eslides/eslides.pdf
+%%hypcap
+%% http://mirrors.ctan.org/macros/latex/contrib/etoolbox/etoolbox.pdf
+%%% \newbool & \newtoggle
+%% http://mirrors.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf
+%% http://mirrors.ctan.org/macros/latex/contrib/noindentafter/noindentafter.pdf
+%% http://ctan.math.washington.edu/tex-archive/support/latexmk/latexmk.pdf
+%% http://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf
+%% https://tex.stackexchange.com/a/31658 use \ifdefined\foo\else\fi
+%% https://tex.stackexchange.com/a/472044 \string fuckery
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%% docs: http://mirrors.ctan.org/info/xetexref/xetex-reference.pdf
