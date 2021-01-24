@@ -517,7 +517,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % For example, \pkg{hyperxmp} is specifically an extension for \pkg{hyperref}, and must load before it. Without \pkg{hyperref}, \pkg{hyperxmp} is useless, so \pkg{hyperref} must always be loaded to be useful. Therefore \cs{DeclarePackagePair} sets \pkg{hyperref} to require \pkg{hyperxmp} immediately before it, and also sets \pkg{hyperxmp} to immediately load \pkg{hyperref} once it is. This allows us to ensure both are loaded, in order, even when loaded from within another package, and without having to patch any \LaTeX* internals.
 %
 %    \begin{macrocode}
-\NewDocumentCommand\DeclarePackagePair{ o m o m o }
+\NewDocumentCommand\RequirePackagePair{ o m o m o }
 {
 	\IfValueT{ #1 }
 	{
@@ -655,7 +655,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	oneinch	.bool_set:N	= \gW@oneinch	,
 	
 	titlesec	.bool_set:N	= \gW@titlesec	,
-	%http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf
 
 	documentClass	.tl_set:N	= \gW@documentClass	,
 	documentClass	.default:n	= article	,
@@ -725,7 +724,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	hyphens, % allow line-breaks to happen in an *already* hyphenated URL
 	lowtilde, % always use math tilde \cs{sim}
 ]{url}% \pkg{hyperref} loads \pkg{url} and then patches it
-%\DeclarePackagePair{url}{hyperref} % 
+%\RequirePackagePair{url}{hyperref} % 
 %
 \PassOptionsToPackage{% \pkg{showkeys}
 	color, % allow labels to be colored by defining \meta{color}s
@@ -783,7 +782,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
 ]{hyperref}
 % Load \pkg{hyperxmp} before \pkg{hyperref}, automatically
-\DeclarePackagePair{hyperxmp}{hyperref}
+\RequirePackagePair{hyperxmp}{hyperref}
 %% Inform *all* packages that `hyperref` is in use:
 \gW@addGlobalOption{hyperref}
 %%
@@ -1045,8 +1044,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	%% Post-2017, don't use xunicode package
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
 \else \RequirePDFTeX % don't even with others
-	%\DeclarePackagePair{hyperref}{mmap}
-	%\DeclarePackagePair{mmap}{fontenc}
+	%\RequirePackagePair{hyperref}{mmap}
+	%\RequirePackagePair{mmap}{fontenc}
 	\RequestPackage{%
 		%mmap,
 		cmap,
