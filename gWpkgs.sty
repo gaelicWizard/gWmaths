@@ -1,0 +1,216 @@
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ iftex, l3keys2e, }%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%!TeX program = pdflatexmk
+%%!TEX encoding = UTF-8
+%%!TEX root = gWmaths.dtx
+%!TEX spellcheck = en-US
+%!BIB program = biber
+%!TEX parameter = -8bit
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProvidesExplPackage
+ 	{gWpkgs}	{2021/01/22}	{0.0.2}%
+		{COVID-19 Quarantine Accessible \TeX* Project: Package Ordering Edition}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\declare@file@substitution{ifxetex.sty}{iftex.sty}
+\declare@file@substitution{ifpdf.sty}{iftex.sty}
+\declare@file@substitution{ifluatex.sty}{iftex.sty}
+%\declare@file@substitution{ifvtex.sty}{iftex.sty}% bunchastuff
+%\declare@file@substitution{ifetex.sty}{iftex.sty}% \NeedsETeX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\DeclarePackageOrdering{ accessibility	}{after}{	xkeyval,
+							ifthen,	}[\cs{RequirePackage}]
+\DeclarePackageOrdering{ accessibility	}{after}{	pdfcomment,
+							listings,
+							hyperref,
+							caption, subcaption,
+							tocbibind,
+							tocloft,
+							ragged2e,
+							listings,
+							etoolbox,
+							parskip,
+							setspace,
+							cmap,
+							fontenc,
+							inputenc,
+							hyphenat,
+							babel,
+							color,
+							xcolor,
+							natbib,
+							graphicx,
+							booktabs,
+							textcomp,
+							gensymb,
+							amsfonts, ambsymb, amsmath,
+							courier,
+							helvet,
+							mathptmx,
+							geometry,
+							nag,	}
+
+\DeclarePackageOrdering{ hyperref	}{after}{	early	}
+\DeclarePackageOrdering{ hyperxmp	}{after}{	early	}
+\DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}
+\DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}
+\DeclarePackageOrdering{ hyperxmp	}{after}{	kvoptions,
+							pdfescape,
+							stringenc,
+							intcalc,
+							iftex,
+							ifmtarg,
+							etoolbox,
+							ifthen,
+							luacode,	}[\cs{RequirePackage}]
+\DeclarePackageOrdering{ hologo		}{after}{	early	}
+\DeclarePackageOrdering{ xcolor		}{before}{	early	}
+\DeclarePackageOrdering{ graphicx	}{before}{	early	}
+\DeclarePackageOrdering{ graphicx	}{before}{	venndiagram	}
+\DeclarePackageOrdering{ venndiagram	}{after}{	tikz,
+							pgf,	}[\cs{RequirePackage}]
+\DeclarePackageOrdering{ varioref	}{after}{	babel }
+\DeclarePackageOrdering{ bookmark	}{after}{	currfile }[uses if already loaded]
+\DeclarePackageOrdering{ bookmark	}{after}{	hyperref }[loads itself without options early]
+\DeclarePackageOrdering{ ntheorem	}{after}{	babel, 
+							amsmath, 
+							mathtools, 
+							empheq, }
+\DeclarePackageOrdering{ cmap		}{after}{	hyperref }
+\DeclarePackageOrdering{ cmap		}{before}{	fontenc }
+\DeclarePackageOrdering{ mmap		}{after}{	hyperref }
+\DeclarePackageOrdering{ mmap		}{before}{	fontenc }
+\DeclarePackageOrdering{ fancyhdr	}{incompatible-warning}{ accessibility }%
+\DeclarePackageOrdering{ fancyhdr	}{before}{	hyperref }%
+\DeclarePackageOrdering{ pdfcomment	}{after}{	hyperref }[\cs{RequirePackage}]
+\DeclarePackageOrdering{ gitinfo2	}{after}{	xcolor } % uses *if* loaded
+\DeclarePackageOrdering{ gitinfo2	}{after}{	etoolbox, 
+							xstring, 
+							kvoptions, 
+							eso-pic,	}
+
+\DeclarePackageOrdering{ nameref	}{after}{	titlesec,
+							beamer,
+							varioref,
+							ifthen,
+							listings,	}
+
+\DeclarePackageOrdering{ doc		}{after}{	multicol,
+							verbatim, 	}
+\DeclarePackageOrdering{ hypdoc		}{after}{	doc,
+							atveryend,
+							calc,
+							hyperref,	}[\pkg{hypdoc} heavily modifies \pkg{doc}, mostly by implementing \pkg{hyperref}.]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclarePackageOrdering{ holtxdoc	}{after}{	hypdoc,
+							hyperref,
+							pdftexcmds,
+							ltxcmds,
+							hologo,
+							array,
+							fontspec,
+							unicode-math,	}
+
+\RequirePackageAfterPackageIfPackage{ hypdoc }{ hyperref }{ doc }[if \pkg{doc} is already loaded when \pkg{hyperref} is loaded, then load \pkg{hypdoc}]
+\RequirePackageAfterPackageIfPackage{ hypdoc }{ doc }{ hyperref }[if \pkg{hyperref} is already loaded when \pkg{doc} is loaded, then load \pkg{hypdoc}]
+
+\DeclarePackageOrdering{ fontspec	}{before}{	fontenc	}[\pkg{fontspec} must be the one to load \pkg{fontenc}]
+
+\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
+	\RequirePackageBeforePackage{ fontspec }{ fontenc }
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclarePackageOrdering{ inputenc	}{before}{	early	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclarePackageOrdering{ fixltx2e 	}{before}{	early	}
+\DeclarePackageOrdering{ fancyhdr 	}{before}{	hyperref	}
+\DeclarePackageOrdering{ fncychap 	}{before}{	hyperref	}
+\DeclarePackageOrdering{ float 		}{before}{	hyperref	}
+\DeclarePackageOrdering{ hyperref 	}{before}{	algorithm	}
+\DeclarePackageOrdering{ amssymb 	}{before}{	xunicode	}
+\DeclarePackageOrdering{ amssymb 	}{before}{	xltxtra	}
+\DeclarePackageOrdering{ graphicx 	}{before}{	xltxtra	}
+\DeclarePackageOrdering{ graphicx 	}{before}{	fontspec	}
+\DeclarePackageOrdering{ caption 	}{before}{	subfig	}
+\DeclarePackageOrdering{ amsmath 	}{before}{	wasysym	}
+\DeclarePackageOrdering{ todonotes 	}{before}{	program	}
+
+\DeclarePackageOrdering{ cleveref 	}{after}{	algorithm2e,
+							algorithmicx,
+							aliascnt,
+							amsmath,
+							amsthm,
+							caption,
+							hyperref,
+							IEEEtrantools,
+							listings,
+							ntheorem,
+							subfig,
+							varioref	}
+
+\DeclarePackageOrdering{ cleveref	}{before}{	autonum,
+							hypdvips	}
+
+\DeclarePackageOrdering{ varioref	}{before}{	hyperref	}
+
+\DeclarePackageOrdering{ natbib		}{before}{	citeref	}
+
+\DeclarePackageOrdering{ babel		}{before}{	apacite	}[ \pkg{babel}'s \cs{selectlanguage} redefines \cs{refname} and \cs{bibname} ]
+
+\DeclarePackageOrdering{ hyperref	}{before}{	apacite	}[hyperref redefines citation and reference list commands]
+
+\DeclarePackageOrdering{ hyperref	}{before}{	cmap	}[hyperref cannot write pdf settings if cmap already wrote to pdf]
+
+\DeclarePackageOrdering{ hyperref	}{before}{	ellipsis,
+							amsrefs,
+							chappg,
+							dblaccnt,
+							linguex	}[the hyperref documentation explicitly says to do so]
+
+\DeclarePackageOrdering{ hyperref	}{after}{	multind,
+							natbib,
+							setspace	}
+%because {the hyperref documentation explicitly says to do so}
+
+\DeclarePackageOrdering{ hyperref	}{before}{	glossaries	}
+%because {otherwise terms won't be clickable hyperlinks}
+
+\DeclarePackageOrdering{ glossaries	}{after}{	babel,
+							olyglossia,
+							inputenc,
+							fontenc,
+							doc	}
+%because {the glossaries documentation explicitly says to do so}
+
+\DeclarePackageOrdering{ hyperref	}{before}{	hypcap	}
+%because {hypcap redefines hyperref's caption command}
+
+\DeclarePackageOrdering{ babel		}{before}{	selnolig	}
+%because {this was recommended by selnolig's author}
+
+\DeclarePackageOrdering{ fontenc	}{after}{	cmap,
+							mmap	}
+%because {otherwise some fonts may be unprocessed}
+
+\DeclarePackageOrdering{ listingsutf8	}{after}{	listings	}
+%because {it patches macros defined by listings}
+% ho-tex replacement for listings; it loads listings itself
+
+\DeclarePackageOrdering{ glossaries	}{before}{	cleveref	}[\pkg{glossaries} loads \pkg{amsmath}, which needs to be loaded before \pkg{cleveref}]
+
+\DeclarePackageOrdering{ refenums	}{after}{	hyperref,
+							cleveref,
+							csquotes,
+							ifthen	}[it prevents an options clash]
+
+\DeclarePackageOrdering{ babel		}{before}{	microtype	}[microtype can use the language setting of babel]
+
+\DeclarePackageOrdering{ hyperref	}{before}{	uri	}[uri uses hyperref's commands if hyperref is loaded]
+
+\DeclarePackageOrdering{ url		}{before}{	uri	}[uri has a RequirePackage on url]
