@@ -3,7 +3,7 @@
 hard hyperxmp mmap phonenumbers venndiagram currfile scontents
 ntheorem csquotes titling tagpdf filemod pdfcomment layouts docmute standalone studenthandouts
 soulutf8
-soft blindtext gitinfo2 paralist
+soft blindtext gitinfo2 paralist accsupp lualatex-math luacode
 
 package l3doc
 hard alphalph enumitem
