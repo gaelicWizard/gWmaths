@@ -166,6 +166,7 @@
 \DeclarePackageOrdering{ hyperref	}{before}{	apacite	}[hyperref redefines citation and reference list commands]
 
 \DeclarePackageOrdering{ hyperref	}{before}{	cmap	}[hyperref cannot write pdf settings if cmap already wrote to pdf]
+% but cmap needs to load before all fonts...?
 
 \DeclarePackageOrdering{ hyperref	}{before}{	ellipsis,
 							amsrefs,
