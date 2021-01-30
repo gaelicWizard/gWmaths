@@ -88,14 +88,14 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %<*!sty&!cls>
 \ProvidesExplFile%
 %</!sty&!cls>
- 	{gWmaths}	{2021/01/22}	{0.4.0}%
+ 	{gWmaths}	{2021/01/25}	{0.4.1}%
 		{COVID-19 Quarantine Accessible \TeX* Project}
 % \section{ Documentation driver file }
 %
 % Load \LaTeXx*'s documentation class, load ourselves (utility package), set the document title \etc., then \cs{DocInput} this very file.
 %
 %    \begin{macrocode}
-\RequirePackage{ etoolbox, xparse, ifmtarg,	}%
+\RequirePackage{ etoolbox, ifmtarg, currfile,	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
 \documentclass{l3doc}
@@ -109,8 +109,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %\OnlyDescription % comment out for implementation details
 %\OldMakeindex % use if your MakeIndex is pre-v2.9
 
-\setlength\hfuzz{15pt} % dont make so many
-\hbadness=7000 % over and under full box warnings
+\setlength\hfuzz{15pt}	% dont make so many
+\hbadness=7000		% over and under full box warnings
 
 \GetFileInfo{\jobname}
 	\title{\fileinfo}
@@ -201,12 +201,12 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % Convenience function to \emph{end} a \cs{part}, but without starting another. This is useful for hierarchy breaks like in PDF bookmarks / TOC.
 %
 %    \begin{macrocode}
-\ProvideDocumentCommand\endpart{}
-{ % \@ifpackageloaded{bookmark}{}{}
-	\ifdefined\bookmarksetup
-		\bookmarksetup{startatroot}% this does whatever to end a \cs{part} 
-	\fi
-}
+\ProvideDocumentCommand\endpart{}%
+{%
+	\ifdefined\bookmarksetup%
+		\bookmarksetup{startatroot}%
+	\fi%
+}%
 %    \end{macrocode}
 % \end{macro}
 %
@@ -220,9 +220,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \def\etc.{\&c\@ifnextchar{.}{}{.}\spacefactor=\the\sfcode`\c}
 \ProvideDocumentCommand{\etcs}{}%
 {%
-    \@ifnextchar{.}%
-        {\&c}%
-        {\&c.\@\xspace}%
+	\@ifnextchar{.}%
+		{\&c}%
+		{\&c.\@\xspace}%
 }%
 %    \end{macrocode}
 % \end{macro}
@@ -232,15 +232,16 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % This implementation began as the appendix from \href{https://tex.stackexchange.com/a/290504/233148}{Space after LaTeX commands}, reproduced here:
 %
 %    \begin{macrocode}
-% \newcommand\requiredelimiter[2][########]{%
-%   \ifdefined#2%
-%     \def\@temp{\def#2#1}%
-%     \expandafter\@temp\expandafter{#2}%
-%   \else
-%     \@latex@error{\noexpand#2undefined}\@ehc
-%   \fi
-% }
-% \@onlypreamble\requiredelimiter
+\newcommand\requiredelimiter[2][########]%
+{%
+	\ifdefined#2%
+		\def\@temp{\def#2#1}%
+		\expandafter\@temp\expandafter{#2}%
+	\else%
+		\@latex@error{\noexpand#2undefined}\@ehc%
+	\fi%
+}%
+\@onlypreamble\requiredelimiter%
 %    \end{macrocode}
 %
 % Define a function which takes \marg{the name of a logo}, and optionally \oarg{a name to define} instead of the logo's regular name, and defines a control word to expand to the properly typeset logo. Additionally, be clever and require the word to end with an asterisk as a "weird" argument delimiter.
@@ -348,10 +349,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %	\href{\gW@CTAN{#3}}{\nolinkurl{#2}}
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Fix up \NeedsTeXFormat to work from within {document}
+%% Fix up \NeedsTeXFormat to work from within \env{document}
 \clist_gclear_new:c {g_gWpkgs_clist}
 \AfterEndPreamble{%
-\ifClassLoadedTF{l3doc}
+\ifClassLoadedTF{l3doc}%
 {
 	\RenewDocumentCommand\NeedsTeXFormat{ m O{\filedate} }
 	{ % TODO: change optional arg to check if empty, then fully compute \filedate from \currfilename (so it's fresh with each run)
@@ -681,6 +682,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\LogHook{ gWpkgs / RequirePackages }
 	\UseHook{ gWpkgs / RequirePackages }
 }
+%
+\let\ifPackageLoaded\@ifpackageloaded
+%https://tex.stackexchange.com/a/484092
+%http://mirrors.ctan.org/macros/generic/ltxcmds/ltxcmds.pdf
 %    \end{macrocode}
 % \end{macro}
 %
@@ -721,18 +726,27 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 {	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}
 %
 \DeclareDefaultHookRule{ late	}{after}{	early	}%
+\DeclareDefaultHookRule{ last	}{after}{	late	}%
 %    \end{macrocode}
+%
+% TODO: add a "depends" relationship, which adds to a hook on \cs{RequestPackages} to also \cs{RequestPackages} another package.
+% 
+% \AddToHook{ gWpkgs / RequestPackages / #2 }{ \RequestPackage{ #3 } } 
+%
+% TODO: write a hook in \cs{RequestPackages} to process hooks for dependencies
+%
+% TODO: write a \cs{PassOptionsToPackageIfPackage}, which hooks \cs{RequestPackage} to \cs{PassOptionsToPackage} if another is requested. 
+%
 % \end{macro}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+%
 %</sty>
-%
-%
-%
-%
-%
-%
-%<*cls>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*cls>
+%
+%
+%
 % \part{ \cls{ gWmaths } ~ document ~ class }
 \RequirePackage{ gWmaths, 	}%
 \GetFileInfo{\CurrentFile}
@@ -783,25 +797,32 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 			}	,
 	exam	.value_forbidden:n	= true	,
 	lecture	.meta:n	= {
-		documentClass	= article
+		documentClass	= article	,
 			}	,
 	lecture	.value_forbidden:n	= true	,
 	course	.meta:n	= {
-		documentClass	= article
+		documentClass	= report	,
 			}	,
 	course	.value_forbidden:n	= true	,
 	quiz	.meta:n	= {
-		documentClass	= article
+		documentClass	= article	,
 			}	,
 	quiz	.value_forbidden:n	= true	,
 	handout	.meta:n	= {
-		documentClass	= article
+		documentClass	= article	,
 			}	,
 	handout	.value_forbidden:n	= true	,
+	dtx	.meta:n = {
+		documentClass	= l3doc	,
+			}	,
+	dtx	.value_forbidden:n	= true	,
 
 
 }
 
+\NewDocumentCommand \gWmathssetup { m } {
+	\keys_set:nn { gWmaths } { #1 }
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \keys_set:nn { gWmaths }
 {% Set our default options
@@ -1203,11 +1224,13 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 \DeclarePackageOrdering{ tagpdf }{before}{ axessibility }% included anyway
 \ifPDFTeX% not \XeTeX* nor \LuaTeX*
-	% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
-	\RequestPackage[% `accessibility` is badly hacked together and quite old...
-		tagged,
-		highstructure,
-			]{accessibility}
+	\bool_if:nT \gW@accessibility
+	{% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
+		\RequestPackage[% `accessibility` is badly hacked together and quite old...
+			tagged,
+			highstructure,
+				]{accessibility}
+	}
 \else
 	\ifLuaTeX
 		\PassOptionsToPackage{tagpdf}{axessibility}
@@ -1249,16 +1272,13 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \RequestPackage{filehook,currfile}[2020/09/29]%
 
 % \begin{macro}{gitinfo2}
-% \pkg{gitinfo2} loads several other packages, including \pkg{xstring} and \pkg{xcolor},
-% so throw it at the end for now.
+% \pkg{gitinfo2} loads several other packages, including \pkg{xstring} and \pkg{xcolor}, so throw it at the end for now.
 %    \begin{macrocode}
-\RequestPackage%
-	{gitinfo2}%
+\RequestPackage{gitinfo2}%
 %    \end{macrocode}
 %\end{macro}
 
-%\RequestPackage%
-%	{ifthen}
+%\RequestPackage{ifthen}%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Ugly hack, because of the unfortunate deprecation of 'n' to 'c' conversion,
@@ -1310,7 +1330,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\listfiles % track loaded files in this job
 	%\date{omg}
 	\hypersetup{%
-		%pdfdate={ \filemodprintdate{\jobname.tex} }, % 2020 or 2020-01 or 2020-01-04
 		pdfrendition=default, %screen,
 		%pdfsubject={},
 		%pdfsubtitle={},
@@ -1348,9 +1367,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	%% ref: https://tex.stackexchange.com/a/1057
 	
 
-%\RequestPackage[%
-	%% docs: http://mirrors.ctan.org/macros/latex/required/tools/xspace.pdf
-		%]{xspace}
+%\RequestPackage{xspace}%
 \AtBeginDocument{%
 	\hologoSetup{%
 		break=false
@@ -1358,16 +1375,15 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 		}
 
 
-\RequestPackage[%
-	%% docs: http://mirrors.ctan.org/macros/latex/contrib/layouts/layman.pdf
-		]{layouts}
-\providecommand{\drawlayouts}	{%
+\RequestPackage{layouts}%
+\providecommand{\drawlayouts}%
+{
 	\drawdimensionstrue
 	\printinunitsof{in}
 	\pagediagram   % draws diagram with all layout vernacular identified (except bottom margin)
 	\pagevalues
 	\currentpage
-		}
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1391,15 +1407,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\let\IfPackageLoaded\@ifpackageloaded
-%\let\IfPackageLoaded\ltx@ifpackageloaded
-%https://tex.stackexchange.com/a/484092
-%http://mirrors.ctan.org/macros/generic/ltxcmds/ltxcmds.pdf
 
 
-\NewDocumentCommand \gWmathssetup { m } {
-	\keys_set:nn { gWmaths } { #1 }
-}
 
 
 \ExplSyntaxOff
