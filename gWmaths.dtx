@@ -1,12 +1,12 @@
 \NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ iftex, l3keys2e, scontents, }%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \ifcsundef{DocInput}{
-%!TeX program = pdflatexmk
 %%!TEX encoding = UTF-8
 %%!TEX root = gWmaths.dtx
-%!TEX spellcheck = en-US
+%%!TEX spellcheck = en-US
+%!TeX program = pdflatexmk
 %!BIB program = biber
-%!TEX parameter = -8bit
+%!TEX parameter = -8bit -interaction=batchmode
 %--enable-8bit-chars
 %-interaction=batchmode
 %<*dtx|README>
@@ -647,6 +647,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
+\NewDocumentCommand \RequestClass{ m }
+{
+	\AddToHook { gWpkgs / RequirePackages }[#1]{	\LoadClass{#1}	}%
+}
 \NewDocumentCommand \RequestOnePackage{ o m o}
 {
 	\IfNoValueT{#2}
@@ -670,6 +674,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \DeclareDocumentCommand{\LoadPackagesNow}{ >{\SplitList{,}}o }
 {
+	\ShowHook{ gWpkgs / RequirePackages }
 	\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
 		\RemoveFromHook{ gWpkgs / RequirePackages }[ inputenc ]
 	\fi
@@ -1036,11 +1041,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \fi
 
 
-%\RequirePackage% Automatically configure package load order.
-%	[2018/04/29]
-%		{pkgloader} % http://mirrors.ctan.org/macros/latex/contrib/pkgloader/pkgloader.pdf
-%
-
 
 \ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
 	\RemoveFromHook{ gWpkgs / RequirePackages }[ inputenc ]
@@ -1058,7 +1058,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load the base document class
-\LoadClass{\gW@documentClass}
+%\LoadClass{\gW@documentClass}%
+\RequestClass{\gW@documentClass}%
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1314,9 +1315,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 		%pdfsubject={},
 		%pdfsubtitle={},
 		%pdfurl={}, % full path to *this* PDF
-		pdfinfo={%
+		%pdfinfo={%
 			%CreationDate={\pdffilemoddate{\jobname.tex}}
-				},
+		%		},
 		%pdfsource={\jobname.tex} % default
 		pdfuapart=1 % that's the whole point, but we're lacking...
 			}
