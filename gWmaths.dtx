@@ -648,7 +648,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand \RequestClass{ m }
+\NewDocumentCommand \RequestClass{ m o }
 {
 	\AddToHook { gWpkgs / RequirePackages }[#1]{	\LoadClass{#1}	}%
 }
@@ -722,11 +722,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 \RequirePackage{ gWpkgs }%
 %
-\AddToHook{ gWpkgs / RequirePackages }[late]
-{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}
+%\AddToHook{ gWpkgs / RequirePackages }[late]
+%{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}
 %
 \DeclareDefaultHookRule{ late	}{after}{	early	}%
-\DeclareDefaultHookRule{ last	}{after}{	late	}%
+\DeclareDefaultHookRule{ top-level	}{after}{	late	}%
 %    \end{macrocode}
 %
 % TODO: add a "depends" relationship, which adds to a hook on \cs{RequestPackages} to also \cs{RequestPackages} another package.
