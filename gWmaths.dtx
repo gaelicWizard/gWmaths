@@ -722,6 +722,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{before}{ last	}%
 }
 %
+%\DeclareDefaultHookRule{	gWpkgs / 
 \DeclareHookRule{ gWpkgs / RequirePackages }{ b4class	}{before}{ classloaded	}%
 \DeclareHookRule{ gWpkgs / RequirePackages }{ b4class	}{before}{ early	}%
 %%TODO: inspect hook ordering to enforce class before early...unless another rule already exists...how to compute...
@@ -750,24 +751,14 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 \RequirePackage{ gWpkgs }%
 %
-<<<<<<< Updated upstream
 %\AddToHook{ gWpkgs / RequirePackages }[late]
 %{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}
 %
-\DeclareDefaultHookRule{ late	}{after}{	early	}%
-\DeclareDefaultHookRule{ top-level	}{after}{	late	}%
-=======
-\AddToHook{ gWpkgs / RequirePackages }[late]
-{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}%
-%
-\DeclareDefaultHookRule{ late	}{after}{	early	}%
 %\DeclareDefaultHookRule{ late	}{after}{	classloaded	}%
 %\DeclareDefaultHookRule{ last	}{after}{	classloaded	}%
-\DeclareDefaultHookRule{ last	}{after}{	late	}%
 %
-\AddToHook{ gWpkgs / RequirePackages }[last]
-{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`last'~package~load~order }	}%
->>>>>>> Stashed changes
+%\AddToHook{ gWpkgs / RequirePackages }[last]
+%{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`last'~package~load~order }	}%
 %    \end{macrocode}
 %
 % TODO: add a "depends" relationship, which adds to a hook on \cs{RequestPackages} to also \cs{RequestPackages} another package.
