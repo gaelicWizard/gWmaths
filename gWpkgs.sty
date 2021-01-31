@@ -18,6 +18,10 @@
 %\declare@file@substitution{ifetex.sty}{iftex.sty}% \NeedsETeX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\DeclarePackageOrdering{ csquotes	}{after}{ gWpkgs / Class Loaded }[\pkg{csquotes} redefines \cs{quote}]
+\DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / Class Loaded}[\pkg{paralist} redefines several environments]
+\DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / Class Loaded}[\pkg{ntheorem} redefines several environments]
+
 \DeclarePackageOrdering{ unicode-math	}{after}{	l3keys2e, fontspec, fix-cm, amsmath,	}[\pkg{unicode-math} \cs{RequirePackage}s these]%
 
 \DeclarePackageOrdering{ backref	}{after}{	kvoptions, kvsetkeys, ltxcmds, rerunfilecheck,	}[\pkg{backref} \cs{RequirePackages}s these]%
