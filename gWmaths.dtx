@@ -467,10 +467,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \ProvideDocumentCommand{\ifClassLoadedTF}{ m m m }
 {
 	\seq_if_in:NnTF \l_pclist_classes_seq { #1 }
-		{ %\msg_term:x { The~class~`#1'~is~loaded }
-		#2 }
-		{ %\msg_term:x { The~class~`#1'~is~NOT~loaded }
-		#3 }
+	{ %\msg_term:x { The~class~`#1'~is~loaded }
+		#2
+	}{ %\msg_term:x { The~class~`#1'~is~NOT~loaded }
+		#3
+	}
 }
 %%
 \ProvideDocumentCommand{\showclassesloaded}{}{\seq_show:N \l_pclist_classes_seq}
@@ -650,7 +651,14 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand \RequestClass{ m o }
 {
-	\AddToHook { gWpkgs / RequirePackages }[#1]{	\LoadClass{#1}	}%
+	\DeclarePackageOrdering{#1}{before}{classloaded}[class loads before `classloaded']
+	\DeclarePackageOrdering{#1}{before}{early}[class loads before `early']
+	\AddToHook { gWpkgs / RequirePackages }[#1]
+	{\ifcsdef{ver@#1.cls}{}{%\showclassesloaded
+		\LoadClass{#1}
+	}}%
+	\DeclarePackageOrdering{#1}{after}{b4class}[class loads after `b4class']
+	\DeclarePackageOrdering{#1}{after}{first}[class loads after `first']
 }
 \NewDocumentCommand \RequestOnePackage{ o m o}
 {
@@ -675,11 +683,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \DeclareDocumentCommand{\LoadPackagesNow}{ >{\SplitList{,}}o }
 {
-	\ShowHook{ gWpkgs / RequirePackages }
+	%\LogHook{ gWpkgs / RequirePackages }
 	\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
 		\RemoveFromHook{ gWpkgs / RequirePackages }[ inputenc ]
 	\fi
-	\LogHook{ gWpkgs / RequirePackages }
+	%\LogHook{ gWpkgs / RequirePackages }
 	\UseHook{ gWpkgs / RequirePackages }
 }
 %
@@ -701,32 +709,65 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand{\DeclarePackageOrdering}{ m m >{\SplitList{,}}m o}
 {
-	\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{ after }{ first }
+	\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{after}{ first	}%
 
 	\tl_map_inline:nn{ #3 }
 	{\@ifnotmtarg{##1}{
 		\PackageInfo{gWpkgs}{ Request~to~order~ #1 ~ #2 ~ ##1 }%~ because~ #4 
+		\DeclareDefaultHookRule{ ##1 }{ after }{ early }
 		\DeclareHookRule{ gWpkgs / RequirePackages }{ ##1 }{ after }{ first }
 		\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{ #2 }{ ##1 }
 	}}
+
+	\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{before}{ last	}%
 }
 %
-\DeclareDefaultHookRule{ first	}{before}{	early	}%
-\DeclareDefaultHookRule{ early	}{before}{	late	}%
+\DeclareHookRule{ gWpkgs / RequirePackages }{ b4class	}{before}{ classloaded	}%
+\DeclareHookRule{ gWpkgs / RequirePackages }{ b4class	}{before}{ early	}%
+%%TODO: inspect hook ordering to enforce class before early...unless another rule already exists...how to compute...
+%%TODO: maybe inspect the internal rules list and insert `b4class' and `classloaded' \emph{immediately} before/after the actual class?
+%%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
+%%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
+%%TODO: maybe define `early' as "class loaded". Before `early' is "before class", and after `early' is "after class loaded".
+\AddToHook{ gWpkgs / RequirePackages }[b4class]%
+{%
+	\PackageInfo{ gWpkgs / RequirePackages }{ b4class }%
+}%
+\AddToHook{ gWpkgs / RequirePackages }[classloaded]%
+{%
+	\PackageInfo{ gWpkgs / RequirePackages }{ classloaded }%
+}%
+%
+\DeclareDefaultHookRule{	first	}{before}{	early	}%
+\DeclareDefaultHookRule{	early	}{after}{	classloaded	}%
+\DeclareDefaultHookRule{	early	}{before}{	late	}%
 %
 \AddToHook{ gWpkgs / RequirePackages }[first]
-{	\LogHook{ gWpkgs / RequirePackages }	}
+{	\LogHook{ gWpkgs / RequirePackages }	}%
 %
 \AddToHook{ gWpkgs / RequirePackages }[early]
-{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`early'~package~load~order }	}
+{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`early'~package~load~order }	}%
 %
 \RequirePackage{ gWpkgs }%
 %
+<<<<<<< Updated upstream
 %\AddToHook{ gWpkgs / RequirePackages }[late]
 %{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}
 %
 \DeclareDefaultHookRule{ late	}{after}{	early	}%
 \DeclareDefaultHookRule{ top-level	}{after}{	late	}%
+=======
+\AddToHook{ gWpkgs / RequirePackages }[late]
+{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}%
+%
+\DeclareDefaultHookRule{ late	}{after}{	early	}%
+%\DeclareDefaultHookRule{ late	}{after}{	classloaded	}%
+%\DeclareDefaultHookRule{ last	}{after}{	classloaded	}%
+\DeclareDefaultHookRule{ last	}{after}{	late	}%
+%
+\AddToHook{ gWpkgs / RequirePackages }[last]
+{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`last'~package~load~order }	}%
+>>>>>>> Stashed changes
 %    \end{macrocode}
 %
 % TODO: add a "depends" relationship, which adds to a hook on \cs{RequestPackages} to also \cs{RequestPackages} another package.
@@ -879,9 +920,16 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }{backref}
 %
 %% Set up \HyperTeX* (hyperref, et al), which is basically the structural core of the document:
-%\bool_if:nT \gW@hyperref{
+\bool_if:nT \gW@hyperref
+{
+	\AddToHook{ package/before/hyperref }
+	{% Choose violence over \cls{beamer}.
+		\PassOptionsToPackage{implicit=true}{hyperref}
+	}
+}% \@gWhyperref
+
 \RequestPackage[% `hyperref`
-	implicit, % Redefine \LaTeX* internals, already default
+	implicit=true, % Redefine \LaTeX* internals, already default
 	hypertexnames, % Use guessable names for anchors, already default
 	bookmarks, % Write TOC as PDF bookmarks
 	%driverfallback=hypertex, % if can't autodetect, then just use the most basic
@@ -915,7 +963,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %\PassOptionsToPackage{% `ntheorem`
 %	hyperref, % Support the `hyperref` package
 %}{ntheorem}
-%}% \@gWhyperref
+
 
 %
 %% Set up `scrbase` not to argue with iftex.
@@ -1005,7 +1053,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 
 \PassOptionsToClass{% `beamer`
-	t % ?
+	t % do not center everything
 }{beamer}
 
 
@@ -1338,7 +1386,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 			%CreationDate={\pdffilemoddate{\jobname.tex}}
 		%		},
 		%pdfsource={\jobname.tex} % default
-		pdfuapart=1 % that's the whole point, but we're lacking...
+		pdfuapart=true, %1 % that's the whole point, but we're lacking...
 			}
 		}
 
