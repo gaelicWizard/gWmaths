@@ -44,14 +44,14 @@
 %\DeclarePackageOrdering{ beamer	}{after}{	geometry	}[\cls{beamer} \cs{RequirePackages}s \pkg{geometry}, but passes in specific \meta{papersize = \cs{beamer@paperwidth},\cs{beamer@paperheight}} \etc.]
 %\beamer@filterclassoptions????
 \DeclarePackageOrdering{ beamer	}{after}{	pgfcore, xxcolor, atbegshi, 	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfcore, xxcolor, atbegshi}]
-%\DeclarePackageOrdering{ beamer	}{after}{	hyperref	}[\cls{beamer} \cs{RequirePackages}s \pkg{hyperref} \emph{with option implicit=false}]
+\DeclarePackageOrdering{ beamer	}{after}{	hyperref	}[\cls{beamer} \cs{RequirePackages}s \pkg{hyperref} \emph{with option implicit=false}]
 
-\DeclarePackageOrdering{ geometry	}{after}{	classloaded	}[classes often set page geometry using primitives]%
-\DeclarePackageOrdering{ fontspec	}{after}{	classloaded	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
-\DeclarePackageOrdering{ fontenc	}{after}{	classloaded	}%
-\DeclarePackageOrdering{ geometry	}{after}{	early	}[classes often set page geometry using primitives]%
-\DeclarePackageOrdering{ fontspec	}{after}{	early	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
-\DeclarePackageOrdering{ fontenc	}{after}{	early	}%
+\DeclarePackageOrdering{ geometry	}{after}{	gWpkgs / Class Loaded	}[classes often set page geometry using primitives]%
+\DeclarePackageOrdering{ fontspec	}{after}{	gWpkgs / Class Loaded	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
+\DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / Class Loaded	}%
+\DeclarePackageOrdering{ geometry	}{after}{	gWpkgs / Class Loaded	}[classes often set page geometry using primitives]%
+\DeclarePackageOrdering{ fontspec	}{after}{	gWpkgs / Class Loaded	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
+%\DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / Class Loaded	}%
 
 
 \DeclarePackageOrdering{ accessibility	}{after}{	xkeyval,
@@ -86,8 +86,8 @@
 							geometry,
 							nag,	}
 
-\DeclarePackageOrdering{ hyperref	}{after}{	early	}
-\DeclarePackageOrdering{ hyperxmp	}{after}{	early	}
+%\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / Class Loaded	}
+%\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / Class Loaded	}
 \DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}
 \DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}
 \DeclarePackageOrdering{ hyperxmp	}{after}{	kvoptions,
@@ -99,9 +99,9 @@
 							etoolbox,
 							ifthen,
 							luacode,	}[\cs{RequirePackage}]
-\DeclarePackageOrdering{ hologo		}{after}{	early	}
-\DeclarePackageOrdering{ xcolor		}{before}{	early	}
-\DeclarePackageOrdering{ graphicx	}{before}{	early	}
+\DeclarePackageOrdering{ hologo		}{after}{	gWpkgs / Class Loaded	}
+\DeclarePackageOrdering{ xcolor		}{before}{	gWpkgs / Class Loaded	}
+\DeclarePackageOrdering{ graphicx	}{before}{	gWpkgs / Class Loaded	}
 \DeclarePackageOrdering{ graphicx	}{before}{	venndiagram	}
 \DeclarePackageOrdering{ venndiagram	}{after}{	tikz,
 							pgf,	}[\cs{RequirePackage}]
@@ -170,14 +170,14 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\DeclarePackageOrdering{ inputenc	}{before}{	early	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
+\DeclarePackageOrdering{ inputenc	}{before}{	gWpkgs / Class Loaded	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\DeclarePackageOrdering{ fixltx2e 	}{before}{	early	}
+\DeclarePackageOrdering{ fixltx2e 	}{before}{	gWpkgs / Class Loaded	}
 \DeclarePackageOrdering{ fancyhdr 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ fncychap 	}{before}{	hyperref	}
-\DeclarePackageOrdering{ float 		}{before}{	hyperref	}
+\DeclarePackageOrdering{ float 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ hyperref 	}{before}{	algorithm	}
 \DeclarePackageOrdering{ amssymb 	}{before}{	xunicode	}
 \DeclarePackageOrdering{ amssymb 	}{before}{	xltxtra	}

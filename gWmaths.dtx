@@ -632,9 +632,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % Functions for document authors to allow them to focus on the document, not the packages.
 %
 %    \begin{macrocode}
-\NewHook{ gWpkgs / RequirePackages }
+\NewHook{ gWpkgs / Load Packages Now }
 \AtEndPreamble
-{	\UseOneTimeHook{ gWpkgs / RequirePackages }	}
+{	\UseOneTimeHook{ gWpkgs / Load Packages Now }	}
 %    \end{macrocode}
 %
 % \begin{macro}{RequestPackage,LoadPackagesNow}
@@ -651,14 +651,12 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand \RequestClass{ m o }
 {
-	\DeclarePackageOrdering{#1}{before}{classloaded}[class loads before `classloaded']
-	\DeclarePackageOrdering{#1}{before}{early}[class loads before `early']
-	\AddToHook { gWpkgs / RequirePackages }[#1]
+	\DeclarePackageOrdering{#1}{before}{gWpkgs / Class Loaded}[class loads before `early']
+	\AddToHook { gWpkgs / Load Packages Now }[#1]
 	{\ifcsdef{ver@#1.cls}{}{%\showclassesloaded
 		\LoadClass{#1}
 	}}%
-	\DeclarePackageOrdering{#1}{after}{b4class}[class loads after `b4class']
-	\DeclarePackageOrdering{#1}{after}{first}[class loads after `first']
+	\DeclarePackageOrdering{#1}{after}{gWpkgs / Before Class}[class loads after `gWpkgs / Before Class']
 }
 \NewDocumentCommand \RequestOnePackage{ o m o}
 {
@@ -676,19 +674,21 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	}
 
 	\IfValueTF{#3}
-	{\AddToHook{ gWpkgs / RequirePackages }[#2]{	\RequirePackage{#2}[#3]	}}
-	{\AddToHook{ gWpkgs / RequirePackages }[#2]{	\RequirePackage{#2}	}}
+	{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}[#3]	}}
+	{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}	}}
+
+	%\DeclareDefaultHookRule{	#2	}{after}{	gWpkgs / Class Loaded	}%
 }
 %    \end{macrocode}
 %    \begin{macrocode}
 \DeclareDocumentCommand{\LoadPackagesNow}{ >{\SplitList{,}}o }
 {
-	%\LogHook{ gWpkgs / RequirePackages }
+	%\LogHook{ gWpkgs / Load Packages Now }
 	\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
-		\RemoveFromHook{ gWpkgs / RequirePackages }[ inputenc ]
+		\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
 	\fi
-	%\LogHook{ gWpkgs / RequirePackages }
-	\UseHook{ gWpkgs / RequirePackages }
+	%\LogHook{ gWpkgs / Load Packages Now }
+	\UseHook{ gWpkgs / Load Packages Now }
 }
 %
 \let\ifPackageLoaded\@ifpackageloaded
@@ -709,56 +709,55 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand{\DeclarePackageOrdering}{ m m >{\SplitList{,}}m o}
 {
-	\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{after}{ first	}%
+	%\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{after}{ gWpkgs / Before Class	}%
+	\DeclareDefaultHookRule{ #1 }{after}{ gWpkgs / Class Loaded	}%
 
 	\tl_map_inline:nn{ #3 }
 	{\@ifnotmtarg{##1}{
 		\PackageInfo{gWpkgs}{ Request~to~order~ #1 ~ #2 ~ ##1 }%~ because~ #4 
-		\DeclareDefaultHookRule{ ##1 }{ after }{ early }
-		\DeclareHookRule{ gWpkgs / RequirePackages }{ ##1 }{ after }{ first }
-		\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{ #2 }{ ##1 }
+		\DeclareDefaultHookRule{ ##1 }{ after }{ gWpkgs / Class Loaded }
+		\DeclareHookRule{ gWpkgs / Load Packages Now }{ ##1 }{ after }{ gWpkgs / Before Class }
+		\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{ #2 }{ ##1 }
 	}}
 
-	\DeclareHookRule{ gWpkgs / RequirePackages }{ #1 }{before}{ last	}%
+	\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{before}{ gWpkgs / Load Packages Completed	}%
 }
 %
 %\DeclareDefaultHookRule{	gWpkgs / 
-\DeclareHookRule{ gWpkgs / RequirePackages }{ b4class	}{before}{ classloaded	}%
-\DeclareHookRule{ gWpkgs / RequirePackages }{ b4class	}{before}{ early	}%
+\DeclareHookRule{ gWpkgs / Load Packages Now }{ gWpkgs / Before Class }{before}{ gWpkgs / Class Loaded }%
 %%TODO: inspect hook ordering to enforce class before early...unless another rule already exists...how to compute...
 %%TODO: maybe inspect the internal rules list and insert `b4class' and `classloaded' \emph{immediately} before/after the actual class?
 %%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
 %%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
 %%TODO: maybe define `early' as "class loaded". Before `early' is "before class", and after `early' is "after class loaded".
-\AddToHook{ gWpkgs / RequirePackages }[b4class]%
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Before Class]%
 {%
-	\PackageInfo{ gWpkgs / RequirePackages }{ b4class }%
+	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Before Class }%
 }%
-\AddToHook{ gWpkgs / RequirePackages }[classloaded]%
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Class Loaded]%
 {%
-	\PackageInfo{ gWpkgs / RequirePackages }{ classloaded }%
+	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Class Loaded }%
 }%
 %
-\DeclareDefaultHookRule{	first	}{before}{	early	}%
-\DeclareDefaultHookRule{	early	}{after}{	classloaded	}%
-\DeclareDefaultHookRule{	early	}{before}{	late	}%
+\DeclareDefaultHookRule{	gWpkgs / Before Class	}{before}{	gWpkgs / Class Loaded	}%
+\DeclareDefaultHookRule{	gWpkgs / Class Loaded	}{before}{	late	}%
 %
-\AddToHook{ gWpkgs / RequirePackages }[first]
-{	\LogHook{ gWpkgs / RequirePackages }	}%
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Before Class]
+{	\LogHook{ gWpkgs / Load Packages Now }	}%
 %
-\AddToHook{ gWpkgs / RequirePackages }[early]
-{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`early'~package~load~order }	}%
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Class Loaded]
+{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`early'~package~load~order }	}%
 %
 \RequirePackage{ gWpkgs }%
 %
-%\AddToHook{ gWpkgs / RequirePackages }[late]
-%{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`late'~package~load~order }	}
+%\AddToHook{ gWpkgs / Load Packages Now }[late]
+%{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`late'~package~load~order }	}
 %
-%\DeclareDefaultHookRule{ late	}{after}{	classloaded	}%
-%\DeclareDefaultHookRule{ last	}{after}{	classloaded	}%
+%\DeclareDefaultHookRule{ late	}{after}{	gWpkgs / Class Loaded	}%
+%\DeclareDefaultHookRule{ gWpkgs / Load Packages Completed	}{after}{	gWpkgs / Class Loaded	}%
 %
-%\AddToHook{ gWpkgs / RequirePackages }[last]
-%{	\PackageInfo{ gWpkgs / RequirePackages }{ Finished~`last'~package~load~order }	}%
+%\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Completed]
+%{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`last'~package~load~order }	}%
 %    \end{macrocode}
 %
 % TODO: add a "depends" relationship, which adds to a hook on \cs{RequestPackages} to also \cs{RequestPackages} another package.
@@ -1103,7 +1102,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 
 \ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
-	\RemoveFromHook{ gWpkgs / RequirePackages }[ inputenc ]
+	\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
 	\RequirePackageBeforePackage{ fontspec }{ fontenc }
 \else% engine is not unicode-native
 	\RequestPackage{inputenc}[2015/01/01]
