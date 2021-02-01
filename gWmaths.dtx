@@ -1466,6 +1466,37 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \ExplSyntaxOff
 
 
+
+
+
+%
+\RequestPackage{tabstackengine,xcolor,txfonts,fancybox,arev,graphicx}
+\cornersize{.1}
+\newcommand\blackcard[2]{%
+  \begingroup\fboxsep=0pt\relax
+  \Ovalbox{\tabbedCenterstack{%
+  \makebox[0pt][l]{\scriptsize$#2$} && \\
+    &\makebox[22pt]{#1}&\\
+    &&\makebox[0pt][r]{\rotatebox[origin=c]{180}{\scriptsize$#2$}}}}%
+  \endgroup}
+\newcommand\redcard[2]{%
+  \begingroup\fboxsep=0pt\relax
+  \Ovalbox{\color{red}\tabbedCenterstack{%
+  \makebox[0pt][l]{\scriptsize$#2$} && \\
+    &\makebox[22pt]{#1}&\\
+    &&\makebox[0pt][r]{\rotatebox[origin=c]{180}{\scriptsize$#2$}}}}%
+  \endgroup}
+\newcommand\jokerface{\raisebox{-2pt}{\kern-1pt\stackengine{0pt}{%
+  \stackinset{c}{1pt}{c}{-.4pt}{\stackunder[.7pt]{$\cdot\kern2pt\cdot\kern0.3pt$}%
+  {--}}{$\bigcirc$}}{\,$\steaming$}{O}{c}{F}{F}{S}}}
+\newcommand\joker{\vcenter{\hbox{\scalebox{.4}{ \tiny JOKER }}}}
+%\begin{document}
+%\blackcard{Q}{\spadesuit}
+%\redcard{10}{\varheartsuit}
+%\redcard{A}{\vardiamondsuit}
+%\blackcard{\jokerface}{\joker}
+%\end{document}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Begin user defined commands
 
