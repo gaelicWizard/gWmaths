@@ -6,7 +6,8 @@
 %%!TEX spellcheck = en-US
 %!TeX program = pdflatexmk
 %!BIB program = biber
-%!TEX parameter = -8bit -interaction=batchmode
+%!TEX parameter = -8bit 
+%-interaction=batchmode
 %--enable-8bit-chars
 %-interaction=batchmode
 %<*dtx|README>
@@ -17,7 +18,11 @@ With the first week of 2021 declaring "hold my beer", some effort was made to ex
 
 This work has the LPPL maintenance status `maintained'.
 
-The Current Maintainer of this work is \author{John Pell\thanks{\url{https://github.com/gaelicWizard/gWmaths}}}.
+The Current Maintainer of this work is 
+%<dtx>\author{
+John Pell
+%<dtx>\thanks{\url{https://github.com/gaelicWizard/gWmaths}}}
+.
 
 The list of all files belonging to `gWmaths' is given in the file `manifest.txt'.
 \end{scontents}
@@ -546,10 +551,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 {
 	\IfValueT{ #1 }
 	{
-		\PackageInfo{ gWpkgs / RequirePackageBefore }{ Passing~#1~to~#2 }
+		%\PackageInfo{ gWpkgs / RequirePackageBefore }{ Passing~#1~to~#2 }
 		\PassOptionsToPackage{ #1 }{ #2 }
 	}
-	\PackageInfo{ gWpkgs / RequirePackageBefore }{ Adding~#2~to~package/before/#4 }
+	%\PackageInfo{ gWpkgs / RequirePackageBefore }{ Adding~#2~to~package/before/#4 }
 	\IfValueTF{ #3 }
 	{	\AddToHook{package/before/#4}{\RequirePackage{#2}[#3]}	}
 	{	\AddToHook{package/before/#4}{\RequirePackage{#2}}	}
@@ -560,10 +565,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 {
 	\IfValueT{ #1 }
 	{
-		\PackageInfo{ gWpkgs / RequirePackageAfter }{ Passing~#1~to~#2 }
+		%\PackageInfo{ gWpkgs / RequirePackageAfter }{ Passing~#1~to~#2 }
 		\PassOptionsToPackage{ #1 }{ #2 }
 	}
-	\PackageInfo{ gWpkgs / RequirePackageAfter }{ Adding~#4~to~package/after/#2 }
+	%\PackageInfo{ gWpkgs / RequirePackageAfter }{ Adding~#4~to~package/after/#2 }
 	\IfValueTF{ #3 }
 	{	\AddToHook{package/after/#4}{	\RequirePackage{#2}[#3]	}	}
 	{	\AddToHook{package/after/#4}{	\RequirePackage{#2}	}	}
@@ -606,13 +611,13 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 {
 	\IfValueT{ #1 }
 	{
-		\PackageInfo{ gWpkgs / DeclarePackagePair }{ Passing~#1~to~#2 }
+		%\PackageInfo{ gWpkgs / DeclarePackagePair }{ Passing~#1~to~#2 }
 		\PassOptionsToPackage{ #1 }{ #2 }
 	}
 	
 	\IfValueT{ #3 }
 	{
-		\PackageInfo{ gWpkgs / DeclarePackagePair }{ Passing~#3~to~#4 }
+		%\PackageInfo{ gWpkgs / DeclarePackagePair }{ Passing~#3~to~#4 }
 		\PassOptionsToPackage{ #3 }{ #4 }
 	}
 
@@ -633,8 +638,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %    \begin{macrocode}
 \NewHook{ gWpkgs / Load Packages Now }
-\AtEndPreamble
-{	\UseOneTimeHook{ gWpkgs / Load Packages Now }	}
 %    \end{macrocode}
 %
 % \begin{macro}{RequestPackage,LoadPackagesNow}
@@ -665,11 +668,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 		\PackageWarning{ gWpkgs }{ Empty~arg~2:~#2 }
 	}
 
-	\PackageInfo{ gWpkgs / RequestOnePackage }{ Request~to~load~package~ #2 ~( #3 )~with~options~ #1 }
+	%\PackageInfo{ gWpkgs / RequestOnePackage }{ Request~to~load~package~ #2 ~( #3 )~with~options~ #1 }
 
 	\IfValueT{#1}
 	{
-		\PackageInfo{ gWpkgs } { Passing~#1~to~#2 }
+		%\PackageInfo{ gWpkgs } { Passing~#1~to~#2 }
 		\PassOptionsToPackage{ #1 }{ #2 }
 	}
 
@@ -683,7 +686,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \DeclareDocumentCommand{\LoadPackagesNow}{ >{\SplitList{,}}o }
 {
-	%\LogHook{ gWpkgs / Load Packages Now }
+	\LogHook{ gWpkgs / Load Packages Now }
 	\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
 		\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
 	\fi
@@ -709,27 +712,37 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand{\DeclarePackageOrdering}{ m m >{\SplitList{,}}m o}
 {
-	%\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{after}{ gWpkgs / Before Class	}%
-	\DeclareDefaultHookRule{ #1 }{after}{ gWpkgs / Class Loaded	}%
+	\@ifpackageloaded{ #1 }
+	{
+		\DeclareHookRule{ gWpkgs / Load Packages Now }
+			{ #1 }{before}{ gWpkgs / Load Packages Now }
+	}{%
+	\DeclareHookRule{ gWpkgs / Load Packages Now }
+		{ gWpkgs / Load Packages Now }{before}{ #1 }
 
 	\tl_map_inline:nn{ #3 }
 	{\@ifnotmtarg{##1}{
-		\PackageInfo{gWpkgs}{ Request~to~order~ #1 ~ #2 ~ ##1 }%~ because~ #4 
-		\DeclareDefaultHookRule{ ##1 }{ after }{ gWpkgs / Class Loaded }
-		\DeclareHookRule{ gWpkgs / Load Packages Now }{ ##1 }{ after }{ gWpkgs / Before Class }
-		\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{ #2 }{ ##1 }
+		\@ifpackageloaded{ ##1 }
+		{
+			\DeclareHookRule{ gWpkgs / Load Packages Now }
+				{ ##1 }{before}{ gWpkgs / Load Packages Now }
+		}{
+			\DeclareHookRule{ gWpkgs / Load Packages Now }
+				{ gWpkgs / Load Packages Now }{before}{ ##1 }
+
+			\DeclareHookRule{ gWpkgs / Load Packages Now }
+				{ #1 }{ #2 }{ ##1 }
+		}
 	}}
 
 	\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{before}{ gWpkgs / Load Packages Completed	}%
-}
+}}
 %
-%\DeclareDefaultHookRule{	gWpkgs / 
+
 \DeclareHookRule{ gWpkgs / Load Packages Now }{ gWpkgs / Before Class }{before}{ gWpkgs / Class Loaded }%
-%%TODO: inspect hook ordering to enforce class before early...unless another rule already exists...how to compute...
-%%TODO: maybe inspect the internal rules list and insert `b4class' and `classloaded' \emph{immediately} before/after the actual class?
 %%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
 %%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
-%%TODO: maybe define `early' as "class loaded". Before `early' is "before class", and after `early' is "after class loaded".
+%%TODO: check if package already loaded and order it before `first' with no other rules...
 \AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Before Class]%
 {%
 	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Before Class }%
@@ -742,7 +755,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \DeclareDefaultHookRule{	gWpkgs / Before Class	}{before}{	gWpkgs / Class Loaded	}%
 \DeclareDefaultHookRule{	gWpkgs / Class Loaded	}{before}{	late	}%
 %
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Before Class]
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Now]
 {	\LogHook{ gWpkgs / Load Packages Now }	}%
 %
 \AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Class Loaded]
@@ -758,6 +771,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Completed]
 %{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`last'~package~load~order }	}%
+\AtEndPreamble
+{	\UseOneTimeHook{ gWpkgs / Load Packages Now }	}
 %    \end{macrocode}
 %
 % TODO: add a "depends" relationship, which adds to a hook on \cs{RequestPackages} to also \cs{RequestPackages} another package.
@@ -875,7 +890,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \PassOptionsToPackage{% `mmap`
 	noTeX % use unicode codepoints, not \TeX* names, [2008/08/11]
 }{mmap} % \pkg{mmap} extends \pkg{cmap} with math mappings.
-\RequirePackageBeforePackage{cmap}{mmap} % \pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\RequirePDFTeX})
+\DeclarePackageOrdering{cmap}{before}{mmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\RequirePDFTeX)]
+%\RequirePackageBeforePackage{cmap}{mmap}
 %
 \RequestPackage[% \pkg{url}
 	obeyspaces, % allow spaces in URLs, but be wary of backslashes 
@@ -943,7 +959,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
 ]{hyperref}
 % Load \pkg{hyperxmp} before \pkg{hyperref}, automatically
-\RequirePackagePair{hyperxmp}{hyperref}
+%\RequirePackagePair{hyperxmp}{hyperref}
 %% Inform *all* packages that `hyperref` is in use:
 \gW@addGlobalOption{hyperref}
 %%
@@ -1095,6 +1111,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 \ifPDFTeX
 	\pdfminorversion=6 %fucking hack for `accessibility`
+	\DeclarePackageOrdering{cmap}{unrelated}{hyperref}[by using \cs{pdfminorversion} here, we obviate the ordering dependency]
 %	\pdf_version_gset:n {6}
 %	\pdf_version_min_gset:n {6}
 \fi
@@ -1103,7 +1120,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 \ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
 	\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
-	\RequirePackageBeforePackage{ fontspec }{ fontenc }
+	%\RequirePackageBeforePackage{ fontspec }{ fontenc }
 \else% engine is not unicode-native
 	\RequestPackage{inputenc}[2015/01/01]
 	% When using older engines, this tells the engine to read all files as UTF-8.
@@ -1164,9 +1181,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	% docs say to only load one, and package/classes should  `s' not `x' as the user may s->x but not back
 	% literally the only difference is the `keyval' package, therefore just use `x'.
 	% `x' loads `s'...
-
-%\RequirePackageBeforePackage{ cmap }{ fontenc }
-%\RequirePackageBeforePackage{ mmap }{ fontenc }
 
 \ifTUTeX % "Unicode \TeX*" matches \LuaTeX* and/or \XeTeX*
 	\RequestPackage% must load *after* maths fonts (specifically euler)
@@ -1525,6 +1539,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % End environments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%</cls>
 
 
 %% https://tex.stackexchange.com/questions/108696/what-do-explsyntaxon-and-explsyntaxoff-do
