@@ -5,6 +5,9 @@ ntheorem csquotes titling tagpdf filemod pdfcomment layouts docmute standalone s
 soulutf8
 soft blindtext gitinfo2 paralist accsupp lualatex-math luacode
 
+# simple cards:
+tabstackengine fanxybox stackengine
+
 package l3doc
 hard alphalph enumitem
 
@@ -46,3 +49,6 @@ latexsym amssymb
 
 #package gWtex
 #none
+
+package studenthandouts
+hard changepage ifthen fmtcount tocloft geometry fancyhdr
