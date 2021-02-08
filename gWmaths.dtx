@@ -820,6 +820,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	
 	titlesec	.bool_set:N	= \gW@titlesec	,
 
+	venn	.bool_set:N	= \gW@venn	,
+
 	documentClass	.tl_set:N	= \gW@documentClass	,
 	documentClass	.default:n	= article	,
 	syllabus	.meta:n	= {
@@ -927,7 +929,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 {
 	\AddToHook{ package/before/hyperref }
 	{% Choose violence over \cls{beamer}.
-		\PassOptionsToPackage{implicit=true}{hyperref}
+	%TODO: *check* if implicit=true before forcing it here
+	%TODO: do this only if \cls{beamer} is to be loaded? Or, do we just *always* want `implicit'?
+	%TODO: can \pkg{hyperref}'s `implicit's be fixed to new hooks?
+		\PassOptionsToPackage{implicit=false,implicit=true}{hyperref}
 	}
 }% \@gWhyperref
 
@@ -1144,14 +1149,18 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	babel,
 	hyperxmp, % babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
 
-	amsfonts,
+	%amsfonts,
 	amssymb,
 	amsmath,
 	%mathtools,
 %%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
-
-	venndiagram,	%https://tex.stackexchange.com/a/381249
 }
+
+%TODO: \RequestPackageIfBool
+\bool_if:nT \gW@venn{%TODO: load this if \cls{beamer}, since it loads \pkg{pkf}
+\RequestPackage{
+	venndiagram,	%https://tex.stackexchange.com/a/381249
+}}
 
 \bool_if:nT \gW@ntheorem{
 \RequestPackage{% improves theorem-like environments, conflicts with `amsthm`
