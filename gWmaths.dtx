@@ -1477,8 +1477,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 
 %
-\RequestPackage{tabstackengine,xcolor,txfonts,fancybox,arev,graphicx}
-\cornersize{.1}
+\RequestPackage{tabstackengine,xcolor,fancybox,graphicx}
+\AtBeginDocument{\cornersize{.1}}
 \newcommand\blackcard[2]{%
   \begingroup\fboxsep=0pt\relax
   \Ovalbox{\tabbedCenterstack{%
