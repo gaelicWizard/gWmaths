@@ -14,7 +14,8 @@
 %%!TEX spellcheck = en-US
 %!TeX program = pdflatexmk
 %!BIB program = biber
-%!TEX parameter = -8bit -interaction=nonstopmode
+%!TEX parameter = -8bit
+% -interaction=nonstopmode
 %--enable-8bit-chars
 %-interaction=batchmode
 }{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,7 +23,7 @@
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-A DTX file is parsed as a whole multiple times from within itself. Additionally, portions are extracted to entirely separate files, which are then imported during parsing of the DTX itself such that some lines are processed multiple times during a single parse (of many parses). Programmers believe in a form of ritual hazing called `recursion', and the ability to construct a working DTX is somewhat of a rite of passage before being allowed to publish a \LaTeX* package. Consider this my proof of qualification.
+A DTX file is parsed as a whole multiple times from within itself through multiple different parsers. Additionally, portions are extracted to entirely separate files, which are then imported during parsing of the DTX itself such that some lines are processed multiple times during a single parse (of many parses). Programmers believe in a form of ritual hazing called `recursion', and the ability to construct a working DTX is somewhat of a rite of passage before being allowed to publish a \LaTeX* package. Consider this my proof of qualification.
 %
 During the great pandemic of 2020, the \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe* lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
 %
@@ -33,7 +34,7 @@ This work has the LPPL maintenance status `maintained'.
 The Current Maintainer of this work is 
 %<dtx>\author{
 John Pell
-%<dtx>\thanks{\url{https://github.com/gaelicWizard/gWmaths}}}
+%<dtx>\thanks{\url{https://github.com/gaelicWizard/\filename}}}
 .
 %
 The list of all files belonging to `gWmaths' is given in the file `manifest.txt'.
@@ -44,13 +45,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %<*ins>
 % \section{Installer job file}	\label{ins}
 %
-% \begin{macro}{l3docstrip, RequirePDFTeX}
+% \begin{macro}{l3docstrip}
 %
 % The ASCII character 9 (tab) becomes |^^I| in \XeTeX*, unless \meta{-8bit} is passed on the command line.
-%
-%    \begin{macrocode}
-%\RequirePDFTeX%
-%    \end{macrocode}
 %
 % Begin a \TeX* group so the unprotected input doesn't jack up too much stuff, then input \LaTeXx*'s edition of \pkg{docstrip}.
 %
@@ -65,8 +62,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\askforoverwritefalse	%\keepsilent	%
 	\usedir{tex/latex/\jobname}	\UseTDS	%
 	\nopreamble	\nopostamble	}%
-\def\@docextension{drv}%
-\def\@stripextension{ins}%
+\def\@docextension{drv}	\def\@stripextension{ins}%
 %    \end{macrocode}
 %
 % \begin{macro}{generate,file}
@@ -365,7 +361,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\RenewDocumentCommand\ProvidesExplFile{ m m m m }
 	{
 		\author{\pkg{#1}
-			\thanks{ \url{ https://github.com/gaelicWizard/gWmaths } }
+			\thanks{ \url{ https://github.com/gaelicWizard/#1 } }
 			~ #3 }
 		\date{#2}
 		\title{#4}
@@ -376,18 +372,23 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\RenewDocumentCommand\ProvidesExplClass{ m m m m }
 	{
 	}
-	\RenewDocumentCommand\RequirePackage{ o m O{\filedate} }
+	\RenewDocumentCommand \RequirePackage { o m o }
+	{
+		\clist_map_inline:nn {#2}
+		{
+			\clist_put_right:Nn \g_gWpkgs_clist {##1}
+		}
+	}
+	\RenewDocumentCommand\RequirePackage{ o m o }
 	{ % TODO: make \RequirePackage add packages to a list, rather than print
 	%% \clist_new:N \g_docinput_clist
-		\file{\jobname}~requires~~\pkg{#2},~dated~#3~or~newer.
+		\clist_map_inline:nn {#2}
+		{
+			\file{\jobname}~requires~\pkg{##1}
+			\IfValueT{#3}{,~dated~#3~or~newer}
+			.~
+		}
 	}
-\RenewDocumentCommand \RequirePackage { o m o }
-  {
-    \clist_map_inline:nn {#2}
-      {
-        \clist_put_right:Nn \g_gWpkgs_clist {##1}
-      }
-  }
 }
 {}%class loaded l3doc
 }
@@ -511,7 +512,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \ExplSyntaxOff
 \NewDocumentEnvironment{gWdocstrip}{ m o +b }
 {	%% https://tex.stackexchange.com/a/227179/233148
-	\RequirePDFTeX
 	\begingroup	\ExplSyntaxOff
 	\input l3docstrip
 
@@ -790,7 +790,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 % \section{ \cls{ \filename } ~ document ~ class }
 \RequirePackage{ gWmaths, 	}%
-\GetFileInfo{\CurrentFile}%
+\GetFileInfo{\currfilename}%
 %
 % \begin{macro}{gWsetup}
 %
@@ -1358,7 +1358,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 \ifcsdef{GetFileInfo}
 {% https://tex.stackexchange.com/a/30486
-	\GetFileInfo{\CurrentFile}
+	\GetFileInfo{\currfilename}
 	\@ifundefined{fileinfo}{}{\hypersetup{
 		pdfsubject={\fileinfo}, % this takes the name/description of the *class*...
 			}}
@@ -1378,7 +1378,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 		}
 
 \ifXeTeX%
-	\PackageWarning{ gWmaths }{ \XeTeX* does not provide cs{pdffilemoddate} }
+	\PackageWarning{ gWmaths }{ \XeTeX* ~ does ~ not ~ provide ~ cs{pdffilemoddate} }
 \else%
 	\hypersetup{
 		pdfcreationdate={\pdffilemoddate{\jobname.tex}},
