@@ -1157,7 +1157,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 
 %TODO: \RequestPackageIfBool
-\bool_if:nT \gW@venn{%TODO: load this if \cls{beamer}, since it loads \pkg{pkf}
+\bool_if:nT \gW@venn{
+%TODO: load this if \cls{beamer}, since it loads \pkg{pgf}
+%TODO: detect \pkg{pgf} and default this on?
 \RequestPackage{
 	venndiagram,	%https://tex.stackexchange.com/a/381249
 }}
