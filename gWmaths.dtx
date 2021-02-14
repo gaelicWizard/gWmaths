@@ -719,17 +719,14 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackageIfPackage	{ o m o >{\SplitList{,}}m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_F {#4}
-	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
-	{ \RequestPackage[#1]{#2}[#3] }
+	\RequestPackageIfPackageOption [#1] {#2} [#3] {#4} {} [#5]
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested or already loaded, because #5
 }
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o >{\SplitList{,}}m >{\SplitList{,}}m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_F {#4}[#5]
-	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
+	\gW_if_package_loaded_or_requested_with_option_T {#4}[#5]
 	{ \RequestPackage[#1]{#2}[#3] }
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested (or loaded) with option #5, because #6
 }
@@ -737,17 +734,14 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\PassOptionsToPackageIfPackage	{ m m m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_F {#3}
-	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
-	{ \PassOptionsToPackage{#1}{#2} }
+	\PassOptionsToPackageIfPackageOption {#1} {#2} {#3} {} [#4]
 	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded), because #4
 }
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\PassOptionsToPackageIfPackageOption	{ m m m m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_F {#3}[#4]
-	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
+	\gW_if_package_loaded_or_requested_with_option_T {#3}[#4]
 	{ \PassOptionsToPackage{#1}{#2} }
 	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded) with option #4, because #5
 }
@@ -765,24 +759,14 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_Fxxxx	{ m o m }
-{
-	\gW_if_package_loaded_or_requested_with_option_TF {#1} [#2] {\@firstofone} {#3}
-}
 \NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_T	{ m o m }
 {
-	\gW_check_packages_loaded % \cs{RequestPackage} all packages already \cs{RequirePackage}d.
-	\bool_new:N \gW_if_package_loaded
-	\bool_new:N \gW_if_option_passed_to_loaded_package
-
-	\clist_clear_new:N \gW_pkgs_loaded_or_requested
-
 	\clist_map_inline:nn {#1}
-	{ % foreach \pkg{#1}
+	{
 		\@ifpackageloaded{##1}
 		{
 			\IfValueTF{#2}
-			{
+			{ % TODO TEST FOR EMPTY
 				\clist_if_in:cnT {opt@##1.sty} {#2}
 				{ #3 }
 			}{
