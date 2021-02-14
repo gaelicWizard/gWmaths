@@ -719,40 +719,36 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackageIfPackage	{ o m o >{\SplitList{,}}m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_TF {#4}
-	{
-		\RequestPackage[#1]{#2}[#3]
-	}{
-		%TODO: if already requested, then request immediately
-		\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]
-		{ \RequestPackage[#1]{#2}[#3] }
-	}
+	\gW_if_package_loaded_or_requested_with_option_F {#4}
+	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
+	{ \RequestPackage[#1]{#2}[#3] }
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested or already loaded, because #5
 }
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o >{\SplitList{,}}m >{\SplitList{,}}m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_TF {#4}[#5]
-	{
-		\RequestPackage[#1]{#2}[#3]
-	}{
-		%TODO: if already requested, then request immediately
-		\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]
-		{ \RequestPackage[#1]{#2}[#3] }
-	}
+	\gW_if_package_loaded_or_requested_with_option_F {#4}[#5]
+	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
+	{ \RequestPackage[#1]{#2}[#3] }
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested (or loaded) with option #5, because #6
 }
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\PassOptionsToPackageIfPackage	{ m m m o }
 {
+	\gW_if_package_loaded_or_requested_with_option_F {#3}
+	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
+	{ \PassOptionsToPackage{#1}{#2} }
 	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded), because #4
 }
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\PassOptionsToPackageIfPackageOption	{ m m m m o }
 {
+	\gW_if_package_loaded_or_requested_with_option_F {#3}[#4]
+	{	\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]	}
+	{ \PassOptionsToPackage{#1}{#2} }
 	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded) with option #4, because #5
 }
 %    \end{macrocode}
@@ -769,12 +765,13 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_F	{ m o m }
+\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_Fxxxx	{ m o m }
 {
-	\gW_if_package_loaded_or_requested_with_option_TF {#1} [#2] {} {#3}
+	\gW_if_package_loaded_or_requested_with_option_TF {#1} [#2] {\@firstofone} {#3}
 }
-\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_TF	{ m o m m }
+\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_T	{ m o m }
 {
+	\gW_check_packages_loaded % \cs{RequestPackage} all packages already \cs{RequirePackage}d.
 	\bool_new:N \gW_if_package_loaded
 	\bool_new:N \gW_if_option_passed_to_loaded_package
 
@@ -784,42 +781,31 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	{ % foreach \pkg{#1}
 		\@ifpackageloaded{##1}
 		{
-			\clist_put_left:Nn \gW_pkgs_loaded_or_requested {##1}
-			\bool_set_true:N \gW_if_package_loaded
-		}{
-			\clist_if_in:cnT {g__hook_ gWpkgs / Load Packages Now _labels_clist} {##1}
+			\IfValueTF{#2}
 			{
-				\clist_put_right:cn \gW_pkgs_loaded_or_requested {##1}
-				\bool_set_true:N \gW_if_package_loaded
+				\clist_if_in:cnT {opt@##1.sty} {#2}
+				{ #3 }
+			}{
+				#3
+			}
+		}{
+			\AddToHook{ gWpkgs / Request Package / ##1 }
+			{
+				\IfValueT{#2}
+				{
+					\clist_if_in:cnT {opt@##1.sty} {#2}
+					{#3}
+				}{
+					#3
+				}
 			}
 		}
 	}
-	\IfValueTF{#2}
-	{
-		\clist_map_inline:Nn \gW_pkgs_loaded_or_requested
-		{ % foreach \clist{gWpkgs_loaded_or_requested}
-			\clist_map_inline:nn {#2}
-			{ % foreach \oarg{#2}
-				\clist_if_in:cnT {opt@##1.sty} {###1}
-				{
-					\bool_set_true:N \gW_if_option_passed_to_loaded_package
-				}
-			}%\cs{clist_map_inline:cn}
-		}
-		\bool_if:NTF \gW_if_option_passed_to_loaded_package
-		{
-			#3
-		}{
-			#4
-		}
-	}{
-		\bool_if:NTF \gW_if_package_loaded
-		{
-			#3
-		}{
-			#4
-		}
-	}
+}
+\NewDocumentCommand	\gW_check_packages_loaded	{ s }
+{% \cs{RequestPackage} all packages already \cs{RequirePackage}d.
+	%\seq_map_inline:Nn \l_pclist_classes_seq {}
+	\seq_map_inline:Nn \l_pclist_packages_seq {\RequestPackage{##1}}
 }
 %    \end{macrocode}
 %    \begin{macrocode}
