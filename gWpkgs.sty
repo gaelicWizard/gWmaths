@@ -18,7 +18,7 @@
 %\declare@file@substitution{ifetex.sty}{iftex.sty}% \NeedsETeX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\DeclarePackageOrdering
+\DeclarePackageOrdering{ article	}{before}{ hyperref, amsmath, babel, bookmark, nameref, hyperxmp, backref }[jfc]
 
 \DeclarePackageOrdering{ csquotes	}{after}{ gWpkgs / Class Loaded }[\pkg{csquotes} redefines \cs{quote}]
 \DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / Class Loaded}[\pkg{paralist} redefines several environments]
