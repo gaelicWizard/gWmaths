@@ -172,7 +172,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %\ProvidesPackage{alphalph}
 %\declare@file@substitution{infwarerr.sty}{gWmaths.sty}
-\disable@package@load{infwarerr}{}%ho-tex internals
+\disable@package@load{infwarerr}{\PackageInfo{gWmaths}{blocked~pkg{infwarerr}~(ho-tex~internals)~from~loading.}}
+% TODO: define \cs{ver@infwarerr.sty} to silence warnings
 \let\@PackageInfo\PackageInfo
 \def\@PackageInfoNoLine#1#2{%
   \PackageInfo{#1}{#2\@gobble}%
@@ -401,7 +402,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % Prepend specified options to the global options list, as though specified in the optional argument to \cs{documentclass}. Leave the actual document-specified options as last so they may override ours if needed.
 %
 %    \begin{macrocode}
-\NewDocumentCommand\gW@addGlobalOption{ >{\SplitList{,}}m }
+\NewDocumentCommand\gW@addGlobalOption{ m }
 {\clist_map_inline:nn {#1}{
 		\clist_gput_left:Nx \@classoptionslist {##1}
 }}%
@@ -649,7 +650,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % \begin{macro}{RequestPackage,LoadPackagesNow}
 %
 %    \begin{macrocode}
-\NewDocumentCommand	\RequestPackages	{ o >{\SplitList{,}}m o }
+\NewDocumentCommand	\RequestPackages	{ o m o }
 {
 	\UseHook{ gWpkgs / Request Packages }
 
@@ -679,53 +680,44 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestOnePackage	{ o m o }
 {
-	\UseHook{ gWpkgs / Request Package }
-	\hook_if_exist:nF {gWpkgs / Request Package / #2}
-	{	\NewHook{ gWpkgs / Request Package / #2 }	}
+	\IfValueTF{#2}
+	{	\hook_if_exist:nF {gWpkgs / Request Package / #2}%
+		{	\NewHook{ gWpkgs / Request Package / #2 }	}%
 
-	\IfNoValueT{#2}
-	{
-		\PackageWarning{ gWpkgs }{ Empty~arg~2:~#2 }
-	}
+		\@ifpackageloaded{ #2 }%
+		{%
+			\DeclareHookRule{ gWpkgs / Load Packages Now }%
+				{ #2 }{before}{ gWpkgs / Load Packages Begin }%
+		}{%
+			\DeclareHookRule{ gWpkgs / Load Packages Now }%
+				{ #2 }{after}{ gWpkgs / Load Packages Begin }%
 
-	%\PackageInfo{ gWpkgs / RequestOnePackage }{ Request~to~load~package~ #2 ~( #3 )~with~options~ #1 }
+			\IfValueT{#1}%
+			{	\PassOptionsToPackage{ #1 }{ #2 }	}%
+		}%
 
-	\IfValueT{#1}
-	{
-		%\PackageInfo{ gWpkgs } { Passing~#1~to~#2 }
-		\PassOptionsToPackage{ #1 }{ #2 }
-	}
+		\IfValueTF{#3}%
+		{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}[#3]	}}%
+		{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}	}}%
 
-	\@ifpackageloaded{ #2 }%
-	{%
-		\DeclareHookRule{ gWpkgs / Load Packages Now }%
-			{ #2 }{before}{ gWpkgs / Load Packages Now }%
+		\UseOneTimeHook{ gWpkgs / Request Package / #2 }%
 	}{%
-		\DeclareHookRule{ gWpkgs / Load Packages Now }%
-			{ #2 }{after}{ gWpkgs / Load Packages Now }%
+		\PackageWarning{ gWpkgs }{ Empty~arg~2:~#2 }%
 	}%
-
-	\IfValueTF{#3}
-	{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}[#3]	}}
-	{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}	}}
-
-	\UseOneTimeHook{ gWpkgs / Request Package / #2 }
-
-	%\DeclareDefaultHookRule{	#2	}{after}{	gWpkgs / Class Loaded	}%
 }
 %    \end{macrocode}
 %
 % The checking-if-loaded would be *way* easier if the package loading hooks were one-time hooks...
 %
 %    \begin{macrocode}
-\NewDocumentCommand	\RequestPackageIfPackage	{ o m o >{\SplitList{,}}m o }
+\NewDocumentCommand	\RequestPackageIfPackage	{ o m o m o }
 {
 	\RequestPackageIfPackageOption [#1] {#2} [#3] {#4} {} [#5]
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested or already loaded, because #5
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o >{\SplitList{,}}m >{\SplitList{,}}m o }
+\NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o m m o }
 {
 	\gW@ifPackageRequestedWithOptionT {#4}[#5]
 	{ \RequestPackage[#1]{#2}[#3] }
@@ -813,7 +805,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\DeclareDocumentCommand	\LoadPackagesNow	{ >{\SplitList{,}}o }
+\DeclareDocumentCommand	\LoadPackagesNow	{ o }
 {
 	\RequestPackage{#1}
 
@@ -857,17 +849,17 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % \end{arguments}
 %
 %    \begin{macrocode}
-\NewDocumentCommand	\DeclarePackageOrdering	{ m m >{\SplitList{,}}m o}
+\NewDocumentCommand	\DeclarePackageOrdering	{ m m m o}
 {
-	\tl_map_inline:nn{ #3 }
+	\clist_map_inline:nn{ #3 }
 	{\@ifnotmtarg{##1}{
 		\@ifpackageloaded{ ##1 }
 		{
 			\DeclareHookRule{ gWpkgs / Load Packages Now }
-				{ ##1 }{before}{ gWpkgs / Load Packages Now }
+				{ ##1 }{before}{ gWpkgs / Load Packages Begin }
 		}{
 			\DeclareHookRule{ gWpkgs / Load Packages Now }
-				{ ##1 }{after}{ gWpkgs / Load Packages Now }
+				{ ##1 }{after}{ gWpkgs / Load Packages Begin }
 		}
 		\DeclareHookRule{ gWpkgs / Load Packages Now }
 			{ #1 }{ #2 }{ ##1 }
@@ -877,7 +869,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }}
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\DeclarePackageDependency	{ s m >{\SplitList{,}}m o }
+\NewDocumentCommand	\DeclarePackageDependency	{ s m m o }
 {
 	\IfBooleanF {#1}
 	{ % It's possible that a package is required to be loaded, but not necessarily that it be loaded *first*
@@ -900,11 +892,16 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\DeclareDefaultHookRule{	gWpkgs / Before Class	}{before}{	gWpkgs / Class Loaded	}%
-\DeclareDefaultHookRule{	gWpkgs / Class Loaded	}{before}{	gWpkgs / Load Packages Completed	}%
-\DeclareDefaultHookRule{	gWpkgs / Load Packages Now	}{before}{	gWpkgs / Before Class	}%
-\DeclareDefaultHookRule{	gWpkgs / Load Packages Now	}{before}{	gWpkgs / Class Loaded	}%
-\DeclareDefaultHookRule{	gWpkgs / Load Packages Now	}{before}{	gWpkgs / Load Packages Completed	}
+\DeclareHookRule{ gWpkgs / Load Packages Now }
+{	gWpkgs / Before Class	}{before}{	gWpkgs / Class Loaded	}%
+\DeclareHookRule{ gWpkgs / Load Packages Now }
+{	gWpkgs / Class Loaded	}{before}{	gWpkgs / Load Packages Completed	}%
+\DeclareHookRule{ gWpkgs / Load Packages Now }
+{	gWpkgs / Load Packages Begin	}{before}{	gWpkgs / Before Class	}%
+\DeclareHookRule{ gWpkgs / Load Packages Now }
+{	gWpkgs / Load Packages Begin	}{before}{	gWpkgs / Class Loaded	}%
+\DeclareHookRule{ gWpkgs / Load Packages Now }
+{	gWpkgs / Load Packages Begin	}{before}{	gWpkgs / Load Packages Completed	}
 %    \end{macrocode}
 %%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
 %%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
@@ -919,10 +916,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Class Loaded }%
 }%
 %
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Now]%
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Begin]%
 {	\LogHook{ gWpkgs / Load Packages Now }	}%
 %
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / gWpkgs / Load Packages Completed]%
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Completed]%
 {%
 	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Load Packages Completed }%
 }%
@@ -1113,9 +1110,15 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 		%hyperfigures, % make figures hyper links
 		hyperfootnotes, % set up hyperlinked footnotes, already default
 	 	hyperindex, % links index entries back to main text, conflicts with hypdoc, already default
-
 	}{hyperref}
-}% \@gWhyperref
+}% \@gWhyperTeX
+
+\ifTUTeX
+	\PassOptionsToPackage
+	{ % Documentation expressly states that \TUTeX* should use \meta{pdfencoding=unicode}
+		pdfencoding=unicode,	% set 'auto' to prefer PDFEncoding over UTF-16.
+	}{hyperref}
+\fi
 
 \RequestPackage[% `hyperref`
 	bookmarks, % Write TOC as PDF bookmarks
@@ -1127,27 +1130,40 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	linktoc=all, % link section name *and* page number from toc
 	backref, % link back from bib entries to main text
 
-	%pdfencoding=unicode, % set 'auto' to prefer PDFEncoding over UTF-16; default for \TUTeX*
 	%pdflang=en-us, % `hyperxmp` automatically sets this from the language of `babel`
 	pdfusetitle, % use \title{} for PDF metadata
 	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
 	pdfpagelabels, % tag pages with page numbers from \LaTeX* ("ii" or whatever)
-	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
 ]{hyperref}
 \DeclarePackageDependency*{hyperxmp}{hyperref}
 %% Inform *all* packages that `hyperref` is in use:
-\gW@addGlobalOption{hyperref}
-\DeclareGlobalOptionsIfPackage{hyperref}{hyperref}[many packages like to be told if \pkg{hyperref} is in use]
-%%
-\RequestPackageIfPackageOption{bookmark}{hyperref}{bookmarks}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
-\PassOptionsToPackageIfPackage{bookmarks}{hyperref}{bookmark}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
-%%
+%\gW@addGlobalOption{hyperref}
+\DeclareGlobalOptionsIfPackage
+{hyperref}{hyperref}[many packages like to be told if \pkg{hyperref} is in use]
+%
+\RequestPackageIfPackageOption
+{bookmark}{hyperref}{bookmarks}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
+\PassOptionsToPackageIfPackage
+{bookmarks}{hyperref}{bookmark}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
+%
 \PassOptionsToPackageIfPackage
 {hyperref}{xcolor}{hyperref}[color expressions by defining additional keys]
-
+%
 \PassOptionsToPackageIfPackage
 {hyperref}{ntheorem}{hyperref}
-
+%
+\AddToHook{ package / after / hyperxmp }
+{
+	\ifcsdef{hypersetup}
+	{
+		\hypersetup
+		{
+			keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
+		}
+	}{
+		\PassOptionsToPackage{keeppdfinfo}{hyperref}
+	}
+}
 
 %
 %% Set up `scrbase` not to argue with iftex.
