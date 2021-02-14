@@ -653,9 +653,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 {
 	\UseHook{ gWpkgs / Request Packages }
 
-	\tl_map_inline:nn{ #2 }
+	\clist_map_inline:nn{ #2 }
 	{
-		\@ifnotmtarg{##1}{\RequestOnePackage[#1]{##1}[#3]}
+		\RequestOnePackage[#1]{##1}[#3]
 	}
 }
 \let\RequestPackage\RequestPackages
@@ -673,7 +673,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	}}%
 	\DeclarePackageOrdering{#2}{after}{gWpkgs / Before Class}[class loads after `gWpkgs / Before Class']
 
-	\UseHook{ gWpkgs / Request Class / #2 }
+	\UseOneTimeHook{ gWpkgs / Request Class / #2 }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -726,7 +726,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o >{\SplitList{,}}m >{\SplitList{,}}m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_T {#4}[#5]
+	\gW@ifPackageRequestedWithOptionT {#4}[#5]
 	{ \RequestPackage[#1]{#2}[#3] }
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested (or loaded) with option #5, because #6
 }
@@ -741,25 +741,28 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\PassOptionsToPackageIfPackageOption	{ m m m m o }
 {
-	\gW_if_package_loaded_or_requested_with_option_T {#3}[#4]
+	\gW@ifPackageRequestedWithOptionT {#3}[#4]
 	{ \PassOptionsToPackage{#1}{#2} }
 	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded) with option #4, because #5
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\DeclareGlobalOptionsIfPackage	{ m m m o }
+\NewDocumentCommand	\DeclareGlobalOptionsIfPackage	{ m m o }
 {
-	%\gWaddToGlobal{#1}{#2} if #3 requested (or loaded), because #4
+	\DeclareGlobalOptionsIfPackageOption {#1} {#2} {} [#3]
+	%\gWaddToGlobal{#1} if #2 requested (or loaded), because #3
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\DeclareGlobalOptionsIfPackageOption	{ m m m m o }
+\NewDocumentCommand	\DeclareGlobalOptionsIfPackageOption	{ m m m o }
 {
-	%\gWaddToGlobal{#1}{#2} if #3 requested (or loaded) with option #4, because #5
+	\gW@ifPackageRequestedWithOptionT {#2}[#3]
+	{ \gW@addGlobalOption{#1} }
+	%\gWaddToGlobal{#1} if #2 requested (or loaded) with option #3, because #4
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_T	{ m o m }
+\NewDocumentCommand	\gW@ifPackageRequestedWithOptionT	{ m o m }
 {
 	\clist_map_inline:nn {#1}
 	{
@@ -770,12 +773,13 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 				\clist_if_in:cnT {opt@##1.sty} {#2}
 				{ #3 }
 			}{
+				\PackageWarning{ gWpkgs }{ ##1 was already loaded, so this may be ineffective... }
 				#3
 			}
 		}{
 			\AddToHook{ gWpkgs / Request Package / ##1 }
 			{
-				\IfValueT{#2}
+				\IfValueTF{#2}
 				{
 					\clist_if_in:cnT {opt@##1.sty} {#2}
 					{#3}
