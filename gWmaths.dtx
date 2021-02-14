@@ -510,7 +510,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %% Hack up loaded package list
 % https://tex.stackexchange.com/a/491456
 %\expandafter\def\csname ver@l3regex.sty\endcsname{}
-\disable@package@load{l3regex}{\PackageInfo{ gWmaths }{ \pkg{l3regex}~is~no~longer~a~spearate~package~and~therefore~need~not~be~loaded. }}
+\disable@package@load{l3regex}{\PackageInfo{ gWmaths }{ \pkg{l3regex}~is~no~longer~a~spearate~package ~and~therefore~need~not~be~loaded. }}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Wrap \pkg{l3docstrip} as \env{l3docstrip}
 \ExplSyntaxOff
@@ -680,7 +680,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \NewDocumentCommand	\RequestOnePackage	{ o m o }
 {
 	\UseHook{ gWpkgs / Request Package }
-	\NewHook{ gWpkgs / Request Package / #2 }
+	\hook_if_exist:nF {gWpkgs / Request Package / #2}
+	{	\NewHook{ gWpkgs / Request Package / #2 }	}
 
 	\IfNoValueT{#2}
 	{
@@ -743,6 +744,21 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 {
 	\gW@ifPackageRequestedWithOptionT {#3}[#4]
 	{ \PassOptionsToPackage{#1}{#2} }
+	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded) with option #4, because #5
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\PassOptionsToClassIfPackage	{ m m m o }
+{
+	\PassOptionsToClassIfPackageOption {#1} {#2} {#3} {} [#4]
+	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded), because #4
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\PassOptionsToClassIfPackageOption	{ m m m m o }
+{
+	\gW@ifPackageRequestedWithOptionT {#3}[#4]
+	{ \PassOptionsToClass{#1}{#2} }
 	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded) with option #4, because #5
 }
 %    \end{macrocode}
@@ -863,10 +879,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\DeclarePackageDependency	{ s m >{\SplitList{,}}m o }
 {
-	% It's possible that a package is required to be loaded, but not necessarily that it be loaded *first*
-	% if not-star, then 
-	\DeclarePackageOrdering{#2}{after}{#3}
-	% For example, \pkg{hyperxmp} requires \pkg{hyperref} in order to function, but can be loaded before or after
+	\IfBooleanF {#1}
+	{ % It's possible that a package is required to be loaded, but not necessarily that it be loaded *first*
+		\DeclarePackageOrdering{#2}{after}{#3}
+	} % For example, \pkg{hyperxmp} requires \pkg{hyperref} in order to function, but can be loaded before or after
 
 	\RequestPackageIfPackage{#3}{#2}[#4]
 }
@@ -1158,20 +1174,20 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %% Set up a much nicer set of theorem environments:
 \bool_if:nT \gW@ntheorem{
-\RequestPackage{% `ntheorem`
+\RequestPackage[% `ntheorem`
 	thmmarks, % enables the automatical placement of endmarks
 	thref, % enables the extended reference features
 	standard % load predefined environments
-}{ntheorem}
+]{ntheorem}
 %
 %% Inform *all* packages that `ntheorem` is in use:
-\gW@addGlobalOption{ntheorem}
+%\gW@addGlobalOption{ntheorem}
 \DeclareGlobalOptionsIfPackage{ntheorem}{ntheorem}[some packages like to be told if \pkg{ntheorem} is in use]
 %%
 \PassOptionsToPackageIfPackage
 {ntheorem}{empheq}{ntheorem}[cope with `ntheorem`]
 \PassOptionsToClassIfPackage
-{noamsthm}{beamer}[prevent from loading `amsthm`, which conflicts with `ntheorem`]
+{noamsthm}{beamer}{ntheorem}[prevent from loading `amsthm`, which conflicts with `ntheorem`]
 
 }%\gW@ntheorem
 
@@ -1185,7 +1201,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \DeclareGlobalOptionsIfPackage{amsmath}{amsmath}[some packages like to be told if \pkg{amsmath} is in use]
 %%
 \PassOptionsToPackageIfPackage
-{amsmath}{ntheorem}[cope with `amsmath`]
+{amsmath}{ntheorem}{amsmath}[cope with `amsmath`]
 }%\gW@amsmath
 
 %
