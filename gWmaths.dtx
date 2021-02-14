@@ -719,24 +719,28 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackageIfPackage	{ o m o >{\SplitList{,}}m o }
 {
-	\tl_map_inline:nn{ #4 }%
-	{\@ifnotmtarg{##1}{
-		\@ifpackageloaded{ ##1 }
-		{
-			\RequestPackage[#1]{#2}[#3]
-		}{
-			%TODO: if already requested, then request immediately
-			\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]
-			{ \RequestPackage[#1]{#2}[#3] }
-		}
-	}}
+	\gW_if_package_loaded_or_requested_with_option_TF {#4}
+	{
+		\RequestPackage[#1]{#2}[#3]
+	}{
+		%TODO: if already requested, then request immediately
+		\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]
+		{ \RequestPackage[#1]{#2}[#3] }
+	}
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested or already loaded, because #5
 }
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o >{\SplitList{,}}m >{\SplitList{,}}m o }
 {
-	%
+	\gW_if_package_loaded_or_requested_with_option_TF {#4}[#5]
+	{
+		\RequestPackage[#1]{#2}[#3]
+	}{
+		%TODO: if already requested, then request immediately
+		\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]
+		{ \RequestPackage[#1]{#2}[#3] }
+	}
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested (or loaded) with option #5, because #6
 }
 %    \end{macrocode}
@@ -765,7 +769,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_T	{ m o m }
+\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_F	{ m o m }
+{
+	\gW_if_package_loaded_or_requested_with_option_TF {#1} [#2] {} {#3}
+}
+\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_TF	{ m o m m }
 {
 	\bool_new:N \gW_if_package_loaded
 	\bool_new:N \gW_if_option_passed_to_loaded_package
@@ -798,14 +806,18 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 				}
 			}%\cs{clist_map_inline:cn}
 		}
-		\bool_if:NT \gW_if_option_passed_to_loaded_package
+		\bool_if:NTF \gW_if_option_passed_to_loaded_package
 		{
 			#3
+		}{
+			#4
 		}
 	}{
-		\bool_if:NT \gW_if_package_loaded
+		\bool_if:NTF \gW_if_package_loaded
 		{
 			#3
+		}{
+			#4
 		}
 	}
 }
