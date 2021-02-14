@@ -5,7 +5,7 @@
 %<*!sty&!cls>
 \ProvidesExplFile%
 %</!sty&!cls>
- 	{gWmaths}	{2021/02/06}	{0.4.3}%
+ 	{gWmaths}	{2021/02/13}	{0.5.0}%
 		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifcsundef{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,7 +171,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %\dontusepackage{alphalph}
 %
 %\ProvidesPackage{alphalph}
-\declare@file@substitution{infwarerr.sty}{gWmaths.sty}
+%\declare@file@substitution{infwarerr.sty}{gWmaths.sty}
+\disable@package@load{infwarerr}{}%ho-tex internals
 \let\@PackageInfo\PackageInfo
 \def\@PackageInfoNoLine#1#2{%
   \PackageInfo{#1}{#2\@gobble}%
@@ -187,6 +188,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \let\@PackageError\PackageError
 \let\@ClassError\ClassError
 %\declare@file@substitution{everyshi.sty}{everyshi-ltx.sty}
+%\disable@package@load {hpackagei} {halternate-codei}
 %\csname ver@alphalph.sty\endcsname
 %\showpackagesloaded
 %\showclassesloaded
@@ -307,6 +309,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 	teTeX,
 	TeXLive,
+	mikTeX,
 
 	pdfTeX,
 	XeTeX,
@@ -410,7 +413,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \begin{macro}{GetFileInfo}
 %
-% Define \GetFileInfo %%% Copy/pasta directly from `doc` package
+% Define \GetFileInfo %%% Copy/pasta directly from \pkg{doc}
 %
 %    \begin{macrocode}
 \ProvideDocumentCommand\GetFileInfo{m}{%
@@ -506,7 +509,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hack up loaded package list
 % https://tex.stackexchange.com/a/491456
-\expandafter\def\csname ver@l3regex.sty\endcsname{}
+%\expandafter\def\csname ver@l3regex.sty\endcsname{}
+\disable@package@load{l3regex}{\PackageInfo{ gWmaths }{ \pkg{l3regex}~is~no~longer~a~spearate~package~and~therefore~need~not~be~loaded. }}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Wrap \pkg{l3docstrip} as \env{l3docstrip}
 \ExplSyntaxOff
@@ -517,10 +521,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 	\ifToplevel{%
 		\usedir{tex/latex/\jobname}
+		\UseTDS%
 		\IfNoValueF{#2}{#2}
 		%\askforoverwritefalse
 		%\keepsilent%
-		\UseTDS%
 		\nopreamble
 		\nopostamble
 	}%
@@ -576,7 +580,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand\RequirePackageBeforePackageIfPackage{ m m m o }
 {
-	\PackageWarning{ gWpkgs / RequirePackageBeforePackageIfPackage }
+	\PackageInfo{ gWpkgs / RequirePackageBeforePackageIfPackage }
 	{ #1 ~when~ #2 ~if~ #3  }
 	\AddToHook{package/before/#2}
 	{
@@ -588,7 +592,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \begin{macrocode}
 \NewDocumentCommand\RequirePackageAfterPackageIfPackage{ m m m o }
 {
-	\PackageWarning{ gWpkgs / RequirePackageAfterPackageIfPackage }
+	\PackageInfo{ gWpkgs / RequirePackageAfterPackageIfPackage }
 	{ #1 ~when~ #2 ~if~ #3  }
 	\AddToHook{package/after/#2}
 	{
@@ -637,31 +641,47 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %    \begin{macrocode}
 \NewHook{ gWpkgs / Load Packages Now }
+\NewHook{ gWpkgs / Request Packages }
+\NewHook{ gWpkgs / Request Package }
+\NewHook{ gWpkgs / Request Class }
 %    \end{macrocode}
 %
 % \begin{macro}{RequestPackage,LoadPackagesNow}
 %
 %    \begin{macrocode}
-\NewDocumentCommand{\RequestPackage}{ o >{\SplitList{,}}m o }
+\NewDocumentCommand	\RequestPackages	{ o >{\SplitList{,}}m o }
 {
+	\UseHook{ gWpkgs / Request Packages }
+
 	\tl_map_inline:nn{ #2 }
 	{
 		\@ifnotmtarg{##1}{\RequestOnePackage[#1]{##1}[#3]}
 	}
 }
+\let\RequestPackage\RequestPackages
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand \RequestClass{ m o }
+\NewDocumentCommand	\RequestClass	{ o m o }
 {
-	\DeclarePackageOrdering{#1}{before}{gWpkgs / Class Loaded}[class loads before `early']
-	\AddToHook { gWpkgs / Load Packages Now }[#1]
-	{\ifcsdef{ver@#1.cls}{}{%\showclassesloaded
-		\LoadClass{#1}
+	\UseHook{ gWpkgs / Request Class }
+	\NewHook{ gWpkgs / Request Class / #2 }
+
+	\DeclarePackageOrdering{#2}{before}{gWpkgs / Class Loaded}[class loads before `early']
+	\AddToHook { gWpkgs / Load Packages Now }[#2]
+	{\ifcsdef{ver@#2.cls}{}{%\showclassesloaded
+		\LoadClass{#2}
 	}}%
-	\DeclarePackageOrdering{#1}{after}{gWpkgs / Before Class}[class loads after `gWpkgs / Before Class']
+	\DeclarePackageOrdering{#2}{after}{gWpkgs / Before Class}[class loads after `gWpkgs / Before Class']
+
+	\UseHook{ gWpkgs / Request Class / #2 }
 }
-\NewDocumentCommand \RequestOnePackage{ o m o}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\RequestOnePackage	{ o m o }
 {
+	\UseHook{ gWpkgs / Request Package }
+	\NewHook{ gWpkgs / Request Package / #2 }
+
 	\IfNoValueT{#2}
 	{
 		\PackageWarning{ gWpkgs }{ Empty~arg~2:~#2 }
@@ -675,27 +695,153 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 		\PassOptionsToPackage{ #1 }{ #2 }
 	}
 
+	\@ifpackageloaded{ #2 }%
+	{%
+		\DeclareHookRule{ gWpkgs / Load Packages Now }%
+			{ #2 }{before}{ gWpkgs / Load Packages Now }%
+	}{%
+		\DeclareHookRule{ gWpkgs / Load Packages Now }%
+			{ #2 }{after}{ gWpkgs / Load Packages Now }%
+	}%
+
 	\IfValueTF{#3}
 	{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}[#3]	}}
 	{\AddToHook{ gWpkgs / Load Packages Now }[#2]{	\RequirePackage{#2}	}}
 
+	\UseOneTimeHook{ gWpkgs / Request Package / #2 }
+
 	%\DeclareDefaultHookRule{	#2	}{after}{	gWpkgs / Class Loaded	}%
 }
 %    \end{macrocode}
+%
+% The checking-if-loaded would be *way* easier if the package loading hooks were one-time hooks...
+%
 %    \begin{macrocode}
-\DeclareDocumentCommand{\LoadPackagesNow}{ >{\SplitList{,}}o }
+\NewDocumentCommand	\RequestPackageIfPackage	{ o m o >{\SplitList{,}}m o }
 {
-	\LogHook{ gWpkgs / Load Packages Now }
-	\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
-		\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
+	\tl_map_inline:nn{ #4 }%
+	{\@ifnotmtarg{##1}{
+		\@ifpackageloaded{ ##1 }
+		{
+			\RequestPackage[#1]{#2}[#3]
+		}{
+			%TODO: if already requested, then request immediately
+			\AddToHook{ gWpkgs / Request Package / ##1 }[ #2 ]
+			{ \RequestPackage[#1]{#2}[#3] }
+		}
+	}}
+	%\RequestPackage[#1]{#2}[#3] if #4 has been requested or already loaded, because #5
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o >{\SplitList{,}}m >{\SplitList{,}}m o }
+{
+	%
+	%\RequestPackage[#1]{#2}[#3] if #4 has been requested (or loaded) with option #5, because #6
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\PassOptionsToPackageIfPackage	{ m m m o }
+{
+	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded), because #4
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\PassOptionsToPackageIfPackageOption	{ m m m m o }
+{
+	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded) with option #4, because #5
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\DeclareGlobalOptionsIfPackage	{ m m m o }
+{
+	%\gWaddToGlobal{#1}{#2} if #3 requested (or loaded), because #4
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\DeclareGlobalOptionsIfPackageOption	{ m m m m o }
+{
+	%\gWaddToGlobal{#1}{#2} if #3 requested (or loaded) with option #4, because #5
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\gW_if_package_loaded_or_requested_with_option_T	{ m o m }
+{
+	\bool_new:N \gW_if_package_loaded
+	\bool_new:N \gW_if_option_passed_to_loaded_package
+
+	\clist_clear_new:N \gW_pkgs_loaded_or_requested
+
+	\clist_map_inline:nn {#1}
+	{ % foreach \pkg{#1}
+		\@ifpackageloaded{##1}
+		{
+			\clist_put_left:Nn \gW_pkgs_loaded_or_requested {##1}
+			\bool_set_true:N \gW_if_package_loaded
+		}{
+			\clist_if_in:cnT {g__hook_ gWpkgs / Load Packages Now _labels_clist} {##1}
+			{
+				\clist_put_right:cn \gW_pkgs_loaded_or_requested {##1}
+				\bool_set_true:N \gW_if_package_loaded
+			}
+		}
+	}
+	\IfValueTF{#2}
+	{
+		\clist_map_inline:Nn \gW_pkgs_loaded_or_requested
+		{ % foreach \clist{gWpkgs_loaded_or_requested}
+			\clist_map_inline:nn {#2}
+			{ % foreach \oarg{#2}
+				\clist_if_in:cnT {opt@##1.sty} {###1}
+				{
+					\bool_set_true:N \gW_if_option_passed_to_loaded_package
+				}
+			}%\cs{clist_map_inline:cn}
+		}
+		\bool_if:NT \gW_if_option_passed_to_loaded_package
+		{
+			#3
+		}
+	}{
+		\bool_if:NT \gW_if_package_loaded
+		{
+			#3
+		}
+	}
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\DeclareDocumentCommand	\LoadPackagesNow	{ >{\SplitList{,}}o }
+{
+	\RequestPackage{#1}
+
+	\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
+		%\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
+		\RequestPackageIfPackage{ fontspec }{ fontenc }
 	\fi
-	%\LogHook{ gWpkgs / Load Packages Now }
+
+	%For each package already loaded:
+	% 1 remove ordering rule `after' \cs{LoadPackagesNow}.
+	% 2 declare an ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
+
 	\UseHook{ gWpkgs / Load Packages Now }
 }
-%
-\let\ifPackageLoaded\@ifpackageloaded
+%    \end{macrocode}
+%    \begin{macrocode}
+\let\ifPackageLoadedTF\@ifpackageloaded
 %https://tex.stackexchange.com/a/484092
 %http://mirrors.ctan.org/macros/generic/ltxcmds/ltxcmds.pdf
+\NewDocumentCommand	\ifPackageLoadedOrRequestedTF	{ m m m }
+{\ifValueT{#1}{\@ifnotmtarg{#1}{%
+	\@ifpackageloaded{ #1 }
+	{	#2	}
+	{
+		%if package requested
+		% #2
+		%otherwise
+		% #3
+	}
+}}}%
 %    \end{macrocode}
 % \end{macro}
 %
@@ -709,16 +855,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % \end{arguments}
 %
 %    \begin{macrocode}
-\NewDocumentCommand{\DeclarePackageOrdering}{ m m >{\SplitList{,}}m o}
+\NewDocumentCommand	\DeclarePackageOrdering	{ m m >{\SplitList{,}}m o}
 {
-	\@ifpackageloaded{ #1 }
-	{
-		\DeclareHookRule{ gWpkgs / Load Packages Now }
-			{ #1 }{before}{ gWpkgs / Load Packages Now }
-	}{%
-	\DeclareHookRule{ gWpkgs / Load Packages Now }
-		{ gWpkgs / Load Packages Now }{before}{ #1 }
-
 	\tl_map_inline:nn{ #3 }
 	{\@ifnotmtarg{##1}{
 		\@ifpackageloaded{ ##1 }
@@ -727,21 +865,49 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 				{ ##1 }{before}{ gWpkgs / Load Packages Now }
 		}{
 			\DeclareHookRule{ gWpkgs / Load Packages Now }
-				{ gWpkgs / Load Packages Now }{before}{ ##1 }
-
-			\DeclareHookRule{ gWpkgs / Load Packages Now }
-				{ #1 }{ #2 }{ ##1 }
+				{ ##1 }{after}{ gWpkgs / Load Packages Now }
 		}
-	}}
+		\DeclareHookRule{ gWpkgs / Load Packages Now }
+			{ #1 }{ #2 }{ ##1 }
+	}
 
 	\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{before}{ gWpkgs / Load Packages Completed	}%
 }}
-%
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\DeclarePackageDependency	{ s m >{\SplitList{,}}m o }
+{
+	% It's possible that a package is required to be loaded, but not necessarily that it be loaded *first*
+	% if not-star, then 
+	\DeclarePackageOrdering{#2}{after}{#3}
+	% For example, \pkg{hyperxmp} requires \pkg{hyperref} in order to function, but can be loaded before or after
 
-\DeclareHookRule{ gWpkgs / Load Packages Now }{ gWpkgs / Before Class }{before}{ gWpkgs / Class Loaded }%
+	\RequestPackageIfPackage{#3}{#2}[#4]
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\DeclarePackageDependencyIfPackage	{ s m >{\SplitList{,}}m m o }
+{
+	% if #4, then \DeclarePackageDependency#1{#2}{#3}[#5]
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\NewDocumentCommand	\DeclarePackageDependencyIfPackageOption	{ s m >{\SplitList{,}}m m m o }
+{
+	% if #5 was passed to #4 (and #4 requested/loaded), then \DeclarePackageDependency#1{#2}{#3}[#6]
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\DeclareDefaultHookRule{	gWpkgs / Before Class	}{before}{	gWpkgs / Class Loaded	}%
+\DeclareDefaultHookRule{	gWpkgs / Class Loaded	}{before}{	gWpkgs / Load Packages Completed	}%
+\DeclareDefaultHookRule{	gWpkgs / Load Packages Now	}{before}{	gWpkgs / Before Class	}%
+\DeclareDefaultHookRule{	gWpkgs / Load Packages Now	}{before}{	gWpkgs / Class Loaded	}%
+\DeclareDefaultHookRule{	gWpkgs / Load Packages Now	}{before}{	gWpkgs / Load Packages Completed	}
+%    \end{macrocode}
 %%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
 %%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
 %%TODO: check if package already loaded and order it before `first' with no other rules...
+%    \begin{macrocode}
 \AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Before Class]%
 {%
 	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Before Class }%
@@ -751,36 +917,27 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Class Loaded }%
 }%
 %
-\DeclareDefaultHookRule{	gWpkgs / Before Class	}{before}{	gWpkgs / Class Loaded	}%
-\DeclareDefaultHookRule{	gWpkgs / Class Loaded	}{before}{	late	}%
-%
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Now]
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Now]%
 {	\LogHook{ gWpkgs / Load Packages Now }	}%
 %
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Class Loaded]
-{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`early'~package~load~order }	}%
-%
+\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / gWpkgs / Load Packages Completed]%
+{%
+	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Load Packages Completed }%
+}%
+%    \end{macrocode}
+%    \begin{macrocode}
 \RequirePackage{ gWpkgs }%
 %
 %\AddToHook{ gWpkgs / Load Packages Now }[late]
 %{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`late'~package~load~order }	}
 %
 %\DeclareDefaultHookRule{ late	}{after}{	gWpkgs / Class Loaded	}%
-%\DeclareDefaultHookRule{ gWpkgs / Load Packages Completed	}{after}{	gWpkgs / Class Loaded	}%
 %
-%\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Completed]
-%{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`last'~package~load~order }	}%
+%    \end{macrocode}
+%    \begin{macrocode}
 \AtEndPreamble
 {	\UseOneTimeHook{ gWpkgs / Load Packages Now }	}
 %    \end{macrocode}
-%
-% TODO: add a "depends" relationship, which adds to a hook on \cs{RequestPackages} to also \cs{RequestPackages} another package.
-% 
-% \AddToHook{ gWpkgs / RequestPackages / #2 }{ \RequestPackage{ #3 } } 
-%
-% TODO: write a hook in \cs{RequestPackages} to process hooks for dependencies
-%
-% TODO: write a \cs{PassOptionsToPackageIfPackage}, which hooks \cs{RequestPackage} to \cs{PassOptionsToPackage} if another is requested. 
 %
 % \end{macro}
 %
@@ -794,14 +951,14 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 % \begin{macro}{gWsetup}
 %
-% Set up our options and defaults
+% Set up our options 
 %
 %    \begin{macrocode}
 \keys_define:nn { gWmaths }
 {
 	autodate	.bool_set:N	= \gW@autodate	,
 
-	hyperref	.bool_set:N	= \gW@hyperref	,
+	hyperTeX	.bool_set:N	= \gW@hyperTeX	,
 
 	ntheorem	.bool_set:N	= \gW@ntheorem	,
 
@@ -813,6 +970,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 	accessibility	.bool_set:N	= \gW@accessibility	,
 
+	tagpdf	.bool_set:N	= \gW@tagpdf	,
+
 	axessibility	.bool_set:N	= \gW@axessibility	,
 
 	videolecture	.bool_set:N	= \gW@videolecture	,
@@ -823,7 +982,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	venn	.bool_set:N	= \gW@venn	,
 
 	documentClass	.tl_set:N	= \gW@documentClass	,
-	documentClass	.default:n	= article	,
+	documentClass	.default:n	= article	,	% .default vs .initial-value
 	syllabus	.meta:n	= {
 		documentClass	= article	,
 			}	,
@@ -860,23 +1019,31 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\keys_set:nn { gWmaths } { #1 }
 }
 %    \end{macrocode}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Set our default options
+%
+%    \begin{macrocode}
 \gWmathssetup
-{% Set our default options
-	autodate,
-	hyperref,
+{
+	hyperTeX,
 	ntheorem,
 	%hypdoc, % this is messy
 	documentClass=article,
 	amsmath,
 }
+%    \end{macrocode}
+%    \begin{macrocode}
+\ifpdf
+	\gWmathssetup{autodate}
+\fi
+%    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prepare arguments for all the packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % All documents are UTF-8 in the 21st century. If not, fix your document.
 %    \begin{macrocode}
 \gW@addGlobalOption{utf8}%
-\RequestPackage{inputenc}%
+\RequestPackage[utf8]{inputenc}%
 %    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up modern defaults for encodings:
@@ -888,8 +1055,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \PassOptionsToPackage{% `mmap`
 	noTeX % use unicode codepoints, not \TeX* names, [2008/08/11]
 }{mmap} % \pkg{mmap} extends \pkg{cmap} with math mappings.
-\DeclarePackageOrdering{cmap}{before}{mmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\RequirePDFTeX)]
-%\RequirePackageBeforePackage{cmap}{mmap}
+\DeclarePackageDependency{mmap}{cmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\cs{RequirePDFTeX})]
 %    \end{macrocode}
 %
 \RequestPackage[% \pkg{url}
@@ -925,31 +1091,37 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }{backref}
 %
 %% Set up \HyperTeX* (hyperref, et al), which is basically the structural core of the document:
-\bool_if:nT \gW@hyperref
+\bool_if:nT \gW@hyperTeX
 {
 	\AddToHook{ package/before/hyperref }
 	{% Choose violence over \cls{beamer}.
 	%TODO: *check* if implicit=true before forcing it here
 	%TODO: do this only if \cls{beamer} is to be loaded? Or, do we just *always* want `implicit'?
 	%TODO: can \pkg{hyperref}'s `implicit's be fixed to new hooks?
-		\PassOptionsToPackage{implicit=false,implicit=true}{hyperref}
-	}
+		\PassOptionsToPackage
+		{
+			implicit=false,
+			implicit=true
+		}{hyperref}
+	} % hook: package/before/hyperref
+	\PassOptionsToPackage
+	{
+		implicit, % Redefine \LaTeX* internals, already default
+		hypertexnames, % Use guessable names for anchors, already default
+		%hyperfigures, % make figures hyper links
+		hyperfootnotes, % set up hyperlinked footnotes, already default
+	 	hyperindex, % links index entries back to main text, conflicts with hypdoc, already default
+
+	}{hyperref}
 }% \@gWhyperref
 
 \RequestPackage[% `hyperref`
-	implicit=true, % Redefine \LaTeX* internals, already default
-	hypertexnames, % Use guessable names for anchors, already default
 	bookmarks, % Write TOC as PDF bookmarks
 	%driverfallback=hypertex, % if can't autodetect, then just use the most basic
-
-	%hyperfigures, % make figures hyper links
-	%hyperfootnotes, % set up hyperlinked footnotes, already default
-	%hyperindex, % set up hyperlinked indices, already default
 
 	colorlinks, % set hyperlinks in color
 	linkcolor=blue, % default is fucking 'red'
 
-	hyperindex, % links index entries back to main text, conflicts with hypdoc
 	linktoc=all, % link section name *and* page number from toc
 	backref, % link back from bib entries to main text
 
@@ -960,36 +1132,34 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	pdfpagelabels, % tag pages with page numbers from \LaTeX* ("ii" or whatever)
 	keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
 ]{hyperref}
-% Load \pkg{hyperxmp} before \pkg{hyperref}, automatically
-%\RequirePackagePair{hyperxmp}{hyperref}
+\DeclarePackageDependency*{hyperxmp}{hyperref}
 %% Inform *all* packages that `hyperref` is in use:
 \gW@addGlobalOption{hyperref}
+\DeclareGlobalOptionsIfPackage{hyperref}{hyperref}[many packages like to be told if \pkg{hyperref} is in use]
 %%
-%\PassOptionsToPackage{% `xcolor`
-%	hyperref % Support the `hyperref` package in terms of color expressions by defining additional keys
-%}{xcolor}
-%\PassOptionsToPackage{% `ntheorem`
-%	hyperref, % Support the `hyperref` package
-%}{ntheorem}
+\RequestPackageIfPackageOption{bookmark}{hyperref}{bookmarks}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
+\PassOptionsToPackageIfPackage{bookmarks}{hyperref}{bookmark}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
+%%
+\PassOptionsToPackageIfPackage
+{hyperref}{xcolor}{hyperref}[color expressions by defining additional keys]
+
+\PassOptionsToPackageIfPackage
+{hyperref}{ntheorem}{hyperref}
 
 
 %
 %% Set up `scrbase` not to argue with iftex.
-\PassOptionsToPackage{% `scrbase`
-	internalonly % don't define macros to conflict with `iftex`
-}{scrbase} % KOMA-Script base package
+\PassOptionsToPackageIfPackage
+{internalonly}{scrbase}{iftex}[don't define macros to conflict with `iftex`] % KOMA-Script base package
 
 
 %
 %% Set up documentation utilities from `hyperref` documentation package.
-\bool_if:nT \gW@hypdoc{
-\PassOptionsToPackage{% `hyperref`
-	hyperindex=false, % do *not* link page numbers from index...conflict w/ hypdoc...
-}{hyperref}
-}%\gW@hypdoc
+\PassOptionsToPackageIfPackage
+{hyperindex=false}{hyperref}{hypdoc}[do *not* link page numbers from index...conflict w/ hypdoc...]
 
 %
-%% Set up colors now that we have color printers and video screens...
+%% Use colors now that we have color printers and video screens...
 \RequestPackage[% `xcolor`
 	xcdraw, % use PS/PDF commands to draw frames and boxes, in dvips, pdftex, dvipdfm
 	fixinclude, % prevents dvips from explicitly resetting current color to black before actually inserting an .eps file
@@ -1002,7 +1172,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %% Set up a much nicer set of theorem environments:
 \bool_if:nT \gW@ntheorem{
-\PassOptionsToPackage{% `ntheorem`
+\RequestPackage{% `ntheorem`
 	thmmarks, % enables the automatical placement of endmarks
 	thref, % enables the extended reference features
 	standard % load predefined environments
@@ -1010,13 +1180,13 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %% Inform *all* packages that `ntheorem` is in use:
 \gW@addGlobalOption{ntheorem}
+\DeclareGlobalOptionsIfPackage{ntheorem}{ntheorem}[some packages like to be told if \pkg{ntheorem} is in use]
 %%
-%\PassOptionsToPackage{% `empheq`
-%	ntheorem % cope with `ntheorem`
-%}{empheq}
-\PassOptionsToClass{% `beamer`
-	noamsthm % prevent from loading `amsthm`, which conflicts with `ntheorem`
-}{beamer}
+\PassOptionsToPackageIfPackage
+{ntheorem}{empheq}{ntheorem}[cope with `ntheorem`]
+\PassOptionsToClassIfPackage
+{noamsthm}{beamer}[prevent from loading `amsthm`, which conflicts with `ntheorem`]
+
 }%\gW@ntheorem
 
 %
@@ -1026,11 +1196,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 %% Inform *all* packages that `amsmath` is in use:
 \gW@addGlobalOption{amsmath}
+\DeclareGlobalOptionsIfPackage{amsmath}{amsmath}[some packages like to be told if \pkg{amsmath} is in use]
 %%
-%\PassOptionsToPackage{% `ntheorem`
-%	amsmath, % cope with `amsmath`
-%}{ntheorem}
-}
+\PassOptionsToPackageIfPackage
+{amsmath}{ntheorem}[cope with `amsmath`]
+}%\gW@amsmath
 
 %
 %% Set up formatting for telephone numbers:
@@ -1076,9 +1246,13 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 ]{geometry}
 
 
-\bool_if:nT \gW@autodate{\AtEndOfClass{%
-	\date{ \filemodprintdate{ \jobname.tex } }%
-}}%
+\bool_if:nT \gW@autodate{%
+	\ifXeTeX%
+		\RequirePDFTeX % or LuaTeX
+	\else%
+		\AtEndOfClass{ \date{ \filemodprintdate{ \jobname.tex } } }%
+	\fi%
+}%
 
 
 
@@ -1091,7 +1265,9 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\RequirePDFTeX
 }
 %\bool_if:nTF \gW@axessibility{}{}
-%\bool_if:nTF \gW@videolecture{}{}
+\bool_if:nT \gW@videolecture{
+	\gWmathssetup{documentClass = beamer}
+}
 
 %declare option for setting margin to 1"
 %\bool_if:nTF \gW@oneinch{}{}
@@ -1124,7 +1300,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
 	%\RequirePackageBeforePackage{ fontspec }{ fontenc }
 \else% engine is not unicode-native
-	\RequestPackage{inputenc}[2015/01/01]
+	\RequestPackage[utf8]{inputenc}[2015/01/01]
 	% When using older engines, this tells the engine to read all files as UTF-8.
 	% \XeTeX* and \LuaTeX* always read UTF-8 and ignore this package.
 	% \LaTeX* circa 2018 and newer default to UTF-8 as well.
@@ -1150,7 +1326,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	hyperxmp, % babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
 
 	%amsfonts,
-	amssymb,
+	%amssymb,
 	amsmath,
 	%mathtools,
 %%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
@@ -1164,10 +1340,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	venndiagram,	%https://tex.stackexchange.com/a/381249
 }}
 
-\bool_if:nT \gW@ntheorem{
-\RequestPackage{% improves theorem-like environments, conflicts with `amsthm`
-	ntheorem,	%https://tex.stackexchange.com/a/5633
-}}%\gW@ntheorem
 
 
 
@@ -1214,7 +1386,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	% `mmap` is `cmap` plus some math-specifics.
 	% `cmap` extends default character mapping to include unicode codepoints.
 	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
-\fi
+\fi%\ifTUTeX
 
 
 
@@ -1300,7 +1472,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 		\PassOptionsToPackage{accsupp}{axessibility}
 	\fi
 	%\RequestPackage{axessibility}
-\fi
+\fi%\ifPDFTeX
 
 %http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf % too complex
 
@@ -1352,7 +1524,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %    \__withargs_docs_old_kernel_msg_error:nnnnnn{#1}{#2}
 %  }
 %}
-%\fi
+%\fi%???????
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \LoadPackagesNow% \pkg{pkgloader}
@@ -1376,7 +1548,6 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 \hypersetup{%
 	%pdflang={en-US}, % `hyperxmp` will ask `babel` for the language code!
-	%hyperindex % turn this shit back on, JFC.
 		}
 
 \ifXeTeX%
@@ -1385,7 +1556,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 	\hypersetup{
 		pdfcreationdate={\pdffilemoddate{\jobname.tex}},
 	}
-\fi%
+\fi%\ifXeTeX
 
 \AtBeginDocument{%
 	\listfiles % track loaded files in this job
@@ -1480,16 +1651,16 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 
 %
 \RequestPackage{tabstackengine,xcolor,fancybox,graphicx}
-\AtBeginDocument{\cornersize{.1}}
+%\AtBeginDocument{\cornersize{.1}}
 \newcommand\blackcard[2]{%
-  \begingroup\fboxsep=0pt\relax
+  \begingroup\cornersize{.1}\fboxsep=0pt\relax
   \Ovalbox{\tabbedCenterstack{%
   \makebox[0pt][l]{\scriptsize$#2$} && \\
     &\makebox[22pt]{#1}&\\
     &&\makebox[0pt][r]{\rotatebox[origin=c]{180}{\scriptsize$#2$}}}}%
   \endgroup}
 \newcommand\redcard[2]{%
-  \begingroup\fboxsep=0pt\relax
+  \begingroup\cornersize{.1}\fboxsep=0pt\relax
   \Ovalbox{\color{red}\tabbedCenterstack{%
   \makebox[0pt][l]{\scriptsize$#2$} && \\
     &\makebox[22pt]{#1}&\\
