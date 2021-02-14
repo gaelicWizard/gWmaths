@@ -18,20 +18,22 @@
 %\declare@file@substitution{ifetex.sty}{iftex.sty}% \NeedsETeX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\DeclarePackageOrdering
+
 \DeclarePackageOrdering{ csquotes	}{after}{ gWpkgs / Class Loaded }[\pkg{csquotes} redefines \cs{quote}]
 \DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / Class Loaded}[\pkg{paralist} redefines several environments]
 \DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / Class Loaded}[\pkg{ntheorem} redefines several environments]
 
-\DeclarePackageOrdering{ unicode-math	}{after}{	l3keys2e, fontspec, fix-cm, amsmath,	}[\pkg{unicode-math} \cs{RequirePackage}s these]%
+\DeclarePackageDependency{ unicode-math	}{	l3keys2e, fontspec, fix-cm, amsmath,	}[\pkg{unicode-math} \cs{RequirePackage}s these]%
 
-\DeclarePackageOrdering{ backref	}{after}{	kvoptions, kvsetkeys, ltxcmds, rerunfilecheck,	}[\pkg{backref} \cs{RequirePackages}s these]%
+\DeclarePackageDependency{ backref	}{	kvoptions, kvsetkeys, ltxcmds, rerunfilecheck,	}[\pkg{backref} \cs{RequirePackages}s these]%
 \DeclarePackageOrdering{ backref	}{after}{	chicago, hyperref,	}[\pkg{backref} checks if these are loaded and modifies it's behavior]%
 
 \DeclarePackageOrdering{ showkeys	}{incompatible-warning}{	showkeys	}[\pkg{showkeys} renders \cs{label}s and \cs{ref}s, so it steps on \pkg{hyperref}'s toes]
 
-\DeclarePackageOrdering{ beamer	}{after}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes}]%
-\DeclarePackageOrdering{ beamer	}{after}{	ifpdf, 	}[\cls{beamer} \cs{RequirePackage}s these]%
-\DeclarePackageOrdering{ beamer	}{after}{	beamerbaseoptions	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaseoptions}]%
+\DeclarePackageDependency{ beamer	}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes}]%
+\DeclarePackageDependency{ beamer	}{	ifpdf, 	}[\cls{beamer} \cs{RequirePackage}s these]%
+\DeclarePackageDependency{ beamer	}{	beamerbaseoptions	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaseoptions}]%
 %beamer@autopdfinfo
 %notheorems
 %noamsthm
@@ -44,22 +46,20 @@
 %\PassOptionsToPackage{bookmarks=true, bookmarksopen=true, pdfborder={ 0 0 0}, pdfhighlight={/N}, linkbordercolor={.5 .5 .5}}{hyperref}
 %pgf, hyperref, color, xcolor
 %`ucs' \POTP[hyperref]{ucs}
-\DeclarePackageOrdering{ beamer	}{after}{	inputenc	}[\cls{beamer} \cs{RequirePackages}s \pkg{inputenc}]
+\DeclarePackageDependency{ beamer	}{	inputenc	}[\cls{beamer} \cs{RequirePackages}s \pkg{inputenc}]
 %\DeclarePackageOrdering{ beamer	}{after}{	geometry	}[\cls{beamer} \cs{RequirePackages}s \pkg{geometry}, but passes in specific \meta{papersize = \cs{beamer@paperwidth},\cs{beamer@paperheight}} \etc.]
 %\beamer@filterclassoptions????
-\DeclarePackageOrdering{ beamer	}{after}{	pgfcore, xxcolor, atbegshi, 	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfcore, xxcolor, atbegshi}]
-\DeclarePackageOrdering{ beamer	}{after}{	hyperref	}[\cls{beamer} \cs{RequirePackages}s \pkg{hyperref} \emph{with option implicit=false}]
+\DeclarePackageDependency{ beamer	}{	pgfcore, xxcolor, atbegshi, 	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfcore, xxcolor, atbegshi}]
+\DeclarePackageDependency{ beamer	}{	hyperref	}[\cls{beamer} \cs{RequirePackages}s \pkg{hyperref} \emph{with option implicit=false}]
 
 \DeclarePackageOrdering{ geometry	}{after}{	gWpkgs / Class Loaded	}[classes often set page geometry using primitives]%
 \DeclarePackageOrdering{ fontspec	}{after}{	gWpkgs / Class Loaded	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
 \DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / Class Loaded	}%
-\DeclarePackageOrdering{ geometry	}{after}{	gWpkgs / Class Loaded	}[classes often set page geometry using primitives]%
-\DeclarePackageOrdering{ fontspec	}{after}{	gWpkgs / Class Loaded	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
-%\DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / Class Loaded	}%
 
 
-\DeclarePackageOrdering{ accessibility	}{after}{	xkeyval,
+\DeclarePackageDependency{ accessibility	}{	xkeyval,
 							ifthen,	}[\cs{RequirePackage}]
+\DeclarePackageOrdering{ accessibility	}{incompatible-error}{	tagpdf	}
 \DeclarePackageOrdering{ accessibility	}{after}{	pdfcomment,
 							listings,
 							hyperref,
@@ -92,9 +92,9 @@
 
 %\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / Class Loaded	}
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / Class Loaded	}
-\DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}
+\DeclarePackageDependency*{ hyperxmp	}{	hyperref	}
 \DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}
-\DeclarePackageOrdering{ hyperxmp	}{after}{	kvoptions,
+\DeclarePackageDependency{ hyperxmp	}{	kvoptions,
 							pdfescape,
 							stringenc,
 							intcalc,
@@ -103,15 +103,15 @@
 							etoolbox,
 							ifthen,
 							luacode,	}[\cs{RequirePackage}]
-\DeclarePackageOrdering{ hologo		}{after}{	gWpkgs / Class Loaded	}
+%\DeclarePackageOrdering{ hologo		}{after}{	gWpkgs / Class Loaded	}
 \DeclarePackageOrdering{ xcolor		}{before}{	gWpkgs / Class Loaded	}
 \DeclarePackageOrdering{ graphicx	}{before}{	gWpkgs / Class Loaded	}
-\DeclarePackageOrdering{ graphicx	}{before}{	venndiagram	}
+\DeclarePackageDependency{ venndiagram	}{	graphicx	}
 \DeclarePackageOrdering{ venndiagram	}{after}{	tikz,
 							pgf,	}[\cs{RequirePackage}]
 \DeclarePackageOrdering{ varioref	}{after}{	babel }
-\DeclarePackageOrdering{ bookmark	}{after}{	currfile }[uses if already loaded]
-\DeclarePackageOrdering{ bookmark	}{after}{	hyperref }[loads itself without options early]
+\DeclarePackageDependency{ bookmark	}{	currfile }[uses if already loaded]
+\DeclarePackageDependency{ bookmark	}{	hyperref }[loads itself without options early]
 \DeclarePackageOrdering{ ntheorem	}{after}{	babel, 
 							amsmath, 
 							mathtools, 
@@ -122,8 +122,8 @@
 \DeclarePackageOrdering{ mmap		}{before}{	fontenc }
 \DeclarePackageOrdering{ fancyhdr	}{incompatible-warning}{ accessibility }%
 \DeclarePackageOrdering{ fancyhdr	}{before}{	hyperref }%
-\DeclarePackageOrdering{ pdfcomment	}{after}{	hyperref }[\cs{RequirePackage}]
-\DeclarePackageOrdering{ gitinfo2	}{after}{	xcolor } % uses *if* loaded
+\DeclarePackageDependency{ pdfcomment	}{	hyperref }[\cs{RequirePackage}]
+\DeclarePackageOrdering{ gitinfo2	}{after}{	xcolor }[uses if loaded]
 \DeclarePackageOrdering{ gitinfo2	}{after}{	etoolbox, 
 							xstring, 
 							kvoptions, 
@@ -134,7 +134,7 @@
 							varioref,
 							ifthen,
 							listings,	}
-\DeclarePackageOrdering{ nameref	}{after}{	refcount, gettitlestring, ltxcmds,	}[\pkg{nameref} \cs{RequirePackages}s these]%
+\DeclarePackageDependency{ nameref	}{	refcount, gettitlestring, ltxcmds,	}[\pkg{nameref} \cs{RequirePackages}s these]%
 \DeclarePackageOrdering{ nameref	}{after}{	showkeys, 
 					hyperref,
 					longtable,
@@ -166,7 +166,7 @@
 \RequirePackageAfterPackageIfPackage{ hypdoc }{ hyperref }{ doc }[if \pkg{doc} is already loaded when \pkg{hyperref} is loaded, then load \pkg{hypdoc}]
 \RequirePackageAfterPackageIfPackage{ hypdoc }{ doc }{ hyperref }[if \pkg{hyperref} is already loaded when \pkg{doc} is loaded, then load \pkg{hypdoc}]
 
-\DeclarePackageOrdering{ fontspec	}{before}{	fontenc	}[\pkg{fontspec} must be the one to load \pkg{fontenc}]
+\DeclarePackageDependency{ fontspec	}{	fontenc	}[\pkg{fontspec} must be the one to load \pkg{fontenc}]
 
 \ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
 	\RequirePackageBeforePackage{ fontspec }{ fontenc }
@@ -222,15 +222,15 @@
 							amsrefs,
 							chappg,
 							dblaccnt,
-							linguex	}[the hyperref documentation explicitly says to do so]
+							linguex	}
+							[the hyperref documentation explicitly says to do so]
 
 \DeclarePackageOrdering{ hyperref	}{after}{	multind,
 							natbib,
 							setspace	}
-%because {the hyperref documentation explicitly says to do so}
+							[the hyperref documentation explicitly says to do so]
 
-\DeclarePackageOrdering{ hyperref	}{before}{	glossaries	}
-%because {otherwise terms won't be clickable hyperlinks}
+\DeclarePackageOrdering{ hyperref	}{before}{	glossaries	}[because otherwise terms won't be clickable hyperlinks]
 
 \DeclarePackageOrdering{ glossaries	}{after}{	babel,
 							olyglossia,
@@ -264,4 +264,4 @@
 
 \DeclarePackageOrdering{ hyperref	}{before}{	uri	}[uri uses hyperref's commands if hyperref is loaded]
 
-\DeclarePackageOrdering{ url		}{before}{	uri	}[uri has a RequirePackage on url]
+\DeclarePackageDependency{ uri		}{	url	}[uri has a RequirePackage on url]
