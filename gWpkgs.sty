@@ -24,14 +24,14 @@
 \DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / Class Loaded}[\pkg{paralist} redefines several environments]
 \DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / Class Loaded}[\pkg{ntheorem} redefines several environments]
 
-\DeclarePackageOrdering{ hologo	}{after}{	graphics, pgf	}[\pkg{holog} will use \pkg{graphics} or \pkg{pgf} if already loaded]%
+\DeclarePackageOrdering{ hologo	}{after}{	graphics, pgf,	}[\pkg{hologo} will use \pkg{graphics} or \pkg{pgf} if already loaded]%
 
 \DeclarePackageDependency{ unicode-math	}{	l3keys2e, fontspec, fix-cm, amsmath,	}[\pkg{unicode-math} \cs{RequirePackage}s these]%
 
 \DeclarePackageDependency{ backref	}{	kvoptions, kvsetkeys, ltxcmds, rerunfilecheck,	}[\pkg{backref} \cs{RequirePackages}s these]%
 \DeclarePackageOrdering{ backref	}{after}{	chicago, hyperref,	}[\pkg{backref} checks if these are loaded and modifies it's behavior]%
 
-\DeclarePackageOrdering{ showkeys	}{incompatible-warning}{	showkeys	}[\pkg{showkeys} renders \cs{label}s and \cs{ref}s, so it steps on \pkg{hyperref}'s toes]
+\DeclarePackageOrdering{ showkeys	}{incompatible-warning}{	hyperref	}[\pkg{showkeys} renders \cs{label}s and \cs{ref}s, so it steps on \pkg{hyperref}'s toes]
 
 \DeclarePackageDependency{ beamer	}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes}]%
 \DeclarePackageDependency{ beamer	}{	ifpdf, 	}[\cls{beamer} \cs{RequirePackage}s these]%
