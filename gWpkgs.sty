@@ -24,6 +24,8 @@
 \DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / Class Loaded}[\pkg{paralist} redefines several environments]
 \DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / Class Loaded}[\pkg{ntheorem} redefines several environments]
 
+\DeclarePackageOrdering{ hologo	}{after}{	graphics, pgf	}[\pkg{holog} will use \pkg{graphics} or \pkg{pgf} if already loaded]%
+
 \DeclarePackageDependency{ unicode-math	}{	l3keys2e, fontspec, fix-cm, amsmath,	}[\pkg{unicode-math} \cs{RequirePackage}s these]%
 
 \DeclarePackageDependency{ backref	}{	kvoptions, kvsetkeys, ltxcmds, rerunfilecheck,	}[\pkg{backref} \cs{RequirePackages}s these]%
