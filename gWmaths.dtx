@@ -9,6 +9,7 @@
 		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifcsundef{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%!TEX encoding = UTF-8
 %%!TEX root = gWmaths.dtx
 %%!TEX spellcheck = en-US
@@ -18,29 +19,35 @@
 % -interaction=nonstopmode
 %--enable-8bit-chars
 %-interaction=batchmode
+%<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 }{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \begin{abstract}
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A DTX file is parsed as a whole multiple times from within itself through multiple different parsers. Additionally, portions are extracted to entirely separate files, which are then imported during parsing of the DTX itself such that some lines are processed multiple times during a single parse (of many parses). Programmers believe in a form of ritual hazing called `recursion', and the ability to construct a working DTX is somewhat of a rite of passage before being allowed to publish a \LaTeX* package. Consider this my proof of qualification.
-%
+
 During the great pandemic of 2020, the \cls{gWmaths} class was created to shorten the common preamble from a set of my wife's \LaTeXe* lectures, transparencies, slides, and handouts. It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
-%
+
 With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve. The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeXx*. Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control.
-%
+
 This work has the LPPL maintenance status `maintained'.
-%
+
 The Current Maintainer of this work is 
 %<dtx>\author{
 John Pell
 %<dtx>\thanks{\url{https://github.com/gaelicWizard/\filename}}}
 .
-%
+
 The list of all files belonging to `gWmaths' is given in the file `manifest.txt'.
+
+ctanify --pkgname=gWmaths gWmaths.dtx gWmaths.sty gWmaths.cls gWmaths.pdf DEPENDS.txt README.txt
+gh release create v0.5.0 gWmaths.tar.gz gWmaths.tds.zip gWmaths.pdf DEPENDS.txt README.txt
+%</dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \end{abstract}
 }%
-%</dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
 % \section{Installer job file}	\label{ins}
@@ -75,10 +82,10 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
   \file{README.txt}{\from{\jobname.dtx}{README}}
   %\filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
   %\file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
-  \file{\jobname.\@stripextension}{\from{\jobname.dtx}{\@stripextension}}
+  %\file{\jobname.\@stripextension}{\from{\jobname.dtx}{\@stripextension}}
   \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
   \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
-  \file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
+  %\file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
 %    \end{macrocode}
 %
 % \begin{macro}{ReportTotals}
@@ -96,7 +103,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % \end{macro}
 %</ins>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage{ iftex, ifmtarg, currfile,	}%
+\RequirePackage{ iftex, currfile,	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
 % \section{ Documentation driver file }
@@ -256,12 +263,19 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 %
 % Use \LaTeXx*'s \cs{cs_gset:cpn} to define a control sequence named \oarg{2}, with a trailing parameter delimiter \meta{/} (without any parameters, just the trailing delimiter), which simply expands through to calling \cs{hologo} with the named logo.
 %
-%    \begin{macrocode} 
-	\cs_gset:cpn	{#2} #3	{\hologo{#1}}
-%    \end{macrocode}
-%    \ uninteresting
 %    \begin{macrocode}
-}
+
+%% TODO: what if #3 isn't `*'?
+	\cs_if_free:cTF {#2}%
+	{	\cs_gset_nopar:cpn	{#2} #3	{\hologo{#1}}%
+	}{%
+		\exp_args:Nc	\RenewDocumentCommand	{#2}	{ s }%
+		{% from https://tex.stackexchange.com/questions/63568/newdocumentcommand-with-constructed-csname
+			\hologo{#1}%
+			\IfBooleanF{##1}%
+			{%
+				\cs_if_exist:cT{xspace}{\xspace}%
+}	}	}	}%
 %    \end{macrocode}
 % \end{macro}
 %
@@ -270,13 +284,8 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 % Define a function which takes a /list/ of logos to ask \pkg{hologo} for. Specify this as \marg{a single mandatory parameter}, and use \cs{SplitList} (from \pkg{xparse}) to transform it to a list. 
 %
 %    \begin{macrocode}
-\NewDocumentCommand	\DeclareHologos	{>{\SplitList{,}}m}
+\NewDocumentCommand	\DeclareHologos	{ >{\SplitList{,}}m }
 {
-%    \end{macrocode}
-%
-% Use \cs{ProcessList} to pass each item from the parameter list to \cs{DeclareHologo}.
-%
-%    \begin{macrocode}
 	\ProcessList{#1}{\DeclareHologo}%
 %    \end{macrocode}
 %
@@ -804,7 +813,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\let\ifPackageLoadedTF\@ifpackageloaded
+\let\IfPackageLoadedTF\@ifpackageloaded
 %https://tex.stackexchange.com/a/484092
 %http://mirrors.ctan.org/macros/generic/ltxcmds/ltxcmds.pdf
 %    \end{macrocode}
@@ -823,7 +832,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \NewDocumentCommand	\DeclarePackageOrdering	{ m m m o}
 {
 	\clist_map_inline:nn{ #3 }
-	{\@ifnotmtarg{##1}{
+	{\tl_if_blank:nF{##1}{
 		\@ifpackageloaded{ ##1 }
 		{
 			\DeclareHookRule{ gWpkgs / Load Packages Now }
