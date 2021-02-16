@@ -5,6 +5,8 @@ ntheorem csquotes titling tagpdf filemod pdfcomment layouts docmute standalone s
 soulutf8
 soft blindtext gitinfo2 paralist accsupp lualatex-math luacode
 
+ctanify
+
 # simple cards:
 tabstackengine fanxybox stackengine
 
