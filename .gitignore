@@ -279,16 +279,19 @@ TSWLatexianTemp*
 
 # other junk too
 *.hd
+.DS_Store
 
 
 # Since this is all generated from DTX, exclude generated files.
 #  The generated files can be checked in (for release versioning) by using `git add -f teh.file`.
-*.ins
-*.cls
-*.sty
-*.drv
-*.pdf
+gWmaths.ins
+gWmaths.cls
+gWmaths.sty
+gWmaths.drv
+gWmaths.pdf
+gWmaths.tds.zip
+gWmaths.tar.gz
+gWmaths.tar.bz2
 README.md
 README.tex
-.DS_Store
 README.txt
