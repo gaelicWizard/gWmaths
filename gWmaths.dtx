@@ -5,7 +5,11 @@
 %<*!sty&!cls>
 \ProvidesExplFile%
 %</!sty&!cls>
- 	{gWmaths}	{2021/02/13}	{0.5.0}%
+%<gWkeys>{gWsetup}
+%<*!gWkeys>
+ 	{gWmaths}
+%</!gWkeys>
+			{2021/02/13}	{0.5.0}%
 		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifcsundef{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -13,9 +17,9 @@
 %%!TEX encoding = UTF-8
 %%!TEX root = gWmaths.dtx
 %%!TEX spellcheck = en-US
+%!TEX parameter = -8bit
 %!TeX program = pdflatexmk
 %!BIB program = biber
-%!TEX parameter = -8bit
 % -interaction=nonstopmode
 %--enable-8bit-chars
 %-interaction=batchmode
@@ -83,6 +87,7 @@ gh release create v0.5.0 gWmaths.tar.gz gWmaths.tds.zip gWmaths.pdf DEPENDS.txt 
   %\filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
   %\file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
   %\file{\jobname.\@stripextension}{\from{\jobname.dtx}{\@stripextension}}
+  \file{gWsetup.\@pkgextension}{\from{\jobname.dtx}{gWkeys}}
   \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
   \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
   %\file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
@@ -922,11 +927,8 @@ gh release create v0.5.0 gWmaths.tar.gz gWmaths.tds.zip gWmaths.pdf DEPENDS.txt 
 %
 %</sty>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%<*cls>
-%
-% \section{ \cls{ \filename } ~ document ~ class }
-\RequirePackage{ gWmaths, 	}%
-\GetFileInfo{\currfilename}%
+%<*gWkeys>
+% \section{ \cls{ \filename } ~ configuration ~ setup }
 %
 % \begin{macro}{gWsetup}
 %
@@ -994,10 +996,21 @@ gh release create v0.5.0 gWmaths.tar.gz gWmaths.tds.zip gWmaths.pdf DEPENDS.txt 
 
 }
 %
-\NewDocumentCommand \gWmathssetup { m } {
-	\keys_set:nn { gWmaths } { #1 }
+\NewDocumentCommand \gWmathssetup { s m }
+{
+	\keys_set:nn { gWmaths } { #2 }
 }
 %    \end{macrocode}
+% \end{macrp}
+%</gWkeys>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*cls>
+% \section{ \cls{ \filename } ~ document ~ class }
+%
+\RequirePackage{ gWmaths, gWsetup, 	}%
+\GetFileInfo{\currfilename}%
+%
+% \begin{macro}{gWsetup}
 %
 % Set our default options
 %
