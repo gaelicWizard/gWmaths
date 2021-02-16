@@ -646,9 +646,22 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \NewHook{ gWpkgs / Request Class }
 %    \end{macrocode}
 %
-% \begin{macro}{RequestPackage,LoadPackagesNow}
+% \begin{macro}{RequestPackages,RequestClass}
 %
 %    \begin{macrocode}
+\NewDocumentCommand	\PassOptionsToPackageUnlessLoaded	{ m m }
+{
+	\clist_map_inline:nn{ #2 }%
+	{	\IfValueT{#1}%
+		{	\@ifpackageloaded{ ##1 }%
+			{	\PackageWarning{ gWpkgs / Pass Options To Package }{ unable~to~pass~options~(#1)~to~##1,~it~is~already~loaded. }
+			}{	\IfValueT{#1}%
+				{	\PassOptionsToPackage{ #1 }{ ##1 }	}%
+			}%
+		}%
+	}%
+}
+\let\PassOptionToPackage\PassOptionsToPackageUnlessLoaded
 \NewDocumentCommand	\RequestPackages	{ o m o }
 {	\UseHook{ gWpkgs / Request Packages }
 
@@ -658,16 +671,12 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 			{	\NewHook{ gWpkgs / Request Package / ##1 }	}%
 
 			\@ifpackageloaded{ ##1 }%
-			{%
-				\DeclareHookRule{ gWpkgs / Load Packages Now }%
+			{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
 					{ ##1 }{before}{ gWpkgs / Load Packages Begin }%
-			}{%
-				\DeclareHookRule{ gWpkgs / Load Packages Now }%
+			}{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
 					{ ##1 }{after}{ gWpkgs / Load Packages Begin }%
-
-				\IfValueT{#1}%
-				{	\PassOptionsToPackage{ #1 }{ ##1 }	}%
 			}%
+			\PassOptionsToPackageUnlessLoaded{ #1 }{ ##1 }%
 
 			\IfValueTF{#3}%
 			{\AddToHook{ gWpkgs / Load Packages Now }[##1]{	\RequirePackage{##1}[#3]	}}%
@@ -708,7 +717,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 \NewDocumentCommand	\RequestPackageIfPackageOption	{ o m o m m o }
 {
 	\gW@ifPackageRequestedWithOptionT {#4}[#5]
-	{ \RequestPackage[#1]{#2}[#3] }
+	{ \RequestPackages[#1]{#2}[#3] }
 	%\RequestPackage[#1]{#2}[#3] if #4 has been requested (or loaded) with option #5, because #6
 }
 %    \end{macrocode}
@@ -765,10 +774,7 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 			{ % TODO TEST FOR EMPTY
 				\clist_if_in:cnT {opt@##1.sty} {#2}%
 				{ #3 }%
-			}{%
-				\PackageWarning{ gWpkgs }{ ##1~was~already~loaded,~so~this~may~be~ineffective... }%
-				#3
-			}%
+			}{	#3	}%
 		}{	\AddToHook{ gWpkgs / Request Package / ##1 }%
 			{	\IfValueTF{#2}%
 				{	\clist_if_in:cnT {opt@##1.sty} {#2}%
