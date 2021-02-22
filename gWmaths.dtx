@@ -1050,7 +1050,7 @@ Options
 % \section{ \cls{ \filename } ~ document ~ class }
 %
 \RequirePackage{ gWmaths, l3pdf, 	}%
-\GetFileInfo{\currfilename}%
+\GetFileInfo{\CurrentFile}%
 %
 % \begin{macro}{gWsetup}
 %
@@ -1060,7 +1060,7 @@ Options
 \gWmathssetup
 {
 	ntheorem,
-	venn,
+	%venn, % required \pkg{pgf}
 	%hypdoc, % this is messy
 	amsmath,
 }
@@ -1757,14 +1757,17 @@ Options
 \newtheorem{Lem}[Thm]{Lemma}
 \newtheorem{Cor}[Thm]{Corollary}
 
-\theoremstyle{definition}
+%\theoremstyle{definition}
+%%https://tex.stackexchange.com/a/340458/233148
+\theorembodyfont{\upshape}
 \newtheorem{Def}[Thm]{Definition}
 
 \theoremstyle{remark}
 \newtheorem{Rem}[Thm]{Remark}
 \newtheorem{Ex}[Thm]{Example}
 
-\theoremstyle{definition}
+%\theoremstyle{definition}
+\theorembodyfont{\upshape}
 \newtheorem{Exercise}{Exercise}
 
 \newenvironment{Solution}{\noindent{\it Solution.}}
