@@ -48,11 +48,11 @@ The list of all files belonging to `gWmaths' is given in the file `manifest.txt'
 ctanify --pkgname=gWmaths gWmaths.dtx gWmaths.sty gWmaths.cls gWmaths.pdf DEPENDS.txt README.txt
 gh release create v0.5.0 --title 2021-02-14 gWmaths.tar.gz gWmaths.tds.zip gWmaths.pdf DEPENDS.txt README.txt
 
-# use release notes from a file
-$ gh release create v1.2.3 -F changelog.md
+use release notes from a file
+gh release create v1.2.3 -F changelog.md
 
-# upload a release asset with a display label
-$ gh release create v1.2.3 '/path/to/asset.zip#My display label'
+upload a release asset with a display label
+gh release create v1.2.3 '/path/to/asset.zip\#My display label'
 
 Options
   -d, --draft             Save the release as a draft instead of publishing it
@@ -231,10 +231,8 @@ Options
 %
 %    \begin{macrocode}
 \ProvideDocumentCommand\endpart{}%
-{%
-	\ifdefined\bookmarksetup%
-		\bookmarksetup{startatroot}%
-	\fi%
+{	\cs_if_exist:cT{bookmarksetup}%
+	{	\bookmarksetup{startatroot}	}%
 }%
 %    \end{macrocode}
 % \end{macro}
@@ -248,8 +246,7 @@ Options
 %\def\etc.{etc.\spacefactor=\the\sfcode`\c}
 \def\etc.{\&c\@ifnextchar{.}{}{.}\spacefactor=\the\sfcode`\c}
 \ProvideDocumentCommand{\etcs}{}%
-{%
-	\@ifnextchar{.}%
+{	\@ifnextchar{.}%
 		{\&c}%
 		{\&c.\@\xspace}%
 }%
@@ -523,10 +520,8 @@ Options
 % \end{arguments}
 % Note that this macro is defined in \LaTeXx* syntax, so failure is impossible.
 %   \begin{macrocode}
-\ProvideDocumentCommand \ifLaTeXxTF { O{} O{} }
-{
-	\ifcsdef {ExplSyntaxOn} {#1} {#2}
-}
+\ProvideDocumentCommand \ifLaTeXxTF { O{} O{} }%
+{	\cs_if_exist:cTF {ExplSyntaxOn} {#1} {#2}	}%
 %   \end{macrocode}
 % \end{macro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -677,43 +672,49 @@ Options
 % \begin{macro}{RequestPackages,RequestClass}
 %
 %    \begin{macrocode}
-\NewDocumentCommand	\PassOptionsToPackageUnlessLoaded	{ m m }
-{
-	\clist_map_inline:nn{ #2 }%
-	{	\IfValueT{#1}%
-		{	\@ifpackageloaded{ ##1 }%
-			{	\PackageWarning{ gWpkgs / Pass Options To Package }{ unable~to~pass~options~(#1)~to~##1,~it~is~already~loaded. }
-			}{	\IfValueT{#1}%
-				{	\PassOptionsToPackage{ #1 }{ ##1 }	}%
-			}%
-		}%
-	}%
-}
-\let\PassOptionToPackage\PassOptionsToPackageUnlessLoaded
+\DeclareDocumentCommand	\PassOptionsToPackages	{ s m m }
+{	\clist_map_inline:nn {#3}% foreach(package)
+	{\IfValueT{##1}{% value(package)
+		\clist_if_exist:cF	{	opt@ ##1 .sty	}
+		{	\clist_new:c	{	opt@ ##1 .sty	}}
+
+		\clist_map_inline:nn {#2}% foreach(option)
+		{\IfValueT{####1}{% value(option)
+			\cs_if_exist:cTF	{	ver@ ##1 .sty	}% package(loaded)
+			{	\IfBooleanTF{#1}% if(star)
+				{	\clist_gput_right:cn	{	opt@ ##1 .sty	}{	####1	}
+				}{	\PackageWarning	{	##1	}{	Unable~to~pass~options~to~a~package~
+										that~has~already~been~loaded...####1 }
+				}
+			}{	\clist_gput_right:cn	{	opt@ ##1 .sty	}{	####1	}
+}	}}	}}	}%
+%    \end{macrocode}
+%    \begin{macrocode}
+%\DeclareDocumentcommand	\RequirePackages	{ o m o }
+%    \end{macrocode}
+%    \begin{macrocode}
 \NewDocumentCommand	\RequestPackages	{ o m o }
 {	\UseHook{ gWpkgs / Request Packages }
 
 	\clist_map_inline:nn{ #2 }%
-	{	\IfValueTF{##1}
-		{	\hook_if_exist:nF {gWpkgs / Request Package / ##1}%
-			{	\NewHook{ gWpkgs / Request Package / ##1 }	}%
+	{\IfValueT{##1}{% value(package)
+		\hook_if_exist:nF {gWpkgs / Request Package / ##1}%
+		{	\NewHook{ gWpkgs / Request Package / ##1 }	}%
 
-			\@ifpackageloaded{ ##1 }%
-			{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
-					{ ##1 }{before}{ gWpkgs / Load Packages Begin }%
-			}{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
-					{ ##1 }{after}{ gWpkgs / Load Packages Begin }%
-			}%
-			\PassOptionsToPackageUnlessLoaded{ #1 }{ ##1 }%
+		\cs_if_exist:cTF	{	ver@ ##1 .sty	}%
+		{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
+				{ ##1 }{before}{ gWpkgs / Load Packages Begin }%
+		}{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
+				{ ##1 }{after}{ gWpkgs / Load Packages Begin }%
+		}%
+		\PassOptionsToPackages{ #1 }{ ##1 }%
 
-			\IfValueTF{#3}%
-			{\AddToHook{ gWpkgs / Load Packages Now }[##1]{	\RequirePackage{##1}[#3]	}}%
-			{\AddToHook{ gWpkgs / Load Packages Now }[##1]{	\RequirePackage{##1}	}}%
+		\IfValueTF{#3}%
+		{\AddToHook{ gWpkgs / Load Packages Now }[##1]{	\RequirePackage{##1}[#3]	}}%
+		{\AddToHook{ gWpkgs / Load Packages Now }[##1]{	\RequirePackage{##1}	}}%
 
-			\UseOneTimeHook{ gWpkgs / Request Package / ##1 }%
-		}{%
-			\PackageWarning{ gWpkgs }{ Empty~arg~2:~#2 }%
-}	}	}%
+		\UseOneTimeHook{ gWpkgs / Request Package / ##1 }%
+}	}}%
 \let\RequestPackage\RequestPackages
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -723,7 +724,7 @@ Options
 
 	\DeclarePackageOrdering{#2}{before}{gWpkgs / Class Loaded}[class loads before `early']
 	\AddToHook { gWpkgs / Load Packages Now }[#2]
-	{\ifcsdef{ver@#2.cls}{}{%\showclassesloaded
+	{\cs_if_exist:cF{ver@#2.cls}{
 		\LoadClass{#2}
 	}}%
 	\DeclarePackageOrdering{#2}{after}{gWpkgs / Before Class}[class loads after `gWpkgs / Before Class']
@@ -760,7 +761,7 @@ Options
 \NewDocumentCommand	\PassOptionsToPackageIfPackageOption	{ m m m m o }
 {
 	\gW@ifPackageRequestedWithOptionT {#3}[#4]
-	{ \PassOptionsToPackage{#1}{#2} }
+	{ \PassOptionsToPackages{#1}{#2} }
 	%\PassOptionToPackage{#1}{#2} if #3 requested (or loaded) with option #4, because #5
 }
 %    \end{macrocode}
@@ -797,12 +798,12 @@ Options
 %    \begin{macrocode}
 \NewDocumentCommand	\gW@ifPackageRequestedWithOptionT	{ m o m }%
 {	\clist_map_inline:nn {#1}%
-	{	\@ifpackageloaded{##1}%
+	{	\cs_if_exist:cTF	{	ver@ ##1 .sty	}%
 		{	\IfValueTF{#2}%
 			{ % TODO TEST FOR EMPTY
 				\clist_if_in:cnT {opt@##1.sty} {#2}%
 				{ #3 }%
-			}{	#3	}%
+			}	{ #3 }%
 		}{	\AddToHook{ gWpkgs / Request Package / ##1 }%
 			{	\IfValueTF{#2}%
 				{	\clist_if_in:cnT {opt@##1.sty} {#2}%
@@ -819,11 +820,6 @@ Options
 \DeclareDocumentCommand	\LoadPackagesNow	{ o }
 {	\RequestPackages{#1}
 
-	\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
-		%\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
-		\RequestPackageIfPackage{ fontspec }{ fontenc }
-	\fi
-
 	%For each package already loaded:
 	% 1 remove ordering rule `after' \cs{LoadPackagesNow}.
 	% 2 declare an ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
@@ -832,7 +828,13 @@ Options
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\let\IfPackageLoadedTF\@ifpackageloaded
+\NewDocumentCommand	\IfPackageLoadedTF	{ m m m }
+{
+	\cs_if_exist:cTF	{	ver@ #1 .sty	}
+	{	#1	}
+	{	#2	}
+}
+%\let\IfPackageLoadedTF\@ifpackageloaded
 %https://tex.stackexchange.com/a/484092
 %http://mirrors.ctan.org/macros/generic/ltxcmds/ltxcmds.pdf
 %    \end{macrocode}
@@ -951,9 +953,30 @@ Options
 %    \begin{macrocode}
 \keys_define:nn { gWmaths }
 {
+	PDFencoding .choices:nn = { PDFDocEncoding, unicode, auto }
+	{	\tl_set:cn{gW@PDFencoding}{#1}	}	,%
+
+	unicode	.choice:	,%
+	unicode/ ascii	.meta:n	= {	PDFencoding = PDFDocEncoding	}	,%
+	unicide/ ascii	.value_forbidden:n	= true	,%
+	unicode/ utf8	.meta:n	= {	PDFencoding = auto	}	,%
+	unicide/ utf8	.value_forbidden:n	= true	,%
+	unicode/ utf16	.meta:n	= {	PDFencoding = unicode	}	,%
+	unicide/ utf16	.value_forbidden:n	= true	,%
+	unicode/ pdf	.meta:n	= {	PDFencoding = auto	}	,%
+	unicide/ pdf	.value_forbidden:n	= true	,%
+	unicode/	.meta:n	= {	PDFencoding = auto	}	,%
+	unicide/	.value_forbidden:n	= true	,%
+	unicode	.initial:n	= utf8	,%
+	utf8	.meta:n	= {	unicode = utf8	}	,%
+	utf8	.value_forbidden:n	= true	,%
+
 	autodate	.bool_set:N	= \gW@autodate	,
 
 	hyperTeX	.bool_set:N	= \gW@hyperTeX	,
+	hyperTeX	.initial:n	= true	,
+	
+	bookmarks	.bool_set:N	= \gW@bookmarks	,%
 
 	ntheorem	.bool_set:N	= \gW@ntheorem	,
 
@@ -970,6 +993,7 @@ Options
 	axessibility	.bool_set:N	= \gW@axessibility	,
 
 	videolecture	.bool_set:N	= \gW@videolecture	,
+
 	oneinch	.bool_set:N	= \gW@oneinch	,
 	
 	titlesec	.bool_set:N	= \gW@titlesec	,
@@ -977,7 +1001,8 @@ Options
 	venn	.bool_set:N	= \gW@venn	,
 
 	documentClass	.tl_set:N	= \gW@documentClass	,
-	documentClass	.default:n	= article	,	% .default vs .initial-value
+	documentClass	.initial:n	= article	,	% .default vs .initial-value
+	documentClass	.value_required:n	= true	,
 	syllabus	.meta:n	= {
 		documentClass	= article	,
 			}	,
@@ -1007,7 +1032,10 @@ Options
 			}	,
 	dtx	.value_forbidden:n	= true	,
 
-
+	unknown	.code:n	= {
+		%\msg_error:nnx { gWmaths }
+		%{ unknown-key } { \l_keys_key_tl }
+			}	,
 }
 %
 \NewDocumentCommand \gWmathssetup { s m }
@@ -1015,13 +1043,13 @@ Options
 	\keys_set:nn { gWmaths } { #2 }
 }
 %    \end{macrocode}
-% \end{macrp}
+% \end{macro}
 %</gWkeys>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*cls>
 % \section{ \cls{ \filename } ~ document ~ class }
 %
-\RequirePackage{ gWmaths, gWsetup, 	}%
+\RequirePackage{ gWmaths, gWsetup, l3pdf, 	}%
 \GetFileInfo{\currfilename}%
 %
 % \begin{macro}{gWsetup}
@@ -1031,10 +1059,9 @@ Options
 %    \begin{macrocode}
 \gWmathssetup
 {
-	hyperTeX,
 	ntheorem,
+	venn,
 	%hypdoc, % this is messy
-	documentClass=article,
 	amsmath,
 }
 %    \end{macrocode}
@@ -1055,43 +1082,42 @@ Options
 %% Set up modern defaults for encodings:
 %
 %    \begin{macrocode}
-\PassOptionsToPackage{% \pkg{cmap}
+\PassOptionsToPackages{% \pkg{cmap}
 	resetfonts,	% Clear any already-loaded fonts and reload
 }{cmap}% maps font glyphs back to unicode characters (allows copy/pasta from PDF).
-\PassOptionsToPackage{% `mmap`
+\PassOptionsToPackages{% `mmap`
 	noTeX % use unicode codepoints, not \TeX* names, [2008/08/11]
 }{mmap} % \pkg{mmap} extends \pkg{cmap} with math mappings.
-\DeclarePackageDependency{mmap}{cmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\cs{RequirePDFTeX})]
 %    \end{macrocode}
 %
-\RequestPackage[% \pkg{url}
+\PassOptionsToPackages{% \pkg{url}
 	obeyspaces, % allow spaces in URLs, but be wary of backslashes 
 	hyphens, % allow line-breaks to happen in an *already* hyphenated URL
 	lowtilde, % always use math tilde \cs{sim}
-]{url}% \pkg{hyperref} loads \pkg{url} and then patches it
+}{url}% \pkg{hyperref} loads \pkg{url} and then patches it
 %
-\PassOptionsToPackage{% \pkg{showkeys}
+\PassOptionsToPackages{% \pkg{showkeys}
 	color, % allow labels to be colored by defining \meta{color}s
 	notref, % do not redefine \cs{ref} and \cs{pageref} (\pkg{varioref})
 	notcite, % do not redefine \cs{cite} et al (\pkg{natbib}
 }{showkeys} % print \cs{label} name in margin or superscript
 %
-\PassOptionsToPackage{% \pkg{varioref}
+\PassOptionsToPackages{% \pkg{varioref}
 	nospace, % documented as being required because the default from 2001 was wrong...but compatabililty...
-}{varioref} % \cs{vref} adds text indication document location
+}{varioref} % \cs{vref} adds text indicating document location
 %
 %\ifdraft{
-%\PassOptionsToPackage{%
+%\PassOptionsToPackages{%
 %	draft
 %}{bookmark}%TODO: replace this with just a damn \DeclareOption
 %}{}% \ifdraft
 %
-\RequestPackage[% \pkg{bookmark} for \pkg{hyperref}
+\PassOptionsToPackages{% \pkg{bookmark} for \pkg{hyperref}
 	atend, % define \cs{BookmarksAtEnd} 
 	%color=anyshit , % PDFv1.4+
-]{bookmark}
+}{bookmark}
 %
-\PassOptionsToPackage{% \pkg{backref}
+\PassOptionsToPackages{% \pkg{backref}
 	%hyperref, % already global option? Also, \pkg{hyperref} loads \pkg{backref} if \meta{backref} passed to it.
 	hyperpageref, % \pkg{hyperref} loads \pkg{backref} if \meta{pagebackref} passed to it
 }{backref}
@@ -1107,12 +1133,12 @@ Options
 		\PassOptionsToPackage
 		{
 			implicit=false,
-			implicit=true
+			implicit=true,
 		}{hyperref}
-	} % hook: package/before/hyperref
-	\PassOptionsToPackage
-	{
-		implicit, % Redefine \LaTeX* internals, already default
+	}% hook: package/before/hyperref
+
+	\PassOptionsToPackages
+	{	implicit, % Redefine \LaTeX* internals, already default
 		hypertexnames, % Use guessable names for anchors, already default
 		%hyperfigures, % make figures hyper links
 		hyperfootnotes, % set up hyperlinked footnotes, already default
@@ -1120,62 +1146,47 @@ Options
 	}{hyperref}
 }% \@gWhyperTeX
 
-\ifTUTeX
-	\PassOptionsToPackage
-	{ % Documentation expressly states that \TUTeX* should use \meta{pdfencoding=unicode}
-		pdfencoding=unicode,	% set 'auto' to prefer PDFEncoding over UTF-16.
-	}{hyperref}
-\fi
+\ifpdf\PassOptionsToPackages{
+	pdfusetitle, % use \title{} for PDF metadata
+	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
+	pdfpagelabels, % tag pages with page numbers from \LaTeX* ("ii" or whatever)
+}{hyperpref}\fi
 
 \RequestPackage[% `hyperref`
-	bookmarks, % Write TOC as PDF bookmarks
-	%driverfallback=hypertex, % if can't autodetect, then just use the most basic
-
 	colorlinks, % set hyperlinks in color
 	linkcolor=blue, % default is fucking 'red'
 
 	linktoc=all, % link section name *and* page number from toc
 	backref, % link back from bib entries to main text
-
-	%pdflang=en-us, % `hyperxmp` automatically sets this from the language of `babel`
-	pdfusetitle, % use \title{} for PDF metadata
-	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
-	pdfpagelabels, % tag pages with page numbers from \LaTeX* ("ii" or whatever)
 ]{hyperref}
-\DeclarePackageDependency*{hyperxmp}{hyperref}
 %% Inform *all* packages that `hyperref` is in use:
 %\gW@addGlobalOption{hyperref}
-\DeclareGlobalOptionsIfPackage
+\DeclareGlobalOptionsIfPackage%
 {hyperref}{hyperref}[many packages like to be told if \pkg{hyperref} is in use]
 %
-\RequestPackageIfPackageOption
-{bookmark}{hyperref}{bookmarks}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
-\PassOptionsToPackageIfPackage
-{bookmarks}{hyperref}{bookmark}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]
-%
-\PassOptionsToPackageIfPackage
-{hyperref}{xcolor}{hyperref}[color expressions by defining additional keys]
+\bool_if:nT \gW@bookmarks%
+{	\PassOptionsToPackages{bookmarks}{hyperref}% Write TOC as PDF bookmarks
+	\RequestPackageIfPackageOption%
+	{bookmark}{hyperref}{bookmarks}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]%
+	\PassOptionsToPackageIfPackage%
+	{bookmarks}{hyperref}{bookmark}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]%
+}%
+\PassOptionsToPackageIfPackage%
+{hyperref}{xcolor}{hyperref}[color expressions by defining additional keys]%
 %
 \PassOptionsToPackageIfPackage
 {hyperref}{ntheorem}{hyperref}
 %
-\AddToHook{ package / after / hyperxmp }
-{
-	\ifcsdef{hypersetup}
-	{
-		\hypersetup
-		{
-			keeppdfinfo % `hyperxmp` strips Author and Keywords by default; don't do that.
-		}
-	}{
-		\PassOptionsToPackage{keeppdfinfo}{hyperref}
-	}
-}
-
+\AddToHook{ package / after / hyperxmp }%
+{	\cs_if_exist:cTF{hypersetup}%
+	{\hypersetup{%
+		keeppdfinfo	% `hyperxmp` strips Author and Keywords by default; don't do that.
+	}}{		\PassOptionsToPackages{keeppdfinfo}{hyperref}%
+}	}%
 %
 %% Set up `scrbase` not to argue with iftex.
-\PassOptionsToPackageIfPackage
-{internalonly}{scrbase}{iftex}[don't define macros to conflict with `iftex`] % KOMA-Script base package
+\PassOptionsToPackageIfPackage% KOMA-Script base package
+{internalonly}{scrbase}{iftex}[don't define macros to conflict with `iftex`]
 
 
 %
@@ -1251,7 +1262,7 @@ Options
 	realmainfile,
 	parent,
 	%parents,
-]{currfile}
+]{currfile}[2020/09/29]
 
 
 
@@ -1262,7 +1273,7 @@ Options
 
 
 
-%\PassOptionsToPackage{% `babel`
+%\PassOptionsToPackages{% `babel`
 	%english % The language can be tagged on the \documentclass declaration!
 		%}{babel}
 
@@ -1280,16 +1291,25 @@ Options
 }%
 
 
+\PassOptionsToPackages
+{ % Documentation expressly states that \TUTeX* should use \meta{pdfencoding=unicode}
+	pdfencoding=\gW@PDFencoding,	% set 'auto' to prefer PDFDocEncoding over UTF-16.
+}{hyperref}
+
+\ifTUTeX
+	% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
+	%\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
+	\RequestPackageIfPackage{ fontspec }{ fontenc }
+\fi
+
 
 
 %\let\@classoptionslist\gW@classoptionslist
 % ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
 % ref: https://www.latex-project.org/help/documentation/clsguide.pdf
 
-\bool_if:nT \gW@accessibility{
-	\RequirePDFTeX
-}
-%\bool_if:nTF \gW@axessibility{}{}
+\bool_if:nTF \gW@axessibility{}{}
+
 \bool_if:nT \gW@videolecture{
 	\gWmathssetup{documentClass = beamer}
 }
@@ -1309,27 +1329,21 @@ Options
 \ProcessOptions\relax
 
 \ifLuaTeX
-	\RequirePackage{pdftexcmds}
+	%\RequirePackage{pdftexcmds}
 \fi
 
-\ifPDFTeX
-	\pdfminorversion=6 %fucking hack for `accessibility`
+\ifpdf
+	\pdf_version_min_gset:n {1.6}
 	\DeclarePackageOrdering{cmap}{unrelated}{hyperref}[by using \cs{pdfminorversion} here, we obviate the ordering dependency]
-%	\pdf_version_gset:n {6}
-%	\pdf_version_min_gset:n {6}
 \fi
 
+\bool_if:nT \gW@accessibility{
+	\RequirePDFTeX
+	\pdf_version_gset:n {1.6} %fucking hack for `accessibility`
+}
 
 
-\ifTUTeX% engine is unicode-native, so drop \pkg{inputenc} entirely and force \pkg{fontspec} for \pkg{fontenc}
-	\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
-	%\RequirePackageBeforePackage{ fontspec }{ fontenc }
-\else% engine is not unicode-native
-	\RequestPackage[utf8]{inputenc}[2015/01/01]
-	% When using older engines, this tells the engine to read all files as UTF-8.
-	% \XeTeX* and \LuaTeX* always read UTF-8 and ignore this package.
-	% \LaTeX* circa 2018 and newer default to UTF-8 as well.
-\fi
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -1385,7 +1399,7 @@ Options
 \RequestPackage{graphicx}
 	% docs say to only load one, and package/classes should  `s' not `x' as the user may s->x but not back
 	% literally the only difference is the `keyval' package, therefore just use `x'.
-	% `x' loads `s'...
+	% ...and `x' loads `s'...
 
 \ifTUTeX % "Unicode \TeX*" matches \LuaTeX* and/or \XeTeX*
 	\RequestPackage% must load *after* maths fonts (specifically euler)
@@ -1397,11 +1411,14 @@ Options
 	%% Post-2017, don't use xunicode package
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
 \else \RequirePDFTeX % don't even with others
-\PassOptionsToPackage{% `fontenc`
-	T1	% T1 fonts extend the old OT1 format to allow greater than 128 characters
-}{fontenc}
-%
-	\RequestPackage[utf8]{inputenc}
+	\PassOptionsToPackages{% `fontenc`
+		T1	% T1 fonts extend the old OT1 format to allow greater than 128 characters
+	}{fontenc}
+	\RequestPackage[utf8]{inputenc}[2015/01/01]
+	% When using older engines, this tells the engine to read all files as UTF-8.
+	% \XeTeX* and \LuaTeX* always read UTF-8 and ignore this package.
+	% \LaTeX* circa 2018 and newer default to UTF-8 as well.
+
 	\RequestPackage{%
 		%mmap,
 		cmap,
@@ -1479,7 +1496,6 @@ Options
 %define new \listofXs
 % docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
-\DeclarePackageOrdering{ tagpdf }{before}{ axessibility }% included anyway
 \ifPDFTeX% not \XeTeX* nor \LuaTeX*
 	\bool_if:nT \gW@accessibility
 	{% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
@@ -1490,13 +1506,14 @@ Options
 	}
 \else
 	\ifLuaTeX
-		\PassOptionsToPackage{tagpdf}{axessibility}
+		\PassOptionsToPackages{tagpdf}{axessibility}
 		\RequestPackage{tagpdf} % official work-in-progress package for future integrated tagging
 	\else % \XeTeX*
 		\let\pdfcompresslevel\pdf@compress@xetex
-		\PassOptionsToPackage{accsupp}{axessibility}
+		\PassOptionsToPackages{accsupp}{axessibility}
 	\fi
-	%\RequestPackage{axessibility}
+	\bool_if:nT \gW@axessibility%
+	{	\RequestPackage{axessibility}	}%
 \fi%\ifPDFTeX
 
 %http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf % too complex
@@ -1510,7 +1527,8 @@ Options
 		% \pkg{nameref} patches a bunch of shit, including \pkg{titlesec, beamer, varioref, ifthen, listings}
 		}% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
-\bool_if:nT \gW@hypdoc{	\RequestPackage{hypdoc}	}%
+\bool_if:nT \gW@hypdoc%
+{	\RequestPackage{hypdoc}	}%
 
 %\RequestPackage[
 	%linewidth = 1 % TODO: what is `linewidth` for?
@@ -1520,13 +1538,6 @@ Options
 %\ifXeTeX\geometry{xetex}\fi%
 %\ifLuaTeX\geometry{luatex}\fi%
 
-\ifLuaTeX
-%	\RequestPackage{pdftexcmds}
-\fi
-
-
-
-\RequestPackage{filehook,currfile}[2020/09/29]%
 
 % \begin{macro}{gitinfo2}
 % \pkg{gitinfo2} loads several other packages, including \pkg{xstring} and \pkg{xcolor}, so throw it at the end for now.
@@ -1552,40 +1563,31 @@ Options
 %\fi%???????
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\LoadPackagesNow% \pkg{pkgloader}
+\LoadPackagesNow%
 
-
-\ifcsdef{GetFileInfo}
+%TODO: flip this so it tries to read metadata from the compiling document after the class is loaded
+\cs_if_exist:cT{GetFileInfo}
 {% https://tex.stackexchange.com/a/30486
 	\GetFileInfo{\currfilename}
-	\@ifundefined{fileinfo}{}{\hypersetup{
+	\cs_if_exist:cT{fileinfo}{\hypersetup{
 		pdfsubject={\fileinfo}, % this takes the name/description of the *class*...
 			}}
 
 	\AtEndOfClass{%
-		%\GetFileInfo{\jobname.tex} % read \ProvidesFile{}[] from the ultimate TeX
-		%\listfiles % track loaded files in this job
-		%\@getclass
-		%\date{\filemodprintdate{\filename}}
+		\GetFileInfo{\jobname.tex} % read \ProvidesFile{}[] from the ultimate TeX
 			}
-}{}% \GetFileInfo
-
-
-\hypersetup{%
-	%pdflang={en-US}, % `hyperxmp` will ask `babel` for the language code!
-		}
+}% \GetFileInfo
 
 \ifXeTeX%
 	\PackageWarning{ gWmaths }{ \XeTeX* ~ does ~ not ~ provide ~ cs{pdffilemoddate} }
 \else%
-	\hypersetup{
-		pdfcreationdate={\pdffilemoddate{\jobname.tex}},
+	\hypersetup{% set the PDF header creation date to the modification date of the source file.
+		pdfcreationdate={\pdffilemoddate{\jobname.tex}},%
 	}
 \fi%\ifXeTeX
 
 \AtBeginDocument{%
 	\listfiles % track loaded files in this job
-	%\date{omg}
 	\hypersetup{%
 		pdfrendition=default, %screen,
 		%pdfsubject={},
@@ -1604,10 +1606,10 @@ Options
 %% preserve document metadata...
 \AtEndPreamble
 {
-	%\let\doctitle\@title
-	%\let\docauthor\@author
+	\let\doctitle\@title
+	\let\docauthor\@author
 	%\let\docthanks\@thanks % this is bjorked due to missing macros
-	%\let\docdate\@date
+	\let\docdate\@date
 }
 
 
@@ -1624,12 +1626,9 @@ Options
 	%% ref: https://tex.stackexchange.com/a/1057
 	
 
-%\RequestPackage{xspace}%
 \AtBeginDocument{%
-	\hologoSetup{%
-		break=false
-			}
-		}
+	\hologoSetup{break=false}%
+		}%
 
 
 \RequestPackage{layouts}%
@@ -1676,7 +1675,6 @@ Options
 
 %
 \RequestPackage{tabstackengine,xcolor,fancybox,graphicx}
-%\AtBeginDocument{\cornersize{.1}}
 \newcommand\blackcard[2]{%
   \begingroup\cornersize{.1}\fboxsep=0pt\relax
   \Ovalbox{\tabbedCenterstack{%
@@ -1735,7 +1733,7 @@ Options
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\im}{im}
 
-%\renewcommand{\labelenumi}{(\alphaph{enumi})}
+%\renewcommand{\labelenumi}{(\alphalph{enumi})}
 
 \providecommand{\blankpage}	{%
       \clearpage%
@@ -1776,15 +1774,7 @@ Options
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%</cls>
-
-
 %% https://tex.stackexchange.com/questions/108696/what-do-explsyntaxon-and-explsyntaxoff-do
-
-
-
-
-
 
 
 %\begin{filecontents*}{platexmkrc}
@@ -1792,6 +1782,8 @@ Options
  %% git update-index --assume-unchanged from https://stackoverflow.com/a/10755704
  %% BUT WAIT: https://stackoverflow.com/a/13631525
  %% git update-index --skip-worktree gWmaths.cls gWmaths.sty README.md gWmaths.drv
+%</cls>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
 \begin{filecontents*}{.git/hooks/post-commit}
 #!/bin/sh
@@ -1827,5 +1819,7 @@ git --no-pager log -1 --date=short --decorate=short \
     ]{gitexinfo}" HEAD > .git/gitHeadInfo.gin
 \end{filecontents*}
 %</ins>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*pkgs>
 
-
+%</pkgs>
