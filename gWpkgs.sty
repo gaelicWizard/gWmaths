@@ -20,6 +20,8 @@
 
 \DeclarePackageOrdering{ article	}{before}{ hyperref, amsmath, babel, bookmark, nameref, hyperxmp, backref }[jfc]
 
+\DeclarePackageDependency{mmap}{cmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\cs{RequirePDFTeX})]
+
 \DeclarePackageOrdering{ csquotes	}{after}{ gWpkgs / Class Loaded }[\pkg{csquotes} redefines \cs{quote}]
 \DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / Class Loaded}[\pkg{paralist} redefines several environments]
 \DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / Class Loaded}[\pkg{ntheorem} redefines several environments]
@@ -59,6 +61,9 @@
 \DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / Class Loaded	}%
 
 
+\DeclarePackageDependency{ axessibility }{tagpdf}[\pkg{axessibility} \cs{RequirePackage}s \pkg{tagpdf}]
+\DeclarePackageDependency{ currfile }{ filehook }
+
 \DeclarePackageDependency{ accessibility	}{	xkeyval,
 							ifthen,	}[\cs{RequirePackage}]
 \DeclarePackageOrdering{ accessibility	}{incompatible-error}{	tagpdf	}
@@ -90,7 +95,7 @@
 							helvet,
 							mathptmx,
 							geometry,
-							nag,	}
+							nag,	}[\pkg{accessibility}'s included example document loads these first...]
 
 %\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / Class Loaded	}
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / Class Loaded	}
