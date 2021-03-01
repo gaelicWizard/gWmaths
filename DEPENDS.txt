@@ -4,11 +4,14 @@ hard hyperxmp mmap phonenumbers venndiagram currfile scontents
 ntheorem csquotes titling tagpdf filemod pdfcomment layouts docmute standalone studenthandouts
 soulutf8
 soft blindtext gitinfo2 paralist accsupp lualatex-math luacode
-
+markdown
 ctanify
 
 # simple cards:
 tabstackengine fanxybox stackengine
+
+package markdown
+hard url paralist ifthen fancyvrb csvsimple gobble
 
 package l3doc
 hard alphalph enumitem

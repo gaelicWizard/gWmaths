@@ -18,6 +18,15 @@
 %\declare@file@substitution{ifetex.sty}{iftex.sty}% \NeedsETeX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\DeclarePackageDependency{markdown}{	keyval,
+					url,
+					graphicx,
+					paralist,
+					ifthen,
+					fancyvrb,
+					csvsimple,
+					gobble,	}[documentation explicitly states dependencies]
+
 \DeclarePackageOrdering{ article	}{before}{ hyperref, amsmath, babel, bookmark, nameref, hyperxmp, backref }[jfc]
 
 \DeclarePackageDependency{mmap}{cmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\cs{RequirePDFTeX})]
