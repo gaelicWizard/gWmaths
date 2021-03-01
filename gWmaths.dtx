@@ -6,8 +6,8 @@
 \ProvidesExplFile%
 %</!sty&!cls>
  	{gWmaths}
-			{2021/02/21}	{0.5.2}%
-		{COVID-19 Quarantine Accessible \TeX{} Project}%
+			{2021/02/21}	{0.6.0}%
+		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifcsundef{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -647,7 +647,7 @@ John Pell
 % Functions for document authors to allow them to focus on the document, not the packages.
 %
 %    \begin{macrocode}
-\NewHook{ gWpkgs / Load Packages Now }
+\NewHook{ gWpkgs / Load Packages }
 \NewHook{ gWpkgs / Request Packages }
 \NewHook{ gWpkgs / Request Class }
 %    \end{macrocode}
@@ -681,20 +681,20 @@ John Pell
 
 	\clist_map_inline:nn{ #2 }%
 	{\IfValueT{##1}{% value(package)
-		\hook_if_exist:nF {gWpkgs / Request Package / ##1}%
+		\hook_if_exist:nF{gWpkgs / Request Package / ##1 }%
 		{	\NewHook{ gWpkgs / Request Package / ##1 }	}%
 
-		\cs_if_exist:cTF	{	ver@ ##1 .sty	}%
-		{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
-				{ ##1 }{before}{ gWpkgs / Load Packages Begin }%
-		}{	\DeclareHookRule{ gWpkgs / Load Packages Now }%
-				{ ##1 }{after}{ gWpkgs / Load Packages Begin }%
+		\cs_if_exist:cTF {	ver@ ##1 .sty	}%
+		{	\DeclareHookRule{ gWpkgs / Load Packages }%
+				{ ##1 }{before}{ gWpkgs / before / packages }%
+		}{	\DeclareHookRule{ gWpkgs / Load Packages }%
+				{ ##1 }{after}{ gWpkgs / before / packages }%
 		}%
 		\PassOptionsToPackages{ #1 }{ ##1 }%
 
 		\IfValueTF{#3}%
-		{\AddToHook{ gWpkgs / Load Packages Now }[##1]{	\RequirePackage{##1}[#3]	}}%
-		{\AddToHook{ gWpkgs / Load Packages Now }[##1]{	\RequirePackage{##1}	}}%
+		{\AddToHook{ gWpkgs / Load Packages }[##1]{	\RequirePackage{##1}[#3]	}}%
+		{\AddToHook{ gWpkgs / Load Packages }[##1]{	\RequirePackage{##1}	}}%
 
 		\UseOneTimeHook{ gWpkgs / Request Package / ##1 }%
 }	}}%
@@ -703,16 +703,16 @@ John Pell
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestClass	{ o m o }
 {	\UseHook{ gWpkgs / Request Class }
-	\NewHook{ gWpkgs / Request Class / #2 }
+	\NewHook{ gWpkgs / Request Package / #2 }
 
-	\DeclarePackageOrdering{#2}{before}{gWpkgs / Class Loaded}[class loads before `early']
-	\AddToHook { gWpkgs / Load Packages Now }[#2]
+	\DeclarePackageOrdering{#2}{before}{gWpkgs / after / class}[class loads before `early']
+	\AddToHook { gWpkgs / Load Packages }[#2]
 	{\cs_if_exist:cF{ver@#2.cls}{
 		\LoadClass{#2}
 	}}%
-	\DeclarePackageOrdering{#2}{after}{gWpkgs / Before Class}[class loads after `gWpkgs / Before Class']
+	\DeclarePackageOrdering{#2}{after}{gWpkgs / before / class}[class loads after `gWpkgs / before / class']
 
-	\UseOneTimeHook{ gWpkgs / Request Class / #2 }
+	\UseOneTimeHook{ gWpkgs / Request Package / #2 }
 }
 %    \end{macrocode}
 %
@@ -800,14 +800,19 @@ John Pell
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\DeclareDocumentCommand	\LoadPackagesNow	{ o }
-{	\RequestPackages{#1}
-
+\DeclareDocumentCommand	\LoadPackagesNow	{ }
+{%TODO: fix up the at-end-preamble version
 	%For each package already loaded:
-	% 1 remove ordering rule `after' \cs{LoadPackagesNow}.
-	% 2 declare an ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
-
-	\UseHook{ gWpkgs / Load Packages Now }
+	\clist_map_inline:cn { @filelist }
+	{\tl_if_in:nnT { ##1 } { .sty }{
+		\tl_set:Nn \l_tmpa_tl { ##1 }
+        	\tl_remove_once:Nn \l_tmpa_tl { .sty }
+	% 1 change ordering rule from after to before gWpkgs/before/packages
+		\DeclareHookRule{ gWpkgs / Load Packages }%
+				{ \l_tmpa_tl }{before}{ gWpkgs / before / packages }
+	% 2 add ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
+	}}
+	\UseHook{ gWpkgs / Load Packages }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -839,17 +844,17 @@ John Pell
 	{\tl_if_blank:nF{##1}{
 		\@ifpackageloaded{ ##1 }
 		{
-			\DeclareHookRule{ gWpkgs / Load Packages Now }
-				{ ##1 }{before}{ gWpkgs / Load Packages Begin }
+			\DeclareHookRule{ gWpkgs / Load Packages }
+				{ ##1 }{before}{ gWpkgs / before / packages }
 		}{
-			\DeclareHookRule{ gWpkgs / Load Packages Now }
-				{ ##1 }{after}{ gWpkgs / Load Packages Begin }
+			\DeclareHookRule{ gWpkgs / Load Packages }
+				{ ##1 }{after}{ gWpkgs / before / packages }
 		}
-		\DeclareHookRule{ gWpkgs / Load Packages Now }
+		\DeclareHookRule{ gWpkgs / Load Packages }
 			{ #1 }{ #2 }{ ##1 }
 	}
 
-	\DeclareHookRule{ gWpkgs / Load Packages Now }{ #1 }{before}{ gWpkgs / Load Packages Completed	}%
+	\DeclareHookRule{ gWpkgs / Load Packages }{ #1 }{before}{ gWpkgs / after / packages	}%
 }	}
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -876,50 +881,50 @@ John Pell
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\DeclareHookRule{ gWpkgs / Load Packages Now }
-{	gWpkgs / Before Class	}{before}{	gWpkgs / Class Loaded	}%
-\DeclareHookRule{ gWpkgs / Load Packages Now }
-{	gWpkgs / Class Loaded	}{before}{	gWpkgs / Load Packages Completed	}%
-\DeclareHookRule{ gWpkgs / Load Packages Now }
-{	gWpkgs / Load Packages Begin	}{before}{	gWpkgs / Before Class	}%
-\DeclareHookRule{ gWpkgs / Load Packages Now }
-{	gWpkgs / Load Packages Begin	}{before}{	gWpkgs / Class Loaded	}%
-\DeclareHookRule{ gWpkgs / Load Packages Now }
-{	gWpkgs / Load Packages Begin	}{before}{	gWpkgs / Load Packages Completed	}
+\DeclareHookRule{ gWpkgs / Load Packages }
+{	gWpkgs / before / class	}{before}{	gWpkgs / after / class	}%
+\DeclareHookRule{ gWpkgs / Load Packages }
+{	gWpkgs / after / class	}{before}{	gWpkgs / after / packages	}%
+\DeclareHookRule{ gWpkgs / Load Packages }
+{	gWpkgs / before / packages	}{before}{	gWpkgs / before / class	}%
+\DeclareHookRule{ gWpkgs / Load Packages }
+{	gWpkgs / before / packages	}{before}{	gWpkgs / after / class	}%
+\DeclareHookRule{ gWpkgs / Load Packages }
+{	gWpkgs / before / packages	}{before}{	gWpkgs / after / packages	}
 %    \end{macrocode}
 %%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
 %%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
 %%TODO: check if package already loaded and order it before `first' with no other rules...
 %    \begin{macrocode}
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Before Class]%
+\AddToHook{ gWpkgs / Load Packages }[gWpkgs / before / class]%
 {%
-	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Before Class }%
+	\PackageInfo{ gWpkgs / Load Packages }{ gWpkgs / before / class }%
 }%
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Class Loaded]%
+\AddToHook{ gWpkgs / Load Packages }[gWpkgs / after / class]%
 {%
-	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Class Loaded }%
+	\PackageInfo{ gWpkgs / Load Packages }{ gWpkgs / after / class }%
 }%
 %
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Begin]%
-{	\LogHook{ gWpkgs / Load Packages Now }	}%
+\AddToHook{ gWpkgs / Load Packages }[gWpkgs / before / packages]%
+{	\LogHook{ gWpkgs / Load Packages }	}%
 %
-\AddToHook{ gWpkgs / Load Packages Now }[gWpkgs / Load Packages Completed]%
+\AddToHook{ gWpkgs / Load Packages }[gWpkgs / after / packages]%
 {%
-	\PackageInfo{ gWpkgs / Load Packages Now }{ gWpkgs / Load Packages Completed }%
+	\PackageInfo{ gWpkgs / Load Packages }{ gWpkgs / after / packages }%
 }%
 %    \end{macrocode}
 %    \begin{macrocode}
-\RequirePackage{ gWpkgs }%
+%\RequirePackage{ gWpkgs }%
 %
-%\AddToHook{ gWpkgs / Load Packages Now }[late]
-%{	\PackageInfo{ gWpkgs / Load Packages Now }{ Finished~`late'~package~load~order }	}
+%\AddToHook{ gWpkgs / Load Packages }[late]
+%{	\PackageInfo{ gWpkgs / Load Packages }{ Finished~`late'~package~load~order }	}
 %
-%\DeclareDefaultHookRule{ late	}{after}{	gWpkgs / Class Loaded	}%
+%\DeclareDefaultHookRule{ late	}{after}{	gWpkgs / after / class	}%
 %
 %    \end{macrocode}
 %    \begin{macrocode}
 \AtEndPreamble
-{	\UseOneTimeHook{ gWpkgs / Load Packages Now }	}
+{	\UseOneTimeHook{ gWpkgs / Load Packages }	}
 %    \end{macrocode}
 %
 % \end{macro}
@@ -1047,6 +1052,12 @@ John Pell
 	%hypdoc, % this is messy
 	amsmath,
 }
+%
+\ProcessKeysOptions{gWmaths}
+%
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{\gW@documentClass}}
+\ProcessOptions\relax
+%
 %    \end{macrocode}
 %    \begin{macrocode}
 \ifpdf
@@ -1204,7 +1215,7 @@ John Pell
 \PassOptionsToPackageIfPackage
 {ntheorem}{empheq}{ntheorem}[cope with `ntheorem`]
 \PassOptionsToClassIfPackage
-{noamsthm}{beamer}{ntheorem}[prevent from loading `amsthm`, which conflicts with `ntheorem`]
+{noamsthm}{beamer}{ntheorem}[prevent from loading \pkg{amsthm}, which conflicts with \pkg{ntheorem}]
 
 }%\gW@ntheorem
 
@@ -1281,7 +1292,7 @@ John Pell
 
 \ifTUTeX
 	% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
-	%\RemoveFromHook{ gWpkgs / Load Packages Now }[ inputenc ]
+	%\RemoveFromHook{ gWpkgs / Load Packages }[ inputenc ]
 	\RequestPackageIfPackage{ fontspec }{ fontenc }
 \fi
 
@@ -1306,10 +1317,6 @@ John Pell
 %\DeclareOption{someoption}{\gW@myoptiontrue}% if the option is set, then raise the flag
 
 
-\ProcessKeysOptions{gWmaths}
-
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{\gW@documentClass}}
-\ProcessOptions\relax
 
 \ifLuaTeX
 	%\RequirePackage{pdftexcmds}

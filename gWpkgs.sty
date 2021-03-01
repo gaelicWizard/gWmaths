@@ -31,9 +31,9 @@
 
 \DeclarePackageDependency{mmap}{cmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\cs{RequirePDFTeX})]
 
-\DeclarePackageOrdering{ csquotes	}{after}{ gWpkgs / Class Loaded }[\pkg{csquotes} redefines \cs{quote}]
-\DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / Class Loaded}[\pkg{paralist} redefines several environments]
-\DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / Class Loaded}[\pkg{ntheorem} redefines several environments]
+\DeclarePackageOrdering{ csquotes	}{after}{ gWpkgs / after / class }[\pkg{csquotes} redefines \cs{quote}]
+\DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / after / class }[\pkg{paralist} redefines several environments]
+\DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / after / class }[\pkg{ntheorem} redefines several environments]
 
 \DeclarePackageOrdering{ hologo	}{after}{	graphics, pgf,	}[\pkg{hologo} will use \pkg{graphics} or \pkg{pgf} if already loaded]%
 
@@ -65,9 +65,9 @@
 \DeclarePackageDependency{ beamer	}{	pgfcore, xxcolor, atbegshi, 	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfcore, xxcolor, atbegshi}]
 \DeclarePackageDependency{ beamer	}{	hyperref	}[\cls{beamer} \cs{RequirePackages}s \pkg{hyperref} \emph{with option implicit=false}]
 
-\DeclarePackageOrdering{ geometry	}{after}{	gWpkgs / Class Loaded	}[classes often set page geometry using primitives]%
-\DeclarePackageOrdering{ fontspec	}{after}{	gWpkgs / Class Loaded	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
-\DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / Class Loaded	}%
+\DeclarePackageOrdering{ geometry	}{after}{	gWpkgs / after / class	}[classes often set page geometry using primitives]%
+\DeclarePackageOrdering{ fontspec	}{after}{	gWpkgs / after / class	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
+\DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / after / class	}%
 
 
 \DeclarePackageDependency{ axessibility }{tagpdf}[\pkg{axessibility} \cs{RequirePackage}s \pkg{tagpdf}]
@@ -106,8 +106,8 @@
 							geometry,
 							nag,	}[\pkg{accessibility}'s included example document loads these first...]
 
-%\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / Class Loaded	}
-%\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / Class Loaded	}
+%\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / after / class	}
+%\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / after / class	}
 \DeclarePackageDependency*{ hyperxmp	}{	hyperref	}
 \DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}
 \DeclarePackageDependency{ hyperxmp	}{	kvoptions,
@@ -119,9 +119,9 @@
 							etoolbox,
 							ifthen,
 							luacode,	}[\cs{RequirePackage}]
-%\DeclarePackageOrdering{ hologo		}{after}{	gWpkgs / Class Loaded	}
-\DeclarePackageOrdering{ xcolor		}{before}{	gWpkgs / Class Loaded	}
-\DeclarePackageOrdering{ graphicx	}{before}{	gWpkgs / Class Loaded	}
+%\DeclarePackageOrdering{ hologo		}{after}{	gWpkgs / after / class	}
+\DeclarePackageOrdering{ xcolor		}{before}{	gWpkgs / after / class	}
+\DeclarePackageOrdering{ graphicx	}{before}{	gWpkgs / after / class	}
 \DeclarePackageDependency{ venndiagram	}{	graphicx	}
 \DeclarePackageOrdering{ venndiagram	}{after}{	tikz,
 							pgf,	}[\cs{RequirePackage}]
@@ -190,11 +190,11 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\DeclarePackageOrdering{ inputenc	}{before}{	gWpkgs / Class Loaded	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
+\DeclarePackageOrdering{ inputenc	}{before}{	gWpkgs / after / class	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\DeclarePackageOrdering{ fixltx2e 	}{before}{	gWpkgs / Class Loaded	}
+\DeclarePackageOrdering{ fixltx2e 	}{before}{	gWpkgs / after / class	}
 \DeclarePackageOrdering{ fancyhdr 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ fncychap 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ float 	}{before}{	hyperref	}
