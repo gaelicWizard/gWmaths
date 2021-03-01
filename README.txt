@@ -10,21 +10,4 @@ The Current Maintainer of this work is
 John Pell
 .
 
-The list of all files belonging to `gWmaths' is given in the file `manifest.txt'.
 
-ctanify --pkgname=gWmaths gWmaths.dtx gWmaths.sty gWmaths.cls gWmaths.pdf DEPENDS.txt README.txt
-gh release create v0.5.0 --title 2021-02-14 gWmaths.tar.gz gWmaths.tds.zip gWmaths.pdf DEPENDS.txt README.txt
-
-use release notes from a file
-gh release create v1.2.3 -F changelog.md
-
-upload a release asset with a display label
-gh release create v1.2.3 '/path/to/asset.zip\#My display label'
-
-Options
-  -d, --draft             Save the release as a draft instead of publishing it
-  -n, --notes string      Release notes
-  -F, --notes-file file   Read release notes from file
-  -p, --prerelease        Mark the release as a prerelease
-      --target branch     Target branch or commit SHA (default: main branch)
-  -t, --title string      Release title
