@@ -1,14 +1,11 @@
 %<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ l3keys2e, etoolbox,	}%
 %<cls>\ProvidesExplClass%
-%<sty|pkgs>\ProvidesExplPackage%
-%<*!sty&!cls&!pkgs>
+%<sty>\ProvidesExplPackage%
+%<*!sty&!cls>
 \ProvidesExplFile%
-%</!sty&!cls&!pkgs>
-%<pkgs>{gWpkgs}
-%<*!pkgs>
+%</!sty&!cls>
  	{gWmaths}
-%</!pkgs>
 			{2021/02/21}	{0.5.2}%
 		{COVID-19 Quarantine Accessible \TeX{} Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,7 +98,6 @@ Options
   %\filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
   %\file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
   %\file{\jobname.\@stripextension}{\from{\jobname.dtx}{\@stripextension}}
-  \file{gWpkgs.\@pkgextension}{\from{\jobname.dtx}{pkgs}}
   \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
   \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
   %\file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
@@ -122,7 +118,7 @@ Options
 % \end{macro}
 %</ins>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage{ iftex, currfile,	}%
+\RequirePackage{ iftex, currfile, 	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
 % \section{ Documentation driver file }
@@ -574,6 +570,9 @@ Options
 % Set one package to always load another package immediately before itself. This should not be used for general package ordering, but should only be used when a particular package is absolutely required, but only if the other package is loaded at all. This isn't about ordering; this is a conditional requirement.
 %
 %    \begin{macrocode}
+\AtEndOfPackage%
+{	\RequirePackage{gWpkgs}	}%
+%
 \NewDocumentCommand\RequirePackageBeforePackage{ o m o m }
 {
 	\IfValueT{ #1 }
