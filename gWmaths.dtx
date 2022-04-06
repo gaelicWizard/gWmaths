@@ -1,12 +1,12 @@
 %<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ l3keys2e, etoolbox,	}%
+\NeedsTeXFormat{LaTeX2e}[2021/11/01]	\RequirePackage{ l3keys2e, etoolbox,	}%
 %<cls>\ProvidesExplClass%
 %<sty>\ProvidesExplPackage%
 %<*!sty&!cls>
 \ProvidesExplFile%
 %</!sty&!cls>
  	{gWmaths}
-			{2021/02/21}	{0.6.0}%
+			{2022/04/06}	{0.6.1}%
 		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifcsundef{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -681,8 +681,7 @@ John Pell
 
 	\clist_map_inline:nn{ #2 }%
 	{\IfValueT{##1}{% value(package)
-		\hook_if_exist:nF{gWpkgs / Request Package / ##1 }%
-		{	\NewHook{ gWpkgs / Request Package / ##1 }	}%
+		\ActivateGenericHook{ gWpkgs / Request Package / ##1 }%
 
 		\cs_if_exist:cTF {	ver@ ##1 .sty	}%
 		{	\DeclareHookRule{ gWpkgs / Load Packages }%
@@ -819,17 +818,6 @@ John Pell
 	}}
 	\UseHook{ gWpkgs / Load Packages }
 }
-%    \end{macrocode}
-%    \begin{macrocode}
-\NewDocumentCommand	\IfPackageLoadedTF	{ m m m }
-{
-	\cs_if_exist:cTF	{	ver@ #1 .sty	}
-	{	#1	}
-	{	#2	}
-}
-%\let\IfPackageLoadedTF\@ifpackageloaded
-%https://tex.stackexchange.com/a/484092
-%http://mirrors.ctan.org/macros/generic/ltxcmds/ltxcmds.pdf
 %    \end{macrocode}
 % \end{macro}
 %
