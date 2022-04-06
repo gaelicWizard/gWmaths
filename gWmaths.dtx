@@ -780,18 +780,13 @@ John Pell
 %    \begin{macrocode}
 \NewDocumentCommand	\gW@ifPackageRequestedWithOptionT	{ m o m }%
 {	\clist_map_inline:nn {#1}%
-	{	\cs_if_exist:cTF	{	ver@ ##1 .sty	}%
-		{	\IfValueTF{#2}%
-			{ % TODO TEST FOR EMPTY
-				\clist_if_in:cnT {opt@##1.sty} {#2}%
-				{ #3 }%
-			}	{ #3 }%
-		}{	\AddToHook{ gWpkgs / Request Package / ##1 }%
-			{	\IfValueTF{#2}%
-				{	\clist_if_in:cnT {opt@##1.sty} {#2}%
-					{#3}%
-				}{	#3	}%
-}	}	}	}%
+	{	\AddToHook{ gWpkgs / Request Package / ##1 }%
+		{	\tl_if_blank:nTF{#2}%
+			{	#3	}%
+			{	\clist_if_in:cnT {opt@ ##1 .sty} {#2}%
+				{#3}%
+			}
+}	}	}%
 \NewDocumentCommand	\gW_check_packages_loaded	{ s }
 {% \cs{RequestPackage} all packages already \cs{RequirePackage}d.
 	%\seq_map_inline:Nn \l_pclist_classes_seq {}
