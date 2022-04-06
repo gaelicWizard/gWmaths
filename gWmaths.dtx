@@ -1112,7 +1112,7 @@ John Pell
 %% Set up \HyperTeX* (hyperref, et al), which is basically the structural core of the document:
 \bool_if:nT \gW@hyperTeX
 {
-	\AddToHook{ package/before/hyperref }
+	\AddToHook{ package/hyperref/before }
 	{% Choose violence over \cls{beamer}.
 	%TODO: *check* if implicit=true before forcing it here
 	%TODO: do this only if \cls{beamer} is to be loaded? Or, do we just *always* want `implicit'?
