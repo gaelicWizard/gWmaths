@@ -1013,7 +1013,7 @@ John Pell
 			}	,
 }
 %
-\NewDocumentCommand \gWmathssetup { s m }
+\NewDocumentCommand \gWsetup { s m }
 {
 	\keys_set:nn { gWmaths } { #2 }
 }
@@ -1025,6 +1025,9 @@ John Pell
 %<*cls>
 % \section{ \cls{ \filename } ~ document ~ class }
 %
+\cs_if_eq:NNT \documentclass \@twoclasseserror {\let\documentclass\relax}
+%\DocumentMetadata
+\let\documentclass\@twoclasseserror
 \RequirePackage{ gWmaths,	}%
 \GetFileInfo{\CurrentFile}%
 %
@@ -1033,7 +1036,7 @@ John Pell
 % Set our default options
 %
 %    \begin{macrocode}
-\gWmathssetup
+\gWsetup
 {
 	ntheorem,
 	%venn, % required \pkg{pgf}
@@ -1049,7 +1052,7 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \ifpdf
-	\gWmathssetup{autodate}
+	\gWsetup{autodate}
 \fi
 %    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1278,12 +1281,6 @@ John Pell
 	pdfencoding=\gW@PDFencoding,	% set 'auto' to prefer PDFDocEncoding over UTF-16.
 }{hyperref}
 
-\ifTUTeX
-	% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
-	%\RemoveFromHook{ gWpkgs / Load Packages }[ inputenc ]
-	\RequestPackageIfPackage{ fontspec }{ fontenc }
-\fi
-
 
 
 %\let\@classoptionslist\gW@classoptionslist
@@ -1293,7 +1290,7 @@ John Pell
 \bool_if:nTF \gW@axessibility{}{}
 
 \bool_if:nT \gW@videolecture{
-	\gWmathssetup{documentClass = beamer}
+	\gWsetup{documentClass = beamer}
 }
 
 %declare option for setting margin to 1"
@@ -1380,8 +1377,10 @@ John Pell
 	% ...and `x' loads `s'...
 
 \ifTUTeX % "Unicode \TeX*" matches \LuaTeX* and/or \XeTeX*
-	\RequestPackage% must load *after* maths fonts (specifically euler)
-		{fontspec}
+	% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
+	%\RemoveFromHook{ gWpkgs / Load Packages }[ inputenc ]
+	\RequestPackage{fontspec} % Handle modern fonts
+	\PassOptionsToPackages{TU}{fontenc} % FIXME: somehow i'm loading this twice somewhere...
 	%\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
 	\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}
 	
@@ -1487,6 +1486,7 @@ John Pell
 		\PassOptionsToPackages{tagpdf}{axessibility}
 		\RequestPackage{tagpdf} % official work-in-progress package for future integrated tagging
 	\else % \XeTeX*
+		\disable@package@load{luacode}{\PackageInfo{gWmaths}{blocked~pkg{luacode}~(not~luatex.}}
 		\let\pdfcompresslevel\pdf@compress@xetex
 		\PassOptionsToPackages{accsupp}{axessibility}
 	\fi
