@@ -1628,8 +1628,14 @@ John Pell
 % https://en.wikibooks.org/wiki/LaTeX/Document_Structure#Sectioning_commands
 %%
 
-% Set our header depth to maximum 3:
-\setcounter{secnumdepth}{3} % '3' is default, and numbers to subsubsections not paragraphs
+\AtEndOfClass{%
+	\cs_if_exist:cF{thechapter}{%
+		\newcounter{chapter}[part]%
+		\counterwithin{section}{chapter}%
+	}%
+}%
+% Set our header depth to maximum 1:
+\setcounter{secnumdepth}{1} % '3' is default, and numbers to subsubsections not paragraphs
 \setcounter{tocdepth}{2} % number to subsection, not subsubsection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
