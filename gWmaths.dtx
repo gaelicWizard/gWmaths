@@ -1327,6 +1327,9 @@ John Pell
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load the base document class
 %\LoadClass{\gW@documentClass}%
+\DeclarePackageOrdering{hyperref}{after}{gWpkgs / after / class}
+\RequestPackage[v1]{subfiles}%
+\DeclarePackageOrdering{titling}{after}{gWpkgs / after / class}
 \RequestClass{\gW@documentClass}%
 %%
 
