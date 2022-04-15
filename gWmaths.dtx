@@ -6,7 +6,7 @@
 \ProvidesExplFile%
 %</!sty&!cls>
  	{gWmaths}
-			{2022/04/06}	{0.6.1}%
+			{2022/04/15}	{0.6.2}%
 		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifcsundef{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1640,6 +1640,19 @@ John Pell
 % Set our header depth to maximum 1:
 \setcounter{secnumdepth}{1} % '3' is default, and numbers to subsubsections not paragraphs
 \setcounter{tocdepth}{2} % number to subsection, not subsubsection
+%
+\NewDocumentCommand\setchapter{m O{#3} m O{#3}}%
+{% https://tex.stackexchange.com/a/530817/233148
+	% if #1 equals \thechapter, then assume that \maketitle will output...
+	% Otherwise, assume that the *whole* document is this chapter
+	\setcounter{chapter}{#1}% Set our chapter number as specified.
+	\phantomsection% Tell \HyperTeX* to handle references appropriately here:
+	%\addcontentsline{toc}{chapter}{\thechapter\hspace{1em}#2}% Add to the table fo contents.
+	\addcontentsline{toc}{chapter}{\numberline{\thechapter}#2}% Add to the table fo contents.
+	\DeclareDocumentCommand\chaptermark{}{ #4 } %TODO
+	
+}%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
