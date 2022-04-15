@@ -1474,6 +1474,10 @@ John Pell
 %define new \listofXs
 % docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
+\ifLuaTeX\else% Don't load \pkg{luacode} if we're not in \LuaTeX*.
+	\disable@package@load{luacode}{\PackageInfo{gWmaths}{blocked~pkg{luacode}~(not~luatex.}}
+\fi%
+
 \ifPDFTeX% not \XeTeX* nor \LuaTeX*
 	\bool_if:nT \gW@accessibility
 	{% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
@@ -1487,7 +1491,6 @@ John Pell
 		\PassOptionsToPackages{tagpdf}{axessibility}
 		\RequestPackage{tagpdf} % official work-in-progress package for future integrated tagging
 	\else % \XeTeX*
-		\disable@package@load{luacode}{\PackageInfo{gWmaths}{blocked~pkg{luacode}~(not~luatex.}}
 		\let\pdfcompresslevel\pdf@compress@xetex
 		\PassOptionsToPackages{accsupp}{axessibility}
 	\fi
