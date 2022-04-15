@@ -1162,8 +1162,8 @@ John Pell
 \PassOptionsToPackageIfPackage
 {hyperref}{ntheorem}{hyperref}
 %
-\AddToHook{ package / after / hyperxmp }%
-{	\cs_if_exist:cTF{hypersetup}%
+\AddToHook{ package / hyperxmp / after }%
+{	\AddToHook{ package / hyperref / after }%
 	{\hypersetup{%
 		keeppdfinfo	% `hyperxmp` strips Author and Keywords by default; don't do that.
 	}}{		\PassOptionsToPackages{keeppdfinfo}{hyperref}%
