@@ -105,8 +105,9 @@
 							mathptmx,
 							geometry,
 							nag,	}[\pkg{accessibility}'s included example document loads these first...]
+\DeclarePackageOrdering{titling}{after}{gWpkgs / after / class}[Assumes title commands already defined]
 
-%\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / after / class	}
+\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / after / class	}[Assumes several control sequences already defined]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / after / class	}
 \DeclarePackageDependency*{ hyperxmp	}{	hyperref	}
 \DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}
