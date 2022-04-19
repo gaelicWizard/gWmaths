@@ -1025,10 +1025,20 @@ John Pell
 %<*cls>
 % \section{ \cls{ \filename } ~ document ~ class }
 %
-\cs_if_eq:NNT \documentclass \@twoclasseserror {\let\documentclass\relax}
-%\DocumentMetadata
-\let\documentclass\@twoclasseserror
-\RequirePackage{ gWmaths,	}%
+\cs_if_exist:NTF \DocumentMetadata%
+{ % MUST be as early as possible, note that we have to even have to hide:
+	\cs_if_eq:NNT \documentclass \@twoclasseserror {\let\documentclass\relax}%
+	\DocumentMetadata%
+	{%
+		pdfversion=1.6,% fucking hack for \pkg{accessibility}
+		testphase=phase-II,% loads \pkg{tagpdf}, calls \cs{tagpdfsetup{activate,interwordspace,paratagging}
+	}%
+	\let\documentclass\@twoclasseserror%
+	\ExplSyntaxOn\makeatletter% ...turned off by \cs{DocumentMetadata}???
+}{%
+	\pdf_version_min_gset:n {1.6} % fucking hack for \pkg{accessibility}
+}%
+\RequirePackage{ gWmaths }%
 \GetFileInfo{\CurrentFile}%
 %
 % \begin{macro}{gWsetup}
@@ -1148,25 +1158,23 @@ John Pell
 \DeclareGlobalOptionsIfPackage%
 {hyperref}{hyperref}[many packages like to be told if \pkg{hyperref} is in use]
 %
-\bool_if:nT \gW@bookmarks%
-{	\PassOptionsToPackages{bookmarks}{hyperref}% Write TOC as PDF bookmarks
-	\RequestPackageIfPackageOption%
-	{bookmark}{hyperref}{bookmarks}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]%
-	\PassOptionsToPackageIfPackage%
-	{bookmarks}{hyperref}{bookmark}[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]%
-}%
+\PassOptionsToPackages{bookmarks}{hyperref}% Write TOC as PDF bookmarks
+\RequestPackageIfPackageOption{bookmark}{hyperref}{bookmarks}%
+	[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]%
+\PassOptionsToPackageIfPackage{bookmarks}{hyperref}{bookmark}%
+	[\pkg{bookmark} replaces \pkg{hyperref}'s PDF bookmarks implementation]%
+%
 \PassOptionsToPackageIfPackage%
 {hyperref}{xcolor}{hyperref}[color expressions by defining additional keys]%
 %
 \PassOptionsToPackageIfPackage
 {hyperref}{ntheorem}{hyperref}
 %
-\AddToHook{ package / hyperxmp / after }%
-{	\AddToHook{ package / hyperref / after }%
-	{\hypersetup{%
-		keeppdfinfo	% `hyperxmp` strips Author and Keywords by default; don't do that.
-	}}{		\PassOptionsToPackages{keeppdfinfo}{hyperref}%
-}	}%
+\AddToHook{ package / hyperxmp / after }{%
+\AddToHook{ package / hyperref / after }{%
+	\hypersetup{%
+		keeppdfinfo,% `hyperxmp` strips Author and Keywords by default; don't do that.
+}}	}%
 %
 %% Set up `scrbase` not to argue with iftex.
 \PassOptionsToPackageIfPackage% KOMA-Script base package
