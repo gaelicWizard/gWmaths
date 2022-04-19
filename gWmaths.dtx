@@ -1044,7 +1044,7 @@ John Pell
 	amsmath,
 }
 %
-\ProcessKeysOptions{gWmaths}
+\ProcessKeysOptions{gWmaths}%
 %
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{\gW@documentClass}}
 \ProcessOptions\relax
@@ -1088,7 +1088,7 @@ John Pell
 }{showkeys} % print \cs{label} name in margin or superscript
 %
 \PassOptionsToPackages{% \pkg{varioref}
-	nospace, % documented as being required because the default from 2001 was wrong...but compatabililty...
+	nospace, % documented as being required because the default from 2001 was wrong...but compatibility...
 }{varioref} % \cs{vref} adds text indicating document location
 %
 %\ifdraft{
@@ -1110,10 +1110,9 @@ John Pell
 %% Set up \HyperTeX* (hyperref, et al), which is basically the structural core of the document:
 \bool_if:nT \gW@hyperTeX
 {
-	\AddToHook{ package/hyperref/before }
+	\AddToHook{ class/beamer/before }
 	{% Choose violence over \cls{beamer}.
 	%TODO: *check* if implicit=true before forcing it here
-	%TODO: do this only if \cls{beamer} is to be loaded? Or, do we just *always* want `implicit'?
 	%TODO: can \pkg{hyperref}'s `implicit's be fixed to new hooks?
 		\PassOptionsToPackage
 		{
