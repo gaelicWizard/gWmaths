@@ -1315,13 +1315,13 @@ John Pell
 \fi
 
 \ifpdf
-	\pdf_version_min_gset:n {1.6}
+	%\pdf_version_min_gset:n {1.6} % see \cs{DocumentMetadata}
 	\DeclarePackageOrdering{cmap}{unrelated}{hyperref}[by using \cs{pdfminorversion} here, we obviate the ordering dependency]
 \fi
 
 \bool_if:nT \gW@accessibility{
 	\RequirePDFTeX
-	\pdf_version_gset:n {1.6} %fucking hack for `accessibility`
+	%\pdf_version_gset:n {1.6} % see \cs{DocumentMetadata}
 }
 
 
@@ -1333,10 +1333,8 @@ John Pell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load the base document class
-%\LoadClass{\gW@documentClass}%
-\DeclarePackageOrdering{hyperref}{after}{gWpkgs / after / class}
 \RequestPackage[v1]{subfiles}%
-\DeclarePackageOrdering{titling}{after}{gWpkgs / after / class}
+\PassOptionsToClass{notitlepage}{\gW@documentClass}
 \RequestClass{\gW@documentClass}%
 %%
 
@@ -1346,7 +1344,7 @@ John Pell
 % See https://github.com/mhelvens/latex-pkgloader/blob/master/pkgloader-recommended.sty
 %%
 \RequestPackage{
-	babel,
+	babel, % No discernible performance impact for just always loading.
 	hyperxmp, % babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
 
 	%amsfonts,
