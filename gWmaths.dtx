@@ -648,8 +648,8 @@ John Pell
 %
 %    \begin{macrocode}
 \NewHook{ gWpkgs / Load Packages }
-\NewHook{ gWpkgs / Request Packages }
-\NewHook{ gWpkgs / Request Class }
+\NewHook{ package / request }
+\NewHook{ class / request }
 %    \end{macrocode}
 %
 % \begin{macro}{RequestPackages,RequestClass}
@@ -677,17 +677,15 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackages	{ o m o }
-{	\UseHook{ gWpkgs / Request Packages }
+{	\UseHook{ package / request }
 
 	\clist_map_inline:nn{ #2 }%
 	{\IfValueT{##1}{% value(package)
-		\ActivateGenericHook{ gWpkgs / Request Package / ##1 }%
+		\ActivateGenericHook{ package / ##1 / request }%
 
-		\cs_if_exist:cTF {	ver@ ##1 .sty	}%
+		\cs_if_exist:cF {	ver@ ##1 .sty	}%
 		{	\DeclareHookRule{ gWpkgs / Load Packages }%
-				{ ##1 }{before}{ gWpkgs / before / packages }%
-		}{	\DeclareHookRule{ gWpkgs / Load Packages }%
-				{ ##1 }{after}{ gWpkgs / before / packages }%
+				{ ##1 }{after}{ gWpkgs / Load Packages \thegWpkgs }%
 		}%
 		\PassOptionsToPackages{ #1 }{ ##1 }%
 
@@ -695,23 +693,32 @@ John Pell
 		{\AddToHook{ gWpkgs / Load Packages }[##1]{	\RequirePackage{##1}[#3]	}}%
 		{\AddToHook{ gWpkgs / Load Packages }[##1]{	\RequirePackage{##1}	}}%
 
-		\UseOneTimeHook{ gWpkgs / Request Package / ##1 }%
+		\UseOneTimeHook{ package / ##1 / request }%
 }	}}%
 \let\RequestPackage\RequestPackages
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestClass	{ o m o }
-{	\UseHook{ gWpkgs / Request Class }
-	\ActivateGenericHook{ gWpkgs / Request Package / #2 }
-
-	\DeclarePackageOrdering{#2}{before}{gWpkgs / after / class}[class loads before `early']
+{	\UseHook{ class / request }
+	\ActivateGenericHook{ package / #2 / request }
+	\DeclarePackageOrdering{#2}{before}{gWpkgs / Load Packages \thegWpkgs}[class loads before nearly all packages]
 	\AddToHook { gWpkgs / Load Packages }[#2]
-	{\cs_if_exist:cF{ver@#2.cls}{
+	{\cs_if_exist:cF{ ver@ #2 .cls }{%
 		\LoadClass{#2}
+		%For each package already loaded:
+		\clist_map_inline:cn { @filelist }
+		{\tl_if_in:nnT { ##1 } { .sty }{
+			\tl_set:Nn \l_tmpa_tl { ##1 }
+        		\tl_remove_once:Nn \l_tmpa_tl { .sty }
+		% 1 change ordering rule from after to before gWpkgs/before/packages
+			\DeclareHookRule{ gWpkgs / Load Packages }%
+					{ \l_tmpa_tl }{before}{ #2 }
+			\RequestPackage{ \l_tmpa_tl }
+		% 2 add ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
+		}}
 	}}%
-	\DeclarePackageOrdering{#2}{after}{gWpkgs / before / class}[class loads after `gWpkgs / before / class']
 
-	\UseOneTimeHook{ gWpkgs / Request Package / #2 }
+	\UseOneTimeHook{ package / #2 / request }
 }
 %    \end{macrocode}
 %
@@ -780,7 +787,7 @@ John Pell
 %    \begin{macrocode}
 \NewDocumentCommand	\gW@ifPackageRequestedWithOptionT	{ m o m }%
 {	\clist_map_inline:nn {#1}%
-	{	\AddToHook{ gWpkgs / Request Package / ##1 }%
+	{	\AddToHook{ package / ##1 / request }%
 		{	\tl_if_blank:nTF{#2}%
 			{	#3	}%
 			{	\clist_if_in:cnT {opt@ ##1 .sty} {#2}%
@@ -799,7 +806,8 @@ John Pell
 %TODO: \foreach_#1_in_filelist
 %    \end{macrocode}
 %    \begin{macrocode}
-\DeclareDocumentCommand	\LoadPackagesNow	{ }
+\newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
+\DeclareDocumentCommand	\LoadPackagesNow	{ s }
 {%TODO: fix up the at-end-preamble version
 	%For each package already loaded:
 	\clist_map_inline:cn { @filelist }
@@ -808,10 +816,17 @@ John Pell
         	\tl_remove_once:Nn \l_tmpa_tl { .sty }
 	% 1 change ordering rule from after to before gWpkgs/before/packages
 		\DeclareHookRule{ gWpkgs / Load Packages }%
-				{ \l_tmpa_tl }{before}{ gWpkgs / before / packages }
+				{ \l_tmpa_tl }{before}{ gWpkgs / Load Packages \thegWpkgs }
+		\RequestPackage{ \l_tmpa_tl }
 	% 2 add ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
 	}}
+	\AddToHook{ gWpkgs / Load Packages }[gWpkgs / Load Packages \thegWpkgs]%
+	{	\LogHook{ gWpkgs / Load Packages }	}%
+	\stepcounter{gWpkgs}
 	\UseHook{ gWpkgs / Load Packages }
+	%\AddToHook{ package / before }{\RequestPackage{\CurrentFile}}
+	% TODO: Make the already-loaded code add a counter to the "after"
+	% TODO: rename "before" and "after" to some kind of "this iteration of \LoadPackagesNow"
 }
 %    \end{macrocode}
 % \end{macro}
@@ -833,10 +848,10 @@ John Pell
 		\@ifpackageloaded{ ##1 }
 		{
 			\DeclareHookRule{ gWpkgs / Load Packages }
-				{ ##1 }{before}{ gWpkgs / before / packages }
+				{ ##1 }{before}{ gWpkgs / Load Packages \thegWpkgs }
 		}{
 			\DeclareHookRule{ gWpkgs / Load Packages }
-				{ ##1 }{after}{ gWpkgs / before / packages }
+				{ ##1 }{after}{ gWpkgs / Load Packages \thegWpkgs }
 		}
 		\DeclareHookRule{ gWpkgs / Load Packages }
 			{ #1 }{ #2 }{ ##1 }
@@ -870,31 +885,13 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \DeclareHookRule{ gWpkgs / Load Packages }
-{	gWpkgs / before / class	}{before}{	gWpkgs / after / class	}%
-\DeclareHookRule{ gWpkgs / Load Packages }
-{	gWpkgs / after / class	}{before}{	gWpkgs / after / packages	}%
-\DeclareHookRule{ gWpkgs / Load Packages }
-{	gWpkgs / before / packages	}{before}{	gWpkgs / before / class	}%
-\DeclareHookRule{ gWpkgs / Load Packages }
-{	gWpkgs / before / packages	}{before}{	gWpkgs / after / class	}%
-\DeclareHookRule{ gWpkgs / Load Packages }
-{	gWpkgs / before / packages	}{before}{	gWpkgs / after / packages	}
+{	gWpkgs / Load Packages \thegWpkgs	}{before}{	gWpkgs / after / packages	}
 %    \end{macrocode}
 %%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
 %%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
 %%TODO: check if package already loaded and order it before `first' with no other rules...
 %    \begin{macrocode}
-\AddToHook{ gWpkgs / Load Packages }[gWpkgs / before / class]%
-{%
-	\PackageInfo{ gWpkgs / Load Packages }{ gWpkgs / before / class }%
-}%
-\AddToHook{ gWpkgs / Load Packages }[gWpkgs / after / class]%
-{%
-	\PackageInfo{ gWpkgs / Load Packages }{ gWpkgs / after / class }%
-}%
 %
-\AddToHook{ gWpkgs / Load Packages }[gWpkgs / before / packages]%
-{	\LogHook{ gWpkgs / Load Packages }	}%
 %
 \AddToHook{ gWpkgs / Load Packages }[gWpkgs / after / packages]%
 {%
@@ -951,8 +948,6 @@ John Pell
 	hyperTeX	.bool_set:N	= \gW@hyperTeX	,
 	hyperTeX	.initial:n	= true	,
 	
-	bookmarks	.bool_set:N	= \gW@bookmarks	,%
-
 	ntheorem	.bool_set:N	= \gW@ntheorem	,
 
 	amsmath	.bool_set:N	= \gW@amsmath	,
@@ -1170,11 +1165,14 @@ John Pell
 \PassOptionsToPackageIfPackage
 {hyperref}{ntheorem}{hyperref}
 %
-\AddToHook{ package / hyperxmp / after }{%
-\AddToHook{ package / hyperref / after }{%
-	\hypersetup{%
-		keeppdfinfo,% `hyperxmp` strips Author and Keywords by default; don't do that.
-}}	}%
+\AddToHook{ package / hyperxmp / after }%
+{%
+	\PassOptionsToPackage{keeppdfinfo}{hyperref}% Make sure this is in the options string
+	\AddToHook{ package / hyperref / after }{%
+		\hypersetup{%
+			keeppdfinfo,% `hyperxmp` strips Author and Keywords by default; don't do that.
+	}}%
+}%
 %
 %% Set up `scrbase` not to argue with iftex.
 \PassOptionsToPackageIfPackage% KOMA-Script base package
@@ -1183,7 +1181,7 @@ John Pell
 
 %
 %% Set up documentation utilities from `hyperref` documentation package.
-\PassOptionsToPackageIfPackage
+\PassOptionsToPackageIfPackage%
 {hyperindex=false}{hyperref}{hypdoc}[do *not* link page numbers from index...conflict w/ hypdoc...]
 
 %
