@@ -603,13 +603,8 @@ John Pell
 %
 %    \begin{macrocode}
 \AtEndOfPackage%
-{
-	\RequirePackage{gWpkgs}
-	\RequestPackagesAlreadyLoaded{gWpkgs 0}
-	\AddToHook{ package / before }%
-	{	\exp_args:NV	\RequestPackage	{\@currname}	}
-	\AtEndPreamble%
-	{	\LoadPackagesNow*{}	}
+{	\RequirePackage{gWpkgs}
+	\RequestPackagesAlreadyLoaded{gWpkgs \thegWpkgs}
 }%
 %
 \NewDocumentCommand	\RequirePackageBeforePackage	{ o m o m }%
@@ -859,6 +854,9 @@ John Pell
 	% 2 add ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
 	}}
 }
+\AddToHook{ package / before }%
+{	\exp_args:NV	\RequestPackage	{\@currname}	}
+%
 \NewDocumentCommand	\LoadPackagesNow	{ s }
 {%TODO: fix up the at-end-preamble version
 	\PackageWarning{gWpkgs}{ Loading~Packages~Now }
@@ -876,6 +874,8 @@ John Pell
 \newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
 \newcounter{gWpkgd}%...
 \NewHook{ gWpkgs }
+\AtEndPreamble%
+{	\LoadPackagesNow*{}	}
 %    \end{macrocode}
 % \end{macro}
 %
