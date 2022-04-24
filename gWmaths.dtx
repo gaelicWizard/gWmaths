@@ -172,10 +172,10 @@ John Pell
 }
 \RequirePackage{etoolbox} % Load \pkg{etoolbox} before the following until the above is implemented
 %% Packages and Classes
-\ProvideDocumentCommand \AtEndOfPackage	{m}% ...this is not an accurate representation of the actual kernel code
-{	\AddToHookNext{ package/after }{ #1 }	}
-\ProvideDocumentCommand \AtEndOfClass	{m}% ...this is not an accurate representation of the actual kernel code
-{	\AddToHookNext{ class/after }{ #1 }	}
+%\ProvideDocumentCommand \AtEndOfPackage	{m}% ...this is not an accurate representation of the actual kernel code
+%{	\AddToHookNext{ package/after }{ #1 }	}
+%\ProvideDocumentCommand \AtEndOfClass	{m}% ...this is not an accurate representation of the actual kernel code
+%{	\AddToHookNext{ class/after }{ #1 }	}
 %% Document Environment
 \ProvideDocumentCommand \AtEndPreamble	{om}%
 {	\AddToHook{ begindocument/before }[ #1 ]{ #2 }	}
@@ -603,7 +603,14 @@ John Pell
 %
 %    \begin{macrocode}
 \AtEndOfPackage%
-{	\RequirePackage{gWpkgs}	}%
+{
+	\RequirePackage{gWpkgs}
+	\RequestPackagesAlreadyLoaded{gWpkgs 0}
+	\AddToHook{ package / before }%
+	{	\exp_args:NV	\RequestPackage	{\@currname}	}
+	\AtEndPreamble%
+	{	\LoadPackagesNow*{}	}
+}%
 %
 \NewDocumentCommand	\RequirePackageBeforePackage	{ o m o m }%
 {
@@ -692,9 +699,6 @@ John Pell
 % Functions for document authors to allow them to focus on the document, not the packages.
 %
 %    \begin{macrocode}
-\NewHook{ gWpkgs }
-\NewHook{ package / request }
-\NewHook{ class / request }
 %    \end{macrocode}
 %
 % \begin{macro}{RequestPackages,RequestClass}
@@ -740,6 +744,7 @@ John Pell
 
 		\UseOneTimeHook{ package / ##1 / request }%
 }	}}%
+\NewHook{ package / request }
 \let\RequestPackage\RequestPackages
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -748,10 +753,12 @@ John Pell
 	\ActivateGenericHook{ package / #2 / request }
 	\DeclarePackageOrdering{#2}{before}{gWpkgs \thegWpkgs}[class loads before nearly all packages]
 	\RequestPackagesAlreadyLoaded{#2}
+	%\PassOptionsToClass....
 	\AddToHook { gWpkgs }[#2]
-	{\cs_if_exist:cF{ ver@ #2 .cls }{	\LoadClass{#2}	}}%
+	{\cs_if_exist:cF{ ver@ #2 .cls }{	\LoadClass{#2}[#3]	}}%
 	\UseOneTimeHook{ package / #2 / request }
 }
+\NewHook{ class / request }
 %    \end{macrocode}
 %
 % The checking-if-loaded would be *way* easier if the package loading hooks were one-time hooks...
@@ -838,8 +845,6 @@ John Pell
 %TODO: \foreach_#1_in_filelist
 %    \end{macrocode}
 %    \begin{macrocode}
-\newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
-\newcounter{gWpkgd}%...
 \NewDocumentCommand	\RequestPackagesAlreadyLoaded	{ s m }%
 {
 	%For each package already loaded:
@@ -850,7 +855,7 @@ John Pell
 	% 1 change ordering rule from after to before gWpkgs/before/packages
 		\DeclareHookRule{ gWpkgs }%
 			{ \l_tmpa_tl }{before}{ #2 }
-		\exp_args:NV\RequestPackage{\l_tmpa_tl}
+		\exp_args:NV	\RequestPackage	{\l_tmpa_tl}
 	% 2 add ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
 	}}
 }
@@ -859,19 +864,18 @@ John Pell
 	\PackageWarning{gWpkgs}{ Loading~Packages~Now }
 	\setcounter{gWpkgd}{\value{gWpkgs}}
 	\stepcounter{gWpkgs}
-	\RequestPackagesAlreadyLoaded{gWpkgs \thegWpkgd}
 	\AddToHook{ gWpkgs }[gWpkgs \thegWpkgd]%
-	{	\PackageInfo{ gWpkgs }{ Loading Packages \thegWpkgd }	}%
-	\DeclareHookRule{ gWpkgs / LoadPackages }%
+	{	\PackageInfo{ gWpkgs }{ Loading~Packages... }	}%
+	\DeclareHookRule{ gWpkgs }%
 		{ gWpkgs \thegWpkgd }{before}{ gWpkgs \thegWpkgs }
 	\LogHook{ gWpkgs }%
 	\IfBooleanTF{#1}%
 	{\UseOneTimeHook{ gWpkgs }}%
 	{\UseHook{ gWpkgs }}%
-	%\AddToHook{ package / before }{\RequestPackage{\CurrentFile}}
-	% TODO: Make the already-loaded code add a counter to the "after"
-	% TODO: rename "before" and "after" to some kind of "this iteration of \LoadPackagesNow"
 }
+\newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
+\newcounter{gWpkgd}%...
+\NewHook{ gWpkgs }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -928,32 +932,8 @@ John Pell
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-%\DeclareHookRule{ gWpkgs }
-%{	gWpkgs \thegWpkgs	}{before}{	gWpkgs / after / packages	}
-%    \end{macrocode}
-%%TODO: maybe configure something so that ordering rules loaded *after* the defaults can allow something to load before the class, but otherwise force everything to load after the class?
-%%TODO: maybe load the default ordering rules inside \cs{LoadPackagesNow}? Or inside the HookOnce? Therefore, all packages have been requested before the ordering rules are applied so we can do some additional logic?
-%%TODO: check if package already loaded and order it before `first' with no other rules...
-%    \begin{macrocode}
-%
-%
-%\AddToHook{ gWpkgs }[gWpkgs / after / packages]%
-%{%
-%	\PackageInfo{ gWpkgs }{ gWpkgs / after / packages }%
-%}%
 %    \end{macrocode}
 %    \begin{macrocode}
-%\RequirePackage{ gWpkgs }%
-%
-%\AddToHook{ gWpkgs }[late]
-%{	\PackageInfo{ gWpkgs }{ Finished~`late'~package~load~order }	}
-%
-%\DeclareDefaultHookRule{ late	}{after}{	gWpkgs / after / class	}%
-%
-%    \end{macrocode}
-%    \begin{macrocode}
-\AtEndPreamble%
-{	\LoadPackagesNow*{}	}
 %    \end{macrocode}
 %
 % \end{macro}
@@ -1191,7 +1171,6 @@ John Pell
 \RequestPackage[% `hyperref`
 	colorlinks, % set hyperlinks in color
 	linkcolor=blue, % default is fucking 'red'
-
 	linktoc=all, % link section name *and* page number from toc
 	backref, % link back from bib entries to main text
 ]{hyperref}
@@ -1410,9 +1389,14 @@ John Pell
 	\RenewDocumentEnvironment{document}{}% s
 	{}% This automatically starts *another* group, while also (locally) discarding the global environment.
 	{\ignorespacesafterend}% Avoid extra spaces after \cs{end}\arg{document}
-	\ExplSyntaxOff % Start the incoming document with normal catcodes.
-}%
+	\AddToHookNext{file/before}%
+	{	\ExplSyntaxOff\makeatother% Start the incoming document with normal catcodes.
+		\cs_set:cpn{@partaux}{}% Allow nested \cs{include}
+}	}%
 \AddToHook{include/after}{\endgroup}
+\AtEndOfClass%
+{	\xpatchcmd{\@include}{\write\@mainaux{\string\@input{#1.aux}}}{\write\@auxout{\string\@input{#1.aux}}}{}{}
+}%
 %TODO: make \cs{include} nestable...
 
 %%
@@ -1422,7 +1406,7 @@ John Pell
 % See https://github.com/mhelvens/latex-pkgloader/blob/master/pkgloader-recommended.sty
 %%
 \RequestPackage{
-	babel, % No discernible performance impact for just always loading.
+	%babel, % No discernible performance impact for just always loading.
 	hyperxmp, % babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
 
 	%amsfonts,
@@ -1468,7 +1452,7 @@ John Pell
 	\RequestPackage{fontspec} % Handle modern fonts
 	\PassOptionsToPackages{TU}{fontenc} % FIXME: somehow i'm loading this twice somewhere...
 	%\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
-	\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}
+	%\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}
 	
 	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1)
 	%% Post-2017, don't use xunicode package
@@ -1627,39 +1611,26 @@ John Pell
 %\fi%???????
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\LoadPackagesNow%
-
-%TODO: flip this so it tries to read metadata from the compiling document after the class is loaded
-\cs_if_exist:cT{GetFileInfo}
-{% https://tex.stackexchange.com/a/30486
-	\GetFileInfo{\currfilename}
-	\cs_if_exist:cT{fileinfo}{\hypersetup{
-		pdfsubject={\fileinfo}, % this takes the name/description of the *class*...
-			}}
-
-	\AtEndOfClass{%
-		\GetFileInfo{\jobname.tex} % read \ProvidesFile{}[] from the ultimate TeX
-			}
-}% \GetFileInfo
-
-\hypersetup{% set the PDF header creation date to the modification date of the source file.
-	pdfcreationdate={\pdffilemoddate{\jobname.tex}},%
-}
-
-\AtBeginDocument{%
+\AtBeginDocument%
+{%
 	\listfiles % track loaded files in this job
-	\hypersetup{%
+	\hypersetup%
+	{%
 		pdfrendition=default, %screen,
 		%pdfsubject={},
 		%pdfsubtitle={},
 		%pdfurl={}, % full path to *this* PDF
+		pdfcreationdate={\pdffilemoddate{\jobname.tex}},%
 		%pdfinfo={%
 			%CreationDate={\pdffilemoddate{\jobname.tex}}
-		%		},
+		%}
 		%pdfsource={\jobname.tex} % default
 		pdfuapart=1, % that's the whole point, but we're lacking...
-			}
-		}
+	}
+	\cs_if_exist:cT{fileinfo}{\hypersetup{
+		%pdfsubject={\fileinfo}, % this takes the name/description of the *class*...
+			}}
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1673,7 +1644,8 @@ John Pell
 }
 \AtBeginDocument% *inside* main document environment
 {
-	\file_get_full_name:nN{\c_sys_jobname_str}	\CurrentFile
+	\cs_if_exist:cT{currfilename}%
+	{	\file_get_full_name:nN{\c_sys_jobname_str}	\CurrentFile	}
 	\file_parse_full_name:VNNN \CurrentFile \CurrentFilePath \CurrentFileName \CurrentFileExt
 	\GetFileInfo{\CurrentFile}
 }
@@ -1692,9 +1664,8 @@ John Pell
 	%% ref: https://tex.stackexchange.com/a/1057
 	
 
-\AtBeginDocument{%
-	\hologoSetup{break=false}%
-		}%
+\AtBeginDocument%
+{	\hologoSetup{break=false}	}%
 
 
 \RequestPackage{layouts}%
@@ -1715,17 +1686,16 @@ John Pell
 % https://en.wikibooks.org/wiki/LaTeX/Document_Structure#Sectioning_commands
 %%
 
-\AtEndOfClass{%
-	\cs_if_exist:cF{thechapter}{%
-		\newcounter{chapter}[part]%
+\AtEndOfClass%
+{	\cs_if_exist:cF{thechapter}%
+	{	\newcounter{chapter}[part]%
 		\counterwithin{section}{chapter}%
-	}%
-}%
+}	}%
 % Set our header depth to maximum 1:
 \setcounter{secnumdepth}{1} % '3' is default, and numbers to subsubsections not paragraphs
 \setcounter{tocdepth}{2} % number to subsection, not subsubsection
 %
-\NewDocumentCommand\setchapter{m O{#3} m O{#3}}%
+\NewDocumentCommand	\setchapter	{m O{#3} m O{#3}}%
 {% https://tex.stackexchange.com/a/530817/233148
 	% if #1 equals \thechapter, then assume that \maketitle will output...
 	% Otherwise, assume that the *whole* document is this chapter
@@ -1734,7 +1704,6 @@ John Pell
 	%\addcontentsline{toc}{chapter}{\thechapter\hspace{1em}#2}% Add to the table fo contents.
 	\addcontentsline{toc}{chapter}{\numberline{\thechapter}#2}% Add to the table fo contents.
 	\ProvideDocumentCommand\thechaptermark{}{ #4 } %TODO?
-	
 }%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1746,7 +1715,6 @@ John Pell
 }%\gW@videolecture
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -1812,29 +1780,33 @@ John Pell
 \providecommand{\al}{\alpha}
 \providecommand{\be}{\beta}
 
-\DeclareMathOperator{\Aut}{Aut}
-\DeclareMathOperator{\Aff}{Aff}
-\DeclareMathOperator{\End}{End}
-\DeclareMathOperator{\Hom}{Hom}
-\DeclareMathOperator{\im}{im}
-
+\AtEndPreamble{
+	\DeclareMathOperator{\Aut}{Aut}
+	\DeclareMathOperator{\Aff}{Aff}
+	\DeclareMathOperator{\End}{End}
+	\DeclareMathOperator{\Hom}{Hom}
+	\DeclareMathOperator{\im}{im}
+}
 %\renewcommand{\labelenumi}{(\alphalph{enumi})}
 
-\providecommand{\blankpage}	{%
-      \clearpage%
-      \thispagestyle{empty}%
-      \addtocounter{page}{-1}%
-      \null%
-      \clearpage}
+\providecommand{\blankpage}%
+{%
+	\clearpage%
+	\thispagestyle{empty}%
+	\addtocounter{page}{-1}%
+	\null%
+	\clearpage
+}
 
 %  End user defined commands
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % These establish different environments for stating Theorems, Lemmas, Remarks, etc.
-
+\AtEndPreamble{
 \newtheorem{Pf}{Proof}
 
 \newtheorem{Thm}{Theorem}
@@ -1855,11 +1827,12 @@ John Pell
 \theorembodyfont{\upshape}
 \newtheorem{Exercise}{Exercise}
 
-\newenvironment{Solution}{\noindent{\it Solution.}}
-
+\newenvironment{Solution}{\noindent{\it Solution.}}{}
+}
 
 % End environments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\LoadPackagesNow{}%
 
 
 %% https://tex.stackexchange.com/questions/108696/what-do-explsyntaxon-and-explsyntaxoff-do
