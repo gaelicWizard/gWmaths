@@ -173,9 +173,11 @@ John Pell
 \RequirePackage{etoolbox} % Load \pkg{etoolbox} before the following until the above is implemented
 %% Packages and Classes
 %\ProvideDocumentCommand \AtEndOfPackage	{m}% ...this is not an accurate representation of the actual kernel code
-%{	\AddToHookNext{ package/after }{ #1 }	}
+%{	\AddToHookNext{ package/ @currname /after }{ #1 }	}
 %\ProvideDocumentCommand \AtEndOfClass	{m}% ...this is not an accurate representation of the actual kernel code
-%{	\AddToHookNext{ class/after }{ #1 }	}
+%{	\AddToHookNext{ class/ @currname /after }{ #1 }	}
+\ProvideDocumentCommand	\AfterEndOfClass	{m}%
+{	\AtEndOfClass{	\AddToHook{ class/ @currname /after }{ #1 }}	}
 %% Document Environment
 \ProvideDocumentCommand \AtEndPreamble	{om}%
 {	\AddToHook{ begindocument/before }[ #1 ]{ #2 }	}
