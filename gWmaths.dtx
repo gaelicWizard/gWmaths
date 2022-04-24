@@ -1332,11 +1332,44 @@ John Pell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load the base document class
-\RequestPackage[v1]{subfiles}%
 \PassOptionsToClass{notitlepage}{\gW@documentClass}
-\RequestClass{\gW@documentClass}%
+\RequestClass	{\gW@documentClass}%
 %%
+\RequestPackage{regexpatch}% ...see \pkg{regexpatch}...
+\ProvideDocumentCommand	\subtitle	{m}%
+{\def\@subtitle{#1}}%
+\subtitle{}%default is blank
+\AtEndOfClass{%
+	% Patch \cs{@maketitle} to add a smaller subtitle after the main title, while keeping \cs{@title} clean.
+	\xpatchcmd{\@maketitle}{{\LARGE \@title \par}}{{\LARGE \@title \par}{\Large \@subtitle \par}}{}{}%
+	\xapptocmd{\maketitlehookb}{\par {\centering\Large \@subtitle \par}}{}{}
+	% Patch \cs{title}, \cs{author}, \cs{date} to be non-global.
+	\xpatchcmd{\title}{\gdef\@title}{\def\@title}{}{}
+	\xpatchcmd{\subtitle}{\gdef\@subtitle}{\def\@subtitle}{}{}
+	\xpatchcmd{\author}{\gdef\@author}{\def\@author}{}{}
+	\xpatchcmd{\date}{\gdef\@date}{\def\@date}{}{}
+}%
+\NewDocumentCommand	\maketitlingpage	{}%
+{%
+	\begin{titlingpage}%
+	\maketitle%
+	\end{titlingpage}%
+}%
+%%
+\RequestPackage[v1]{subfiles}%
+\AddToHook{include/before}%
+{	\begingroup % Keep (most) assignments local to the sub-document, not global.
+	\RenewDocumentCommand\documentclass{omo}
+	{	\tl_if_eq:nnT{#2}{gWmaths}{\gWsetup{#1}}	}%
+	\RenewDocumentEnvironment{document}{}% s
+	{}% This automatically starts *another* group, while also (locally) discarding the global environment.
+	{\ignorespacesafterend}% Avoid extra spaces after \cs{end}\arg{document}
+	\ExplSyntaxOff % Start the incoming document with normal catcodes.
+}%
+\AddToHook{include/after}{\endgroup}
+%TODO: make \cs{include} nestable...
 
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Begin actually loading packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
