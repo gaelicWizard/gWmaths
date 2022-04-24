@@ -1020,14 +1020,17 @@ John Pell
 %
 \cs_if_exist:NTF \DocumentMetadata%
 { % MUST be as early as possible, note that we have to even have to hide:
-	\cs_if_eq:NNT \documentclass \@twoclasseserror {\let\documentclass\relax}%
+	\cs_if_eq:NNT \documentclass \@twoclasseserror {\RenewDocumentCommand\documentclass{omo}%
+	{%
+		\let\documentclass\@twoclasseserror%
+		\ExplSyntaxOn\makeatletter% ...turned off by \cs{DocumentMetadata}???
+	}}%
 	\DocumentMetadata%
 	{%
 		pdfversion=1.6,% fucking hack for \pkg{accessibility}
 		testphase=phase-II,% loads \pkg{tagpdf}, calls \cs{tagpdfsetup{activate,interwordspace,paratagging}
 	}%
-	\let\documentclass\@twoclasseserror%
-	\ExplSyntaxOn\makeatletter% ...turned off by \cs{DocumentMetadata}???
+	\documentclass{gWmaths}% fix \cs{DocumentMetadata}'s damage to category code settings.
 }{%
 	\pdf_version_min_gset:n {1.6} % fucking hack for \pkg{accessibility}
 }%
@@ -1489,8 +1492,8 @@ John Pell
 	}
 \else
 	\ifLuaTeX
-		\PassOptionsToPackages{tagpdf}{axessibility}
-		\RequestPackage{tagpdf} % official work-in-progress package for future integrated tagging
+		%\PassOptionsToPackages{tagpdf}{axessibility}
+		%\RequestPackage{tagpdf} % official work-in-progress package for future integrated tagging
 	\else % \XeTeX*
 		\let\pdfcompresslevel\pdf@compress@xetex
 		\PassOptionsToPackages{accsupp}{axessibility}
@@ -1561,13 +1564,9 @@ John Pell
 			}
 }% \GetFileInfo
 
-\ifXeTeX%
-	\PackageWarning{ gWmaths }{ \XeTeX* ~ does ~ not ~ provide ~ cs{pdffilemoddate} }
-\else%
-	\hypersetup{% set the PDF header creation date to the modification date of the source file.
-		pdfcreationdate={\pdffilemoddate{\jobname.tex}},%
-	}
-\fi%\ifXeTeX
+\hypersetup{% set the PDF header creation date to the modification date of the source file.
+	pdfcreationdate={\pdffilemoddate{\jobname.tex}},%
+}
 
 \AtBeginDocument{%
 	\listfiles % track loaded files in this job
