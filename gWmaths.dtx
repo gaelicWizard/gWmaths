@@ -1585,12 +1585,18 @@ John Pell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% preserve document metadata...
-\AtEndPreamble
+\AtEndPreamble%
 {
 	\let\doctitle\@title
 	\let\docauthor\@author
 	%\let\docthanks\@thanks % this is bjorked due to missing macros
 	\let\docdate\@date
+}
+\AfterPreamble% *inside* main document environment
+{
+	\file_get_full_name:nN{\c_sys_jobname_str}	\CurrentFile
+	\file_parse_full_name:VNNN \CurrentFile \CurrentFilePath \CurrentFileName \CurrentFileExt
+	\GetFileInfo{\CurrentFile}
 }
 
 
