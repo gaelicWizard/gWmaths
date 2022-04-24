@@ -1,5 +1,8 @@
 %<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\NeedsTeXFormat{LaTeX2e}[2021/11/01]	\RequirePackage{ l3keys2e, etoolbox,	}%
+\NeedsTeXFormat{LaTeX2e}[2021/11/01]	\RequirePackage{ l3keys2e,	}%
+%%!TEX encoding = UTF-8
+%%!TEX root = gWmaths.dtx
+%%!TEX spellcheck = en-US
 %<cls>\ProvidesExplClass%
 %<sty>\ProvidesExplPackage%
 %<*!sty&!cls>
@@ -9,19 +12,7 @@
 			{2022/04/15}	{0.6.2}%
 		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ifcsundef{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%!TEX encoding = UTF-8
-%%!TEX root = gWmaths.dtx
-%%!TEX spellcheck = en-US
-%!TEX parameter = -8bit
-%!TeX program = pdflatexmk
-%!BIB program = biber
-% -interaction=nonstopmode
-%--enable-8bit-chars
-%-interaction=batchmode
-%<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cs_if_exist:cTF{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \begin{abstract}
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,11 +34,21 @@ John Pell
 % The list of all files belonging to `gWmaths' is given in the file `manifest.txt'.
 
 %</dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \end{abstract}
+}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%!TEX encoding = UTF-8
+%%!TEX root = gWmaths.dtx
+%%!TEX spellcheck = en-US
+%!TEX parameter = -8bit
+%!TeX program = pdflatexmk
+%!BIB program = biber
+% -interaction=nonstopmode
+%--enable-8bit-chars
+%-interaction=batchmode
 }%
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
 % \section{Installer job file}	\label{ins}
 %
@@ -156,7 +157,54 @@ John Pell
 %</drv>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*sty>
+% \section{ Convenience Names for Common Hooks }
+% Most of these are provided by the format, so the following declarations do absolutely nothing. Others are provided by \pkg{etoolbox}, so this really only covers the case where \pkg{etoolbox} isn't ever loaded.
 %
+%    \begin{macrocode}
+\ProvideDocumentCommand	\IfFormatAtLeastTF	{mmm}%
+{	\@ifl@t@r\fmtversion{#1}{#2}{#3}	}
+\AddToHook{cmd/IfFormatAtLeastTF/before}%
+{
+	% IF \pkg{etoolbox}
+	%tl_compare_string_some_shit_jobname
+	% THEN \cs{endinput}
+	%{	\endinput	}{}
+}
+\RequirePackage{etoolbox} % Load \pkg{etoolbox} before the following until the above is implemented
+%% Packages and Classes
+\ProvideDocumentCommand \AtEndOfPackage	{m}% ...this is not an accurate representation of the actual kernel code
+{	\AddToHookNext{ package/after }{ #1 }	}
+\ProvideDocumentCommand \AtEndOfClass	{m}% ...this is not an accurate representation of the actual kernel code
+{	\AddToHookNext{ class/after }{ #1 }	}
+%% Document Environment
+\ProvideDocumentCommand \AtEndPreamble	{om}%
+{	\AddToHook{ begindocument/before }[ #1 ]{ #2 }	}
+\ProvideDocumentCommand \AtBeginDocument	{om}%
+{	\AddToHook{ begindocument }[ #1 ]{ #2 }	}
+\ProvideDocumentCommand \AfterEndPreamble	{om}%
+{	\AddToHook{ begindocument/end }[ #1 ]{ #2 }	}
+\ProvideDocumentCommand	\AfterPreamble	{om}%
+{	\PackageWarning{ gWmaths }%
+	{ \cs{AfterPreamble}~is~*not*~fully~inside~document~body!! }
+	\AtBeginDocument[ #1 ]{ #2 }%
+%%% \AfterPreamble	% \let\AfterPreamble\AtBeginDocument
+}
+\ProvideDocumentCommand \AtEndDocument	{om}%
+{	\AddToHook{ enddocument }[ #1 ]{ #2 }	}
+\ProvideDocumentCommand \AfterEndDocument	{om}%
+{	\AddToHook{ enddocument/end }[ #1 ]{ #2 }	}
+%% Environments
+\ProvideDocumentCommand	\BeforeBeginEnvironment	{omm}%
+{	\AddToHook{ env/ #2 /before }[ #1 ]{ #3 }	}
+\ProvideDocumentCommand	\AtBeginEnvironment	{omm}%
+{	\AddToHook{ env/ #2 /begin }[ #1 ]{ #3 }	}
+\ProvideDocumentCommand	\AtEndEnvironment	{omm}%
+{	\AddToHook{ env/ #2 /end }[ #1 ]{ #3 }	}
+\ProvideDocumentCommand	\AfterEndEnvironment	{omm}%
+{	\AddToHook{ env/ #2 /after }[ #1 ]{ #3 }	}
+%    \end{macrocode}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \section{ \pkg{\filename} utilities package }
 %
 %    \begin{macrocode}
