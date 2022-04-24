@@ -811,6 +811,7 @@ John Pell
 }
 \NewDocumentCommand	\LoadPackagesNow	{ s }
 {%TODO: fix up the at-end-preamble version
+	\PackageWarning{gWpkgs}{ Loading~Packages~Now }
 	\setcounter{gWpkgd}{\value{gWpkgs}}
 	\stepcounter{gWpkgs}
 	\RequestPackagesAlreadyLoaded{gWpkgs \thegWpkgd}
@@ -1625,7 +1626,7 @@ John Pell
 	%\let\docthanks\@thanks % this is bjorked due to missing macros
 	\let\docdate\@date
 }
-\AfterPreamble% *inside* main document environment
+\AtBeginDocument% *inside* main document environment
 {
 	\file_get_full_name:nN{\c_sys_jobname_str}	\CurrentFile
 	\file_parse_full_name:VNNN \CurrentFile \CurrentFilePath \CurrentFileName \CurrentFileExt
