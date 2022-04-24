@@ -9,7 +9,7 @@
 \ProvidesExplFile%
 %</!sty&!cls>
  	{gWmaths}
-			{2022/04/15}	{0.6.2}%
+			{2022/04/23}	{0.6.2}%
 		{COVID-19 Quarantine Accessible \TeX* Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \cs_if_exist:cTF{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -605,54 +605,51 @@ John Pell
 \AtEndOfPackage%
 {	\RequirePackage{gWpkgs}	}%
 %
-\NewDocumentCommand\RequirePackageBeforePackage{ o m o m }
+\NewDocumentCommand	\RequirePackageBeforePackage	{ o m o m }%
 {
-	\IfValueT{ #1 }
+	\IfValueT{ #1 }%
 	{
 		%\PackageInfo{ gWpkgs / RequirePackageBefore }{ Passing~#1~to~#2 }
 		\PassOptionsToPackage{ #1 }{ #2 }
 	}
 	%\PackageInfo{ gWpkgs / RequirePackageBefore }{ Adding~#2~to~package/before/#4 }
 	\IfValueTF{ #3 }
-	{	\AddToHook{package/before/#4}{\RequirePackage{#2}[#3]}	}
-	{	\AddToHook{package/before/#4}{\RequirePackage{#2}}	}
+	{	\AddToHook{package/ #4 /before}{\RequirePackage{#2}[#3]}	}
+	{	\AddToHook{package/ #4 /before}{\RequirePackage{#2}}	}
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand\RequirePackageAfterPackage{ o m o m }
-{
-	\IfValueT{ #1 }
+\NewDocumentCommand	\RequirePackageAfterPackage	{ o m o m }%
+{	\IfValueT{ #1 }%
 	{
 		%\PackageInfo{ gWpkgs / RequirePackageAfter }{ Passing~#1~to~#2 }
 		\PassOptionsToPackage{ #1 }{ #2 }
 	}
 	%\PackageInfo{ gWpkgs / RequirePackageAfter }{ Adding~#4~to~package/after/#2 }
 	\IfValueTF{ #3 }
-	{	\AddToHook{package/after/#4}{	\RequirePackage{#2}[#3]	}	}
-	{	\AddToHook{package/after/#4}{	\RequirePackage{#2}	}	}
+	{	\AddToHook{package/ #4 /after}{	\RequirePackage{#2}[#3]	}	}
+	{	\AddToHook{package/ #4 /after}{	\RequirePackage{#2}	}	}
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand\RequirePackageBeforePackageIfPackage{ m m m o }
+\NewDocumentCommand	\RequirePackageBeforePackageIfPackage	{ m m m o }%
 {
-	\PackageInfo{ gWpkgs / RequirePackageBeforePackageIfPackage }
+	\PackageInfo{ gWpkgs / RequirePackageBeforePackageIfPackage }%
 	{ #1 ~when~ #2 ~if~ #3  }
-	\AddToHook{package/before/#2}
-	{
-		\@ifpackageloaded{#3}
-		{	\RequirePackage{#1}	}
-	}
-}
+	\AddToHook{package/ #2 /before}%
+	{	\@ifpackageloaded{#3}%
+		{	\RequirePackage{#1}	}{}
+}	}
 %    \end{macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand\RequirePackageAfterPackageIfPackage{ m m m o }
+\NewDocumentCommand	\RequirePackageAfterPackageIfPackage	{ m m m o }%
 {
-	\PackageInfo{ gWpkgs / RequirePackageAfterPackageIfPackage }
+	\PackageInfo{ gWpkgs / RequirePackageAfterPackageIfPackage }%
 	{ #1 ~when~ #2 ~if~ #3  }
-	\AddToHook{package/after/#2}
+	\AddToHook{package/ #2 /after}%
 	{
-		\@ifpackageloaded{#3}
-		{	\RequirePackage{#1}	}
+		\@ifpackageloaded{#3}%
+		{	\RequirePackage{#1}	}{}
 	}
 }
 %    \end{macrocode}
