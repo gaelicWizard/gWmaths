@@ -1625,9 +1625,9 @@ John Pell
 		%pdfsubject={},
 		%pdfsubtitle={},
 		%pdfurl={}, % full path to *this* PDF
-		pdfcreationdate={\pdffilemoddate{\jobname.tex}},%
+		pdfcreationdate={\tex_filemoddate:D{\jobname.tex}},%
 		%pdfinfo={%
-			%CreationDate={\pdffilemoddate{\jobname.tex}}
+			%CreationDate={\tex_filemoddate:D{\jobname.tex}}
 		%}
 		%pdfsource={\jobname.tex} % default
 		pdfuapart=1, % that's the whole point, but we're lacking...
