@@ -1,5 +1,3 @@
-A DTX file is parsed as a whole multiple times from within itself through multiple different parsers.
-Additionally, portions are extracted to entirely separate files, which are then imported during parsing of the DTX itself such that some lines are processed multiple times during a single parse (of many parses).
 Programmers believe in a form of ritual hazing called `recursion', and the ability to construct a working DTX is somewhat of a rite of passage before being allowed to publish a \LaTeX* package.
 Consider this my proof of qualification.
 

@@ -1,8 +1,8 @@
-%<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\NeedsTeXFormat{LaTeX2e}[2021/11/01]	\RequirePackage{ l3keys2e,	}%
+%<*!README&!xmplmain&!xmpllecture&!xmplexam&!xmplquiz&!xmplgroup>%%%%%%%%%%%%%%%
+\NeedsTeXFormat{LaTeX2e}[2021/11/01]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%!TEX encoding = UTF-8
 %%!TEX root = gWmaths.dtx
-%%!TEX spellcheck = en-US
+%%!BIB program = biber
 %<cls>\ProvidesExplClass%
 %<sty>\ProvidesExplPackage%
 %<*!sty&!cls>
@@ -15,10 +15,8 @@
 \cs_if_exist:cT{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \begin{abstract}
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%</!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%</!README&!xmplmain&!xmpllecture&!xmplexam&!xmplquiz&!xmplgroup>%%%%%%%%%%%%%%%
 %<*dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-A DTX file is parsed as a whole multiple times from within itself through multiple different parsers.
-Additionally, portions are extracted to entirely separate files, which are then imported during parsing of the DTX itself such that some lines are processed multiple times during a single parse (of many parses).
 Programmers believe in a form of ritual hazing called `recursion', and the ability to construct a working DTX is somewhat of a rite of passage before being allowed to publish a \LaTeX* package.
 Consider this my proof of qualification.
 
@@ -41,20 +39,11 @@ John Pell
 
 %</dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*!xmplmain&!xmpllecture&!xmplexam&!xmplquiz&!xmplgroup>%%%%%%%%%%%%%%%%%%%%%%%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \end{abstract}
+% \ExplSyntaxOff
 }%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%    \begin{macrocode}
-%%!TEX encoding = UTF-8
-%%!TEX root = gWmaths.dtx
-%%!TEX spellcheck = en-US
-%%!TEX parameter = -8bit
-%%!TeX program = pdflatexmk
-%%!BIB program = biber
-%% -interaction=nonstopmode
-%%--enable-8bit-chars
-%%-interaction=batchmode
-%    \end{macrocode}
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
 % \section{Installer job file}	\label{ins}
@@ -86,13 +75,15 @@ John Pell
 %
 %    \begin{macrocode}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
-  \file{README.txt}{\from{\jobname.dtx}{README}}
+  \file{README.txt}{\from{\jobname.dtx}{README}}%
   %\filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
   %\file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
   %\file{\jobname.\@stripextension}{\from{\jobname.dtx}{\@stripextension}}
-  \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
-  \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
+  \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}%
+  \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}%
   %\file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
+  \file{MAT-101.tex}{\from{\jobname.dtx}{xmplmain}}%
+  %\file{Lectures/Chapter~2.tex}{\from{\jobname.dtx}{xmpllecture}}%
 %    \end{macrocode}
 %
 % \begin{macro}{ReportTotals}
@@ -110,7 +101,7 @@ John Pell
 % \end{macro}
 %</ins>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage{ iftex,	}%
+\RequirePackage{ iftex,	l3keys2e,	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
 % \section{ Documentation driver file }
@@ -1885,5 +1876,63 @@ git --no-pager log -1 --date=short --decorate=short \
     ]{gitexinfo}" HEAD > .git/gitHeadInfo.gin
 \end{filecontents*}
 %</ins>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<dtx>\Finale% \cls{l3doc}, \pkg{doc}, \cs{\StopEventually}
+%</!xmplmain&!xmpllecture&!xmplexam&!xmplquiz&!xmplgroup>%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*xmplmain|xmpllecture|xmplexam|xmplquiz|xmplgroup>%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    \begin{macrocode}
+\documentclass%
+%%!TEX encoding = UTF-8
+%%!TEX parameter = -8bit
+[	main=english,% The language the course is taught in, used by \pkg{babel}
+%%!TEX spellcheck = en-US
+	course=MATH-101,% Put the official course designation here, and the next line:
+%%!TEX root = MATH-101.TEX
+	catalognumber=15243,% Put the catalog/section number for this iteration of the class.
+%<*xmpllecture|xmpl_stuff_>
+	chapters=1,% This lecture only covers content from Chapter 1 of the text book.
+	firstsection=2,% This lecture begins with section 2 of the chapter.
+	% See below for how to skip sections
+%</xmpllecture|xmpl_stuff_>
+]{gWmaths}
+%%!TeX program = xelatexmk
+%    \end{macrocode}
+\author{Professor Sarah Connor}
+%<xmplmain>\title{Mathematics for Liberal Artists}% Title of the course
+%<xmpllecture>\title{Sets}% Title of the chapter
+%<xmpl_stuff_>% title of the quiz/exam/coverage/whatshit
+%%
+%<xmplmain>% First Day of Class, used to generate "Spring 2202" and weekly schedule
+%<xmpllecture>% Date this lecture is to be delivered, parsed and formatted as "Week 1"
+%<xmpl_stuff_>%
+\date{2022-02-02}
+%%
+\begin{document}% Actual content begins here:
+\maketitle% Will set \thechapter, set \thechaptermark, and print a title
+
+% some other stuff
+%%
+
+%<*xmpllecture>
+\section{Using Venn Diagrams to Study Set Operations}% Increments section counter and prints a heading
+
+\subsection{Finding the Difference of Two Sets}
+
+\begin{Exercise}
+Let $A = \{4, 6, 8, 10 \}, B = \{2, 6, 12\}$, and $C = \{8, 10 \}$. Find each set.
+\begin{enumerate}[a)]
+\item $A - B$
+\vspace{0.5 in}
+\item $B - C$
+\vspace{0.3 in}
+\item $(A - B) - C$
+\vspace{0.5 in}
+\end{enumerate}
+\end{Exercise}
+%</xmpllecture>
+
+
+
+% some other stuff
+\end{document}
+%</xmplmain|xmpllecture|xmplexam|xmplquiz|xmplgroup>
