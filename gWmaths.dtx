@@ -1296,12 +1296,9 @@ John Pell
 ]{geometry}
 
 
-\bool_if:nT \gW@autodate{%
-	\ifXeTeX%
-		\RequirePDFTeX % or LuaTeX
-	\else%
-		\AtEndOfClass{ \date{ \filemodprintdate{ \jobname.tex } } }%
-	\fi%
+\bool_if:nT \gW@autodate%
+{
+	\AtEndOfClass{ \date{ \filemodprintdate{ \jobname.tex } } }%
 }%
 
 
