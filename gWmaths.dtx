@@ -1044,6 +1044,7 @@ John Pell
 %<*cls>
 % \section{ \cls{ \filename } ~ document ~ class }
 %
+%\ifXeTeX\pdftrue\fi % SOME APPS ASSUME THIS MEANS PDFTEX
 \cs_if_exist:NTF \DocumentMetadata%
 { % MUST be as early as possible, note that we have to even have to hide:
 	\cs_if_eq:NNT \documentclass \@twoclasseserror%
