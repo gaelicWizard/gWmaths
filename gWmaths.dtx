@@ -111,6 +111,7 @@ John Pell
 %    \begin{macrocode}
 \documentclass{l3doc}
 \usepackage{gWmaths}
+\RequestPackage{embedfile,dtx-attach}
 
 %\EnableCrossrefs % Say \DisableCrossrefs if index is ready
 \CodelineIndex % \vs. \PageIndex
@@ -1421,8 +1422,14 @@ John Pell
 	venndiagram,	%https://tex.stackexchange.com/a/381249
 }}
 
+\RequestPackage% Use real subscripts/superscripts from OTF fonts, when available.
+	{realscripts}
 
-
+%\RequestPackage% Allow including external files encapsulated in the resulting PDF.
+%	{embedfile}
+%\RequestPackage% \pkg{embedall} does the automagic using file hooks
+%	[notall]%FIXME: make sure this loads at the right time, double-check options, &c.
+%	{embedall}
 
 \bool_if:nT \gW@oneinch{
 	\AtEndOfClass{
