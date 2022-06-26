@@ -1834,11 +1834,18 @@ John Pell
 %% https://tex.stackexchange.com/questions/108696/what-do-explsyntaxon-and-explsyntaxoff-do
 
 
-%\begin{filecontents*}{platexmkrc}
-%\end{filecontents*}
+\begin{filecontents*}{latexmkrc}
+# This file _MUST NOT_ have any file extension; just `latexmkrc`.
+# This file forces XeLaTeX when used with LaTeXmk as invoked by TeXShop.
+$pdf_mode = 5;
+$dvi_mode = $postscript_mode = 0;
+push @extra_xelatex_options, "-8bit";
+push @extra_xelatex_options, $TSUserCompileOptions;
+\end{filecontents*}
  %% git update-index --assume-unchanged from https://stackoverflow.com/a/10755704
  %% BUT WAIT: https://stackoverflow.com/a/13631525
  %% git update-index --skip-worktree gWmaths.cls gWmaths.sty README.md gWmaths.drv
+ %% ctanify --pkgname=gWmaths --tdsonly='*.sty' --tdsonly='*.cls' gWmaths.{dtx,pdf} *.{sty,cls,txt,tex,def}
 %</cls>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
