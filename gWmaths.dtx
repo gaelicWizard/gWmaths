@@ -602,9 +602,22 @@ John Pell
 % Set one package to always load another package immediately before itself. This should not be used for general package ordering, but should only be used when a particular package is absolutely required, but only if the other package is loaded at all. This isn't about ordering; this is a conditional requirement.
 %
 %    \begin{macrocode}
+\AddToHook{package/request}
+{%
+}{}
+\AddToHook{class/beamer/request}[gWpkgs]
+{	\DeclarePackageOrdering{hyperref}{after}{beamerbasemodes}[\cls{beamer} loads \pkg{hyperref} halfway through...]
+	\DeclarePackageOrdering{hyperref}{after}{beamerbaseoptions}[\cls{beamer} loads \pkg{hyperref} halfway through...]
+	\DeclarePackageOrdering{hyperref}{before}{beamerbaserequires}[\cls{beamer} loads \pkg{hyperref} halfway through...]
+	\DeclarePackageOrdering{hyperref}{unrelated}{gWpkgs / class / after}[\cls{beamer} loads \pkg{hyperref} halfway through...]
+	\DeclarePackageOrdering{geometry}{unrelated}{gWpkgs / class / after}[\cls{beamer} loads \pkg{hyperref} halfway through...]
+}
 \AtEndOfPackage%
-{	\RequirePackage{gWpkgs}
-	\RequestPackagesAlreadyLoaded{gWpkgs \thegWpkgs}
+{	\DeclarePackageOrdering{gWmaths}{before}{ gWpkgs / class / before }
+	\DeclarePackageOrdering{gWpkgs}{before}{ gWpkgs / class / before }
+	\RequestPackagesAlreadyLoaded{ gWmaths }%
+	\RequirePackage{gWpkgs}
+	\RequestPackagesAlreadyLoaded{ gWpkgs }%
 }%
 %
 \NewDocumentCommand	\RequirePackageBeforePackage	{ o m o m }%
@@ -721,36 +734,56 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackages	{ o m o }
-{	\UseHook{ package / request }
-
-	\clist_map_inline:nn{ #2 }%
+{	\clist_map_inline:nn{ #2 }%
 	{\IfValueT{##1}{% value(package)
 		\ActivateGenericHook{ package / ##1 / request }%
 
-		\cs_if_exist:cF {	ver@ ##1 .sty	}%
+		\IfValueT{#1}{	\PassOptionsToPackage{ #1 }{ ##1 }	}%
+		\cs_if_exist:cTF {	ver@ ##1 .sty	}%
+		{	\AddToHook{ gWpkgs }[##1]{\relax}	}
 		{	\DeclareHookRule{ gWpkgs }%
-				{ ##1 }{after}{ gWpkgs \thegWpkgs }%
-		}%
-		\PassOptionsToPackages{ #1 }{ ##1 }%
+				{ ##1 }{after}{ gWpkgs }%
 
-		\IfValueTF{#3}%
-		{\AddToHook{ gWpkgs }[##1]{	\RequirePackage{##1}[#3]	}}%
-		{\AddToHook{ gWpkgs }[##1]{	\RequirePackage{##1}	}}%
+			\IfValueTF{#3}%
+			{\AddToHook{ gWpkgs }[##1]{	\RequirePackage{##1}[#3]	}}%
+			{\AddToHook{ gWpkgs }[##1]{	\RequirePackage{##1}	}}%
+		}%
 
 		\UseOneTimeHook{ package / ##1 / request }%
-}	}}%
+	}	}
+	\UseHook{ package / request }
+}%
 \NewHook{ package / request }
 \let\RequestPackage\RequestPackages
 %    \end{macrocode}
 %    \begin{macrocode}
+\AtEndOfPackage%
+{	\DeclarePackageOrdering{gWpkgs / class / before}{after}{gWpkgs}[...]
+	\DeclarePackageOrdering{gWpkgs / class / before}{before}{gWpkgs / class / after}[life is pain]
+	\AddToHook { gWpkgs }[ gWpkgs / class / before ]%
+	{
+		\relax%\RequestPackagesAlreadyLoaded{gWpkgs / class / before}
+	}
+	\AddToHook { gWpkgs }[ gWpkgs / class / after ]%
+	{
+		\relax%\RequestPackagesAlreadyLoaded{gWpkgs / class / after}
+	}
+
+}
 \NewDocumentCommand	\RequestClass	{ o m o }
 {	\UseHook{ class / request }
 	\ActivateGenericHook{ package / #2 / request }
-	\DeclarePackageOrdering{#2}{before}{gWpkgs \thegWpkgs}[class loads before nearly all packages]
-	\RequestPackagesAlreadyLoaded{#2}
+	\ActivateGenericHook{ class / #2 / request }
+	\RequestPackagesAlreadyLoaded{ #2 }
+	\DeclarePackageOrdering{#2}{after}{gWpkgs / class / before}[class loads before nearly all packages]
 	%\PassOptionsToClass....
-	\AddToHook { gWpkgs }[#2]
-	{\cs_if_exist:cF{ ver@ #2 .cls }{	\LoadClass{#2}[#3]	}}%
+	\AddToHook { gWpkgs }[#2]%
+	{%
+		\cs_if_exist:cF{ ver@ #2 .cls }%
+		{	\LoadClass{#2}[#3]	}
+	}
+	\UseOneTimeHook{ class / #2 / request }
+	\DeclarePackageOrdering{#2}{before}{gWpkgs / class / after}[class loads before nearly all packages]
 	\UseOneTimeHook{ package / #2 / request }
 }
 \NewHook{ class / request }
@@ -825,9 +858,8 @@ John Pell
 		{	\tl_if_blank:nTF{#2}%
 			{	#3	}%
 			{	\clist_if_in:cnT {opt@ ##1 .sty} {#2}%
-				{#3}%
-			}
-}	}	}%
+				{	#3	}
+}	}	}	}%
 \NewDocumentCommand	\gW_check_packages_loaded	{ s }
 {% \cs{RequestPackage} all packages already \cs{RequirePackage}d.
 	%\seq_map_inline:Nn \l_pclist_classes_seq {}
@@ -847,12 +879,14 @@ John Pell
 	{\tl_if_in:nnT { ##1 } { .sty }{
 		\tl_set:Nn \l_tmpa_tl { ##1 }
         	\tl_remove_once:Nn \l_tmpa_tl { .sty }
+		%\PackageWarning{gWpkgs}{\l_tmpa_tl ~~before~#2}
 	% 1 change ordering rule from after to before gWpkgs/before/packages
 		\DeclareHookRule{ gWpkgs }%
 			{ \l_tmpa_tl }{before}{ #2 }
 		\exp_args:NV	\RequestPackage	{\l_tmpa_tl}
 	% 2 add ordering rule `before' \cs{LoadPackagesNow}. This should generate errors if any rules conflict.
 	}}
+	\AddToHook{gWpkgs}[#2]{\relax}
 }
 \AddToHook{ package / before }%
 {	\exp_args:NV	\RequestPackage	{\@currname}	}
@@ -860,15 +894,12 @@ John Pell
 \NewDocumentCommand	\LoadPackagesNow	{ s }
 {%TODO: fix up the at-end-preamble version
 	\PackageWarning{gWpkgs}{ Loading~Packages~Now }
-	\setcounter{gWpkgd}{\value{gWpkgs}}
 	\stepcounter{gWpkgs}
-	\AddToHook{ gWpkgs }[gWpkgs \thegWpkgd]%
-	{	\PackageInfo{ gWpkgs }{ Loading~Packages... }	}%
-	\DeclareHookRule{ gWpkgs }%
-		{ gWpkgs \thegWpkgd }{before}{ gWpkgs \thegWpkgs }
 	\LogHook{ gWpkgs }%
 	\IfBooleanTF{#1}%
-	{\UseOneTimeHook{ gWpkgs }}%
+	{	\UseOneTimeHook{ gWpkgs }
+		\let\LoadPackagesNow\relax
+	}%
 	{\UseHook{ gWpkgs }}%
 }
 \newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
@@ -893,14 +924,14 @@ John Pell
 {
 	\clist_map_inline:nn{ #3 }
 	{\tl_if_blank:nF{##1}{
-		\@ifpackageloaded{ ##1 }
-		{
-			\DeclareHookRule{ gWpkgs }
-				{ ##1 }{before}{ gWpkgs \thegWpkgs }
-		}{
-			\DeclareHookRule{ gWpkgs }
-				{ ##1 }{after}{ gWpkgs \thegWpkgs }
-		}
+%		\@ifpackageloaded{ ##1 }
+%		{
+%			\DeclareHookRule{ gWpkgs }
+%				{ ##1 }{before}{ gWpkgs \thegWpkgs }
+%		}{
+%			\DeclareHookRule{ gWpkgs }
+%				{ ##1 }{after}{ gWpkgs \thegWpkgs }
+%		}
 		\DeclareHookRule{ gWpkgs }
 			{ #1 }{ #2 }{ ##1 }
 	}
@@ -931,6 +962,8 @@ John Pell
 	% if #5 was passed to #4 (and #4 requested/loaded), then \DeclarePackageDependency#1{#2}{#3}[#6]
 }
 %    \end{macrocode}
+%
+%
 %    \begin{macrocode}
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -1160,19 +1193,16 @@ John Pell
 %% Set up \HyperTeX* (hyperref, et al), which is basically the structural core of the document:
 \bool_if:nT \gW@hyperTeX
 {
-	\AddToHook{ class/beamer/before }
+	\AddToHook{ class / beamer / before }%
 	{% Choose violence over \cls{beamer}.
 	%TODO: *check* if implicit=true before forcing it here
 	%TODO: can \pkg{hyperref}'s `implicit's be fixed to new hooks?
-		\PassOptionsToPackage
-		{
-			implicit=false,
-			implicit=true,
-		}{hyperref}
+		\AddToHook{ package / hyperref / before }%
+		{	\PassOptionsToPackage{	implicit,	}{hyperref}	}
 	}% hook: package/before/hyperref
 
 	\PassOptionsToPackages
-	{	implicit, % Redefine \LaTeX* internals, already default
+	{	%implicit, % Redefine \LaTeX* internals, already default
 		hypertexnames, % Use guessable names for anchors, already default
 		%hyperfigures, % make figures hyper links
 		hyperfootnotes, % set up hyperlinked footnotes, already default
@@ -1184,7 +1214,7 @@ John Pell
 	pdfusetitle, % use \title{} for PDF metadata
 	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
 	pdfpagelabels, % tag pages with page numbers from \LaTeX* ("ii" or whatever)
-}{hyperpref}}
+}{hyperref}}
 
 \RequestPackage[% `hyperref`
 	colorlinks, % set hyperlinks in color
@@ -1265,7 +1295,7 @@ John Pell
 \RequestPackage{amsmath}
 %
 %% Inform *all* packages that `amsmath` is in use:
-\gW@addGlobalOption{amsmath}
+%\gW@addGlobalOption{amsmath}
 \DeclareGlobalOptionsIfPackage{amsmath}{amsmath}[some packages like to be told if \pkg{amsmath} is in use]
 %%
 \PassOptionsToPackageIfPackage
@@ -1289,6 +1319,9 @@ John Pell
 	%autopunct % look ahead for trailing punctuation to move inside marks
 ]{csquotes}
 
+%
+%% Fix paragraph spacing: don't indent, do separate paragraphs.
+\RequestPackage{parskip}
 
 
 \RequestPackage[% `currfile`
@@ -1316,10 +1349,10 @@ John Pell
 ]{geometry}
 
 
-\bool_if:nT \gW@autodate%
-{
+%\bool_if:nT \gW@autodate%
+%{
 	\AtEndOfClass{ \date{ \filemodprintdate{ \jobname.tex } } }%
-}%
+%}%
 
 
 \PassOptionsToPackages
@@ -1376,10 +1409,11 @@ John Pell
 \RequestClass	{\gW@documentClass}%
 %%
 \RequestPackage{regexpatch}% ...see \pkg{regexpatch}...
-\ProvideDocumentCommand	\subtitle	{m}%
-{\def\@subtitle{#1}}%
-\subtitle{}%default is blank
 \AtEndOfClass{%
+	\ProvideDocumentCommand	\subtitle	{m}%
+	{\def\@subtitle{#1}}%
+	\subtitle{}%default is blank
+	%%
 	% Patch \cs{@maketitle} to add a smaller subtitle after the main title, while keeping \cs{@title} clean.
 	\xpatchcmd{\@maketitle}{{\LARGE \@title \par}}{{\LARGE \@title \par}{\Large \@subtitle \par}}{}{}%
 	\xapptocmd{\maketitlehookb}{\par {\centering\Large \@subtitle \par}}{}{}
@@ -1421,12 +1455,12 @@ John Pell
 % See https://github.com/mhelvens/latex-pkgloader/blob/master/pkgloader-recommended.sty
 %%
 \RequestPackage{
-	%babel, % No discernible performance impact for just always loading.
+	babel, % No discernible performance impact for just always loading.
 	hyperxmp, % babel cannot set the pdf-lang option for hyperref, but it can through hyperxmp!
 
 	%amsfonts,
 	%amssymb,
-	amsmath,
+	%amsmath,
 	%mathtools,
 %%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
 }
@@ -1541,6 +1575,7 @@ John Pell
 	%shortlabels, % compatible with `enumerate`
 	%unboxed % avoid problems nesting environments
 		%]{enumitem}
+	\RequestPackage{titling}% un-dumb \maketitle % see \pkg{titlesec}; incompatible w/ Beamer
 }%\gW@videolecture
 
 
@@ -1556,7 +1591,6 @@ John Pell
 	filemod,
 }%
 
-\RequestPackage{titling}% un-dumb \maketitle % see \pkg{titlesec}
 
 %define new \listofXs
 % docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
@@ -1708,8 +1742,10 @@ John Pell
 
 \AtEndOfClass%
 {	\cs_if_exist:cF{thechapter}%
-	{	\newcounter{chapter}[part]%
-		\counterwithin{section}{chapter}%
+	{	\cs_if_exist:cT{thepart}%
+		{	\newcounter{chapter}[part]%
+			\counterwithin{section}{chapter}%
+		}%
 }	}%
 % Set our header depth to maximum 1:
 \setcounter{secnumdepth}{1} % '3' is default, and numbers to subsubsections not paragraphs
@@ -1730,13 +1766,60 @@ John Pell
 
 
 
-\bool_if:nT \gW@videolecture{
-	\providecommand*{\theorembreak}{\usebeamertemplate{theorem end}\framebreak\usebeamertemplate{theorem begin}}
-}%\gW@videolecture
+\NewDocumentCommand	\gW@provideTheoremBreak	{}%
+{%
+\setbeamertemplate{theorem begin}
+{%
+  \par\vskip\medskipamount%
+  \begin{beamercolorbox}[colsep*=.75ex]{block title}
+    \usebeamerfont*{block title}%
+      \inserttheoremname
+      \ifx\inserttheoremaddition\empty\else\ (\inserttheoremaddition)\fi%
+  \end{beamercolorbox}%
+  {\parskip0pt\par}%
+  \ifbeamercolorempty[bg]{block title}
+  {}
+  {\ifbeamercolorempty[bg]{block body}{}{\nointerlineskip\vskip-0.5pt}}%
+  \usebeamerfont{block body}%
+  \vskip-.25ex\vbox{}%
+}
+\setbeamertemplate{theorem end}{}
+
+	\ProvideDocumentCommand	\theorembreak	{}%
+	{%
+		\usebeamertemplate{theorem end}
+		\framebreak
+		\usebeamertemplate{theorem begin}
+	}%
+}
+\AddToHook{class/beamer/after}{	\gW@provideTheoremBreak	}%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
+\NewDocumentCommand \AllTheCards {}
+{	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+	{	\blackcard{##1}{\spadesuit}
+		\par
+		\redcard{##1}{\varheartsuit}
+		\par
+		\blackcard{##1}{\clubsuit}
+		\par
+		\redcard{##1}{\vardiamondsuit}
+		\par
+}	}%
+%\blackcard{Q}{\spadesuit}
+%\redcard{10}{\varheartsuit}
+%\redcard{A}{\vardiamondsuit}
+%\blackcard{\jokerface}{\joker}
+
+
+
+
+%\addto\captionsenglish{%
+%	\renewcommand{\abstractname}{What To Expect}% Heading of Intro section
+%}
 
 
 
@@ -1826,22 +1909,9 @@ John Pell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % These establish different environments for stating Theorems, Lemmas, Remarks, etc.
-\AtEndPreamble{
-\newtheorem{Pf}{Proof}
+\AddToHook{package/ntheorem/after}{
 
-\newtheorem{Thm}{Theorem}
-\newtheorem{Prop}[Thm]{Proposition}
-\newtheorem{Lem}[Thm]{Lemma}
-\newtheorem{Cor}[Thm]{Corollary}
-
-%\theoremstyle{definition}
 %%https://tex.stackexchange.com/a/340458/233148
-\theorembodyfont{\upshape}
-\newtheorem{Def}[Thm]{Definition}
-
-\theoremstyle{remark}
-\newtheorem{Rem}[Thm]{Remark}
-\newtheorem{Ex}[Thm]{Example}
 
 %\theoremstyle{definition}
 \theorembodyfont{\upshape}
