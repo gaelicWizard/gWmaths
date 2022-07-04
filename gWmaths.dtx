@@ -901,10 +901,12 @@ John Pell
 		\let\LoadPackagesNow\relax
 	}%
 	{\UseHook{ gWpkgs }}%
+	\UseHook{ gWpkgs / after }
 }
 \newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
 \newcounter{gWpkgd}%...
 \NewHook{ gWpkgs }
+\NewHook{ gWpkgs / after }
 \AtEndPreamble%
 {	\LoadPackagesNow*{}	}
 %    \end{macrocode}
