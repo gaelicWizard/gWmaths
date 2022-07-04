@@ -111,7 +111,7 @@ John Pell
 %    \begin{macrocode}
 \documentclass{l3doc}
 \usepackage{gWmaths}
-\RequestPackage{embedfile,dtx-attach}
+\ifPDFTeX\RequestPackage{embedfile,dtx-attach}\fi
 
 %\EnableCrossrefs % Say \DisableCrossrefs if index is ready
 \CodelineIndex % \vs. \PageIndex
