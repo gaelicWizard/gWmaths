@@ -160,15 +160,20 @@ John Pell
 % Most of these are provided by the format, so the following declarations do absolutely nothing. Others are provided by \pkg{etoolbox}, so this really only covers the case where \pkg{etoolbox} isn't ever loaded.
 %
 %    \begin{macrocode}
-\ProvideDocumentCommand	\IfFormatAtLeastTF	{mmm}%
-{	\@ifl@t@r\fmtversion{#1}{#2}{#3}	}
-\AddToHook{cmd/IfFormatAtLeastTF/before}%
-{
+\AddToHook{ package / etoolbox / before }%
+{	%\let\IfFormatAtLeastTF\endinput
 	% IF \pkg{etoolbox}
 	%tl_compare_string_some_shit_jobname
 	% THEN \cs{endinput}
 	%{	\endinput	}{}
 }
+\AddToHook{ package / etoolbox / after }%
+{	%\undef\IfFormatAtLeastTF
+	%\providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}
+}
+%\DeclareDocumentCommand	\IfFormatAtLeastTF	{mmm}%
+%{	\@ifl@t@r\fmtversion{#1}{#2}{#3}	}
+%
 \RequirePackage{etoolbox} % Load \pkg{etoolbox} before the following until the above is implemented
 %% Packages and Classes
 %\ProvideDocumentCommand \AtEndOfPackage	{m}% ...this is not an accurate representation of the actual kernel code
