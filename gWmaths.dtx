@@ -1246,7 +1246,7 @@ John Pell
 	\PassOptionsToPackage{keeppdfinfo}{hyperref}% Make sure this is in the options string
 	\AddToHook{ package / hyperref / after }{%
 		\hypersetup{%
-			keeppdfinfo,% `hyperxmp` strips Author and Keywords by default; don't do that.
+			keeppdfinfo=true,% `hyperxmp` strips Author and Keywords by default; don't do that.
 	}}%
 }%
 %
