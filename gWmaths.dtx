@@ -1340,9 +1340,10 @@ John Pell
 
 
 
-%\PassOptionsToPackages{% `babel`
+\PassOptionsToPackages{% `babel`
+	provide*=*, % Load the locale, not just the language.
 	%english % The language can be tagged on the \documentclass declaration!
-		%}{babel}
+		}{babel}
 
 \RequestPackage[%
 	%heightrounded % round off to avoid overfull alrgn;earujs
