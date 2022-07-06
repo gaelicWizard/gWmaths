@@ -1444,8 +1444,11 @@ John Pell
 	\RenewDocumentCommand\documentclass{omo}
 	{	\tl_if_eq:nnT{#2}{gWmaths}{\gWsetup{#1}}	}%
 	\RenewDocumentEnvironment{document}{}% s
-	{}% This automatically starts *another* group, while also (locally) discarding the global environment.
-	{\ignorespacesafterend}% Avoid extra spaces after \cs{end}\arg{document}
+	{}% This automatically starts *another* group, while also shadowing the global `document' environment.
+	{
+		\aftergroup\endinput % Ensure that anything after \cs{end}\arg{document} is discarded.
+		\ignorespacesafterend % Avoid extra spaces after \cs{end}\arg{document}.
+	}
 	\AddToHookNext{file/before}%
 	{	\ExplSyntaxOff\makeatother% Start the incoming document with normal catcodes.
 		\cs_set:cpn{@partaux}{}% Allow nested \cs{include}
