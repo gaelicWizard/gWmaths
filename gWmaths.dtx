@@ -717,7 +717,7 @@ John Pell
 % \begin{macro}{RequestPackages,RequestClass}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand	\PassOptionsToPackages	{ s m m }
+\DeclareDocumentCommand	\PassOptionsToPackages	{ s m m } % TODO: latest kernel (2022-06) modifies \cs{PassOptionsToPackage}, so this should not *re*implement; just pass for each package.
 {	\clist_map_inline:nn {#3}% foreach(package)
 	{\IfValueT{##1}{% value(package)
 		\clist_if_exist:cF	{	opt@ ##1 .sty	}
@@ -1312,7 +1312,7 @@ John Pell
 %
 %% Set up formatting for telephone numbers:
 \RequestPackage[% `phonenumbers`
-	country=US, % switch defaults from DE to US.
+	country=US, % switch defaults from DE to US. % TODO: get current locale, instead of hardcoding.
 	foreign=international, % Use sensible defaults for full ITU numbers.
 	home-country=none, % Do not strip the country code (default).
 	home-area-code=none, % Do *not* strip area code, ever (default).
@@ -1328,7 +1328,7 @@ John Pell
 
 %
 %% Fix paragraph spacing: don't indent, do separate paragraphs.
-\RequestPackage{parskip}
+\RequestPackage{parskip} % Doesn't work with \cls{beamer}...maybe just loaded too late?
 
 
 \RequestPackage[% `currfile`
@@ -1578,14 +1578,13 @@ John Pell
 
 \bool_if:nF \gW@videolecture{
 	\RequestPackage{paralist} % `paralist` redefines {itemize}, {enumerate} environments
-%\RequestPackage[ % `enumitem` redefines {itemize}, {enumerate} environments
+	%\RequestPackage[ % `enumitem` redefines {itemize}, {enumerate} environments
 	% `enumitem` is substantially more complex than `paralist`
 	%shortlabels, % compatible with `enumerate`
 	%unboxed % avoid problems nesting environments
 		%]{enumitem}
 	\RequestPackage{titling}% un-dumb \maketitle % see \pkg{titlesec}; incompatible w/ Beamer
 }%\gW@videolecture
-
 
 
 %\RequestPackage% `pdfpages` improves inserting PDF clippings over graphicx
@@ -1857,12 +1856,6 @@ John Pell
   \stackinset{c}{1pt}{c}{-.4pt}{\stackunder[.7pt]{$\cdot\kern2pt\cdot\kern0.3pt$}%
   {--}}{$\bigcirc$}}{\,$\steaming$}{O}{c}{F}{F}{S}}}
 \newcommand\joker{\vcenter{\hbox{\scalebox{.4}{ \tiny JOKER }}}}
-%\begin{document}
-%\blackcard{Q}{\spadesuit}
-%\redcard{10}{\varheartsuit}
-%\redcard{A}{\vardiamondsuit}
-%\blackcard{\jokerface}{\joker}
-%\end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Begin user defined commands
