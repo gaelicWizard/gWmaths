@@ -1509,13 +1509,36 @@ John Pell
 	% literally the only difference is the `keyval' package, therefore just use `x'.
 	% ...and `x' loads `s'...
 
+% https://tex.stackexchange.com/a/12468/233148
+\def\ScaleIfNeeded{%
+	% Determine if the image is too wide for the page.
+	\ifdim\Gin@nat@width>\linewidth
+		\linewidth
+	\else
+		\Gin@nat@width
+	\fi
+}
+\AddToHook{ package / graphicx / after }%
+{%
+	\setkeys{Gin}{keepaspectratio}
+		% Instruct \pkg{graphicx} to maintain the aspect ration of all imported graphics.
+
+	% https://tex.stackexchange.com/a/86355/233148
+	\def\maxwidth#1{\ifdim\Gin@nat@width>#1 #1\else\Gin@nat@width\fi}
+	\def\maxheight#1{\ifdim\Gin@nat@height>#1 #1\else\Gin@nat@height\fi}
+	\def\textheightlesscaption{\dimexpr\textheight-4\baselineskip-\abovecaptionskip-\belowcaptionskip\relax}
+	\setkeys{Gin}{width=\maxwidth{\linewidth}, height=\maxheight{\textheightlesscaption}}
+}
+
+
+
 \ifTUTeX % "Unicode \TeX*" matches \LuaTeX* and/or \XeTeX*
 	% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
-	%\RemoveFromHook{ gWpkgs }[ inputenc ]
+	\disable@package@load{inputenc}{\PackageInfo{gWmaths}{blocked~pkg{inputenc}~from~loading.}}
 	\RequestPackage{fontspec} % Handle modern fonts
 	\PassOptionsToPackages{TU}{fontenc} % FIXME: somehow i'm loading this twice somewhere...
 	%\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
-	%\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}
+	\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}.
 	
 	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1)
 	%% Post-2017, don't use xunicode package
@@ -1528,6 +1551,7 @@ John Pell
 	% When using older engines, this tells the engine to read all files as UTF-8.
 	% \XeTeX* and \LuaTeX* always read UTF-8 and ignore this package.
 	% \LaTeX* circa 2018 and newer default to UTF-8 as well.
+	\disable@package@load{fontspec}{\PackageInfo{gWmaths}{blocked~pkg{fontspec}~from~loading.}}
 
 	\RequestPackage{%
 		%mmap,
@@ -1539,8 +1563,9 @@ John Pell
 	% `cmap` extends default character mapping to include unicode codepoints.
 	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
 \fi%\ifTUTeX
-
-
+%\AddToHook{ package / fontspec / after}%
+%{	\setmainfont{Garamond}	}
+\tracinglostchars=3 % codepoints missing characters are *errors*!
 
 %\RequirePackage[%
 	%% docs: http://mirrors.ctan.org/macros/latex/contrib/standalone/standalone.pdf
