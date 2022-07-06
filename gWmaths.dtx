@@ -160,21 +160,14 @@ John Pell
 % Most of these are provided by the format, so the following declarations do absolutely nothing. Others are provided by \pkg{etoolbox}, so this really only covers the case where \pkg{etoolbox} isn't ever loaded.
 %
 %    \begin{macrocode}
-\AddToHook{ package / etoolbox / before }%
-{	%\let\IfFormatAtLeastTF\endinput
-	% IF \pkg{etoolbox}
-	%tl_compare_string_some_shit_jobname
-	% THEN \cs{endinput}
-	%{	\endinput	}{}
+\AddToHook{ package / etoolbox / before }% Hack to prevent "already defined"
+{	\ProvideDocumentCommand\IfFormatAtLeastTF{mmm}% Eat arguments on the same line, *imperfect*...
+	{	\endinput	}
 }
 \AddToHook{ package / etoolbox / after }%
-{	%\undef\IfFormatAtLeastTF
-	%\providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}
+{	\RenewDocumentCommand\IfFormatAtLeastTF{mmm}% Restore normal functionality.
+	{	\@ifl@t@r\fmtversion{#1}{#2}{#3}	}
 }
-%\DeclareDocumentCommand	\IfFormatAtLeastTF	{mmm}%
-%{	\@ifl@t@r\fmtversion{#1}{#2}{#3}	}
-%
-\RequirePackage{etoolbox} % Load \pkg{etoolbox} before the following until the above is implemented
 %% Packages and Classes
 %\ProvideDocumentCommand \AtEndOfPackage	{m}% ...this is not an accurate representation of the actual kernel code
 %{	\AddToHookNext{ package/ @currname /after }{ #1 }	}
@@ -182,22 +175,24 @@ John Pell
 %{	\AddToHookNext{ class/ @currname /after }{ #1 }	}
 \ProvideDocumentCommand	\AfterEndOfClass	{m}%
 {	\AtEndOfClass{	\AddToHook{ class/ @currname /after }{ #1 }}	}
+\ProvideDocumentCommand	\AfterEndOfPackage	{m}%
+{	\AtEndOfClass{	\AddToHook{ package/ @currname /after }{ #1 }}	}
 %% Document Environment
-\ProvideDocumentCommand \AtEndPreamble	{om}%
+\ProvideDocumentCommand \AtEndPreamble	{om}% matches \pkg{etoolbox}
 {	\AddToHook{ begindocument/before }[ #1 ]{ #2 }	}
-\ProvideDocumentCommand \AtBeginDocument	{om}%
+\ProvideDocumentCommand \AtBeginDocument	{om}% matches kernel
 {	\AddToHook{ begindocument }[ #1 ]{ #2 }	}
-\ProvideDocumentCommand \AfterEndPreamble	{om}%
+\ProvideDocumentCommand \AfterEndPreamble	{om}% matches \pkg{etoolbox}
 {	\AddToHook{ begindocument/end }[ #1 ]{ #2 }	}
-\ProvideDocumentCommand	\AfterPreamble	{om}%
+\ProvideDocumentCommand	\AfterPreamble	{om}% matches \pkg{etoolbox}, same as \cs{AtBeginDocument}
 {	\PackageWarning{ gWmaths }%
 	{ \cs{AfterPreamble}~is~*not*~fully~inside~document~body!! }
 	\AtBeginDocument[ #1 ]{ #2 }%
 %%% \AfterPreamble	% \let\AfterPreamble\AtBeginDocument
 }
-\ProvideDocumentCommand \AtEndDocument	{om}%
+\ProvideDocumentCommand \AtEndDocument	{om}% matches kernel
 {	\AddToHook{ enddocument }[ #1 ]{ #2 }	}
-\ProvideDocumentCommand \AfterEndDocument	{om}%
+\ProvideDocumentCommand \AfterEndDocument	{om}% matches \pkg{etoolbox}
 {	\AddToHook{ enddocument/end }[ #1 ]{ #2 }	}
 %% Environments
 \ProvideDocumentCommand	\BeforeBeginEnvironment	{omm}%
