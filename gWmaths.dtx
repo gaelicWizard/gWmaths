@@ -1371,8 +1371,19 @@ John Pell
 
 \bool_if:nTF \gW@axessibility{}{}
 
-\bool_if:nT \gW@videolecture{
-	\gWsetup{documentClass = beamer}
+\bool_if:nTF \gW@videolecture%
+{%
+	%\gWsetup{documentClass = beamer}
+	%\geometry{landscape, papersize={4in,5in}, margin=4ex}
+	\NewDocumentEnvironment	{slide}	{}%
+	{	\clearpage	}{	\clearpage	}
+	\AddToHook{ class / beamer / after }%
+	{	\RenewDocumentEnvironment	{slide}	{}%
+		{	\group_end:\begin{frame}	}{	\end{frame}\group_begin:	}
+	}
+}{%
+	\NewDocumentEnvironment	{slide}	{}%
+	{	\group_end:	}{	\group_begin:	}
 }
 
 %declare option for setting margin to 1"
