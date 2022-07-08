@@ -1952,15 +1952,24 @@ John Pell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % These establish different environments for stating Theorems, Lemmas, Remarks, etc.
-\AddToHook{package/ntheorem/after}{
+\AddToHook{package/ntheorem/after}%%https://tex.stackexchange.com/a/340458/233148
+{
+	\theorembodyfont{\upshape}
+	\newtheorem{Exercise}{\textcolor{brown}{Exercise}}
 
-%%https://tex.stackexchange.com/a/340458/233148
+	\newenvironment{Solution}{\noindent{\it Solution.}}{}
 
-%\theoremstyle{definition}
-\theorembodyfont{\upshape}
-\newtheorem{Exercise}{Exercise}
-
-\newenvironment{Solution}{\noindent{\it Solution.}}{}
+%% TODO: switch this to alter \setparms@definition -> \theorem@headerfont rather than the name...but that will color the number too..?
+	\xpatchcmd{\mkheader@theorem}{{theorem}{theorem}{Theorem}}{{theorem}{theorem}{\textcolor{green}{Theorem}}}%
+	{\let\Theorem\theorem}	{}
+	\xpatchcmd{\mkheader@corollary}{{corollary}{corollary}{Corollary}}{{corollary}{corollary}{\textcolor{violet}{Corollary}}}%
+	{\let\Corollary\corollary}	{}
+	\xpatchcmd{\mkheader@lemma}{{lemma}{lemma}{Lemma}}{{lemma}{lemma}{\textcolor{orange}{Lemma}}}%
+	{\let\Lemma\lemma}	{}
+	\xpatchcmd{\mkheader@proposition}{{proposition}{proposition}{Proposition}}{{proposition}{proposition}{\textcolor{blue}{Proposition}}}%
+	{\let\Proposition\proposition}	{}
+\xpatchcmd{\mkheader@definition}{{definition}{definition}{Definition}}{{definition}{definition}{\textcolor{red}{Definition}}}%
+	{\let\Definition\definition}	{}
 }
 
 % End environments
