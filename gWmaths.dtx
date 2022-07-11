@@ -9,7 +9,7 @@
 \ProvidesExplFile%
 %</!sty&!cls>
  	{gWmaths}%
-			{2022/06/30}	{0.6.4}%
+			{2022/07/11}	{0.6.4}%
 		{COVID-19 Quarantine Accessible \TeX{} Project}%
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \cs_if_exist:cT{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1621,9 +1621,9 @@ John Pell
 \bool_if:nF \gW@videolecture{
 	\RequestPackage{paralist} % `paralist` redefines {itemize}, {enumerate} environments
 	%\RequestPackage[ % `enumitem` redefines {itemize}, {enumerate} environments
-	% `enumitem` is substantially more complex than `paralist`
-	%shortlabels, % compatible with `enumerate`
-	%unboxed % avoid problems nesting environments
+		% `enumitem` is substantially more complex than `paralist`
+		%shortlabels, % compatible with `enumerate`
+		%unboxed % avoid problems nesting environments
 		%]{enumitem}
 	\RequestPackage{titling}% un-dumb \maketitle % see \pkg{titlesec}; incompatible w/ Beamer
 }%\gW@videolecture
@@ -1964,6 +1964,15 @@ John Pell
 	\newenvironment{Solution}{\noindent{\it Solution.}}{}
 
 %% TODO: switch this to alter \setparms@definition -> \theorem@headerfont rather than the name...but that will color the number too..?
+	%\xpatchcmd{\setparams@definition}{\def \theorem@headerfont }{\def \theorem@headerfont#1\ }%
+	%{	\xpatchcmd{\setparams@definition}{\}\def \theorem@separator \{}{ \textcolor{red}{#1}\ \}\def \theorem@separator \{}	{}{}	}	{}
+	\xpatchcmd{\setparms@definition}{\csname th@plain\endcsname}{\th@plain}%
+	{}{}
+
+
+	\xpatchcmd{\mkheader@definition}{{definition}{definition}{Definition}}{{definition}{definition}{\textcolor{red}{Definition}}}%
+	{\let\Definition\definition}	{}
+
 	\xpatchcmd{\mkheader@theorem}{{theorem}{theorem}{Theorem}}{{theorem}{theorem}{\textcolor{green}{Theorem}}}%
 	{\let\Theorem\theorem}	{}
 	\xpatchcmd{\mkheader@corollary}{{corollary}{corollary}{Corollary}}{{corollary}{corollary}{\textcolor{violet}{Corollary}}}%
@@ -1972,8 +1981,6 @@ John Pell
 	{\let\Lemma\lemma}	{}
 	\xpatchcmd{\mkheader@proposition}{{proposition}{proposition}{Proposition}}{{proposition}{proposition}{\textcolor{blue}{Proposition}}}%
 	{\let\Proposition\proposition}	{}
-\xpatchcmd{\mkheader@definition}{{definition}{definition}{Definition}}{{definition}{definition}{\textcolor{red}{Definition}}}%
-	{\let\Definition\definition}	{}
 }
 
 % End environments
