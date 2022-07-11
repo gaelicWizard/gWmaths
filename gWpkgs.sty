@@ -146,7 +146,8 @@
 \DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / class / after	}[Assumes several control sequences already defined]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / class / after	}
 \DeclarePackageDependency*{ hyperxmp	}{	hyperref	}
-\DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}
+\DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}[In newer kernels, \pkg{hyperxmp} *must* load before any \pkg{hyperref} keys are set...]
+%\DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}%% WHY?!
 \DeclarePackageDependency{ hyperxmp	}{	kvoptions,
 							pdfescape,
 							stringenc,
@@ -160,8 +161,8 @@
 \DeclarePackageOrdering{ xcolor		}{before}{	gWpkgs / class / after	}
 \DeclarePackageOrdering{ graphicx	}{before}{	gWpkgs / class / after	}
 \DeclarePackageDependency{ venndiagram	}{	graphicx	}
-\DeclarePackageOrdering{ venndiagram	}{after}{	tikz,
-							pgf,	}[\cs{RequirePackage}]
+\DeclarePackageDependency{ venndiagram	}{	tikz,
+						pgf,	}[\cs{RequirePackage}]
 \DeclarePackageOrdering{ varioref	}{after}{	babel }
 \DeclarePackageDependency{ bookmark	}{	currfile }[uses if already loaded]
 \DeclarePackageDependency{ bookmark	}{	hyperref }[loads itself without options early]
