@@ -1554,7 +1554,7 @@ John Pell
 	\disable@package@load{inputenc}{\PackageInfo{gWmaths}{blocked~pkg{inputenc}~from~loading.}}
 	\RequestPackage{fontspec} % Handle modern fonts
 	\PassOptionsToPackages{TU}{fontenc} % FIXME: somehow i'm loading this twice somewhere...
-	%\defaultfontfeatures{Ligatures=TeX} % Make ASCII nicer
+	\AddToHook{package/ fontspec /after}{\defaultfontfeatures{Ligatures=TeX}} % Make ASCII nicer
 	\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}.
 	
 	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1)
