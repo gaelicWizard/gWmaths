@@ -1960,8 +1960,8 @@ John Pell
 {
 	\theorembodyfont{\upshape}
 	\newtheorem{Exercise}{\textcolor{brown}{Exercise}}
-
 	\newenvironment{Solution}{\noindent{\it Solution.}}{}
+	%$ TODO: prepend \cs{pagebreak}\oarg{2} to \cs{endExercise} and \cs{endSolution}
 
 %% TODO: switch this to alter \setparms@definition -> \theorem@headerfont rather than the name...but that will color the number too..?
 	%\xpatchcmd{\setparams@definition}{\def \theorem@headerfont }{\def \theorem@headerfont#1\ }%
