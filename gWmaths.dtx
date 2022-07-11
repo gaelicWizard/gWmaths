@@ -1848,20 +1848,24 @@ John Pell
 
 
 \NewDocumentCommand \AllTheCards {}
-{	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
-	{	\blackcard{##1}{\spadesuit}
-		\par
-		\redcard{##1}{\varheartsuit}
-		\par
-		\blackcard{##1}{\clubsuit}
-		\par
-		\redcard{##1}{\vardiamondsuit}
-		\par
-}	}%
+{{	\centering	%% Mind the group
+	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+	{	\blackcard{##1}{\spadesuit}	}
+	\par
+	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+	{	\redcard{##1}{\varheartsuit}	}
+	\par
+	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+	{	\blackcard{##1}{\clubsuit}	}
+	\par
+	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+	{	\redcard{##1}{\vardiamondsuit}	}
+	\par
+}}%
 %\blackcard{Q}{\spadesuit}
 %\redcard{10}{\varheartsuit}
 %\redcard{A}{\vardiamondsuit}
-%\blackcard{\jokerface}{\joker}
+%\blackcard{\jokerface}{\joker} %% Joker is broken...
 
 
 
@@ -1878,7 +1882,7 @@ John Pell
 
 
 
-%
+%% from https://tex.stackexchange.com/a/514184/233148
 \RequestPackage{tabstackengine,xcolor,fancybox,graphicx}
 \newcommand\blackcard[2]{%
   \begingroup\cornersize{.1}\fboxsep=0pt\relax
