@@ -1,4 +1,4 @@
-\NeedsTeXFormat{LaTeX2e}[2020/10/01]	\RequirePackage{ iftex, l3keys2e, }%
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %!TeX program = pdflatexmk
 %%!TEX encoding = UTF-8
@@ -141,7 +141,7 @@
 							geometry,
 							nag,	}[\pkg{accessibility}'s included example document loads these first...]
 \DeclarePackageOrdering{titling}{after}{documentclass / after}[Assumes title commands already defined]
-\DeclarePackageOrdering{titling}{incompatible-error}{beamer}[\cls{beamer} does not define the bits of \cs{maketitle} that \pkg{titling} expects]
+\DeclarePackageOrdering{titling}{incompatible-warning}{beamer}[\cls{beamer} does not define the bits of \cs{maketitle} that \pkg{titling} expects]
 
 \DeclarePackageOrdering{ hyperref	}{after}{	documentclass / after	}[Assumes several control sequences already defined]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	documentclass / after	}

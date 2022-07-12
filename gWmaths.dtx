@@ -1612,15 +1612,19 @@ John Pell
 %\RequestPackage{fancyhdr}%
 
 
-\bool_if:nF \gW@videolecture{
-	\RequestPackage{paralist} % `paralist` redefines {itemize}, {enumerate} environments
-	%\RequestPackage[ % `enumitem` redefines {itemize}, {enumerate} environments
-		% `enumitem` is substantially more complex than `paralist`
-		%shortlabels, % compatible with `enumerate`
-		%unboxed % avoid problems nesting environments
-		%]{enumitem}
-	\RequestPackage{titling}% un-dumb \maketitle % see \pkg{titlesec}; incompatible w/ Beamer
+\AddToHook{class/ beamer /after}{
+	\disable@package@load{paralist}{\PackageInfo{beamer}{blocked~pkg{paralist}~from~loading.}}
+	\disable@package@load{enumitem}{\PackageInfo{beamer}{blocked~pkg{enumitem}~from~loading.}}
+	\disable@package@load{titling}{\PackageInfo{beamer}{blocked~pkg{titling}~from~loading.}}
 }%\gW@videolecture
+
+\RequestPackage{paralist} % `paralist` redefines {itemize}, {enumerate} environments
+%\RequestPackage[ % `enumitem` redefines {itemize}, {enumerate} environments
+	% `enumitem` is substantially more complex than `paralist`
+	%shortlabels, % compatible with `enumerate`
+	%unboxed % avoid problems nesting environments
+	%]{enumitem}
+\RequestPackage{titling}% un-dumb \maketitle % see \pkg{titlesec}; incompatible w/ Beamer
 
 
 %\RequestPackage% `pdfpages` improves inserting PDF clippings over graphicx
