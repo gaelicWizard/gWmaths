@@ -1527,14 +1527,6 @@ John Pell
 	% ...and `x' loads `s'...
 
 % https://tex.stackexchange.com/a/12468/233148
-\def\ScaleIfNeeded{%
-	% Determine if the image is too wide for the page.
-	\ifdim\Gin@nat@width>\linewidth
-		\linewidth
-	\else
-		\Gin@nat@width
-	\fi
-}
 \AddToHook{ package / graphicx / after }%
 {%
 	\setkeys{Gin}{keepaspectratio}
@@ -1544,6 +1536,7 @@ John Pell
 	\def\maxwidth#1{\ifdim\Gin@nat@width>#1 #1\else\Gin@nat@width\fi}
 	\def\maxheight#1{\ifdim\Gin@nat@height>#1 #1\else\Gin@nat@height\fi}
 	\def\textheightlesscaption{\dimexpr\textheight-4\baselineskip-\abovecaptionskip-\belowcaptionskip\relax}
+	% Determine if the image is too wide for the page.
 	\setkeys{Gin}{width=\maxwidth{\linewidth}, height=\maxheight{\textheightlesscaption}}
 }
 
