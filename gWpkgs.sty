@@ -32,9 +32,9 @@
 
 \DeclarePackageDependency{mmap}{cmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\cs{RequirePDFTeX})]
 
-\DeclarePackageOrdering{ csquotes	}{after}{ gWpkgs / class / after }[\pkg{csquotes} redefines \cs{quote}]
-\DeclarePackageOrdering{ paralist	}{after}{ gWpkgs / class / after }[\pkg{paralist} redefines several environments]
-\DeclarePackageOrdering{ ntheorem	}{after}{ gWpkgs / class / after }[\pkg{ntheorem} redefines several environments]
+\DeclarePackageOrdering{ csquotes	}{after}{ documentclass / after }[\pkg{csquotes} redefines \cs{quote}]
+\DeclarePackageOrdering{ paralist	}{after}{ documentclass / after }[\pkg{paralist} redefines several environments]
+\DeclarePackageOrdering{ ntheorem	}{after}{ documentclass / after }[\pkg{ntheorem} redefines several environments]
 
 \DeclarePackageOrdering{ hologo	}{after}{	graphics, pgf,	}[\pkg{hologo} will use \pkg{graphics} or \pkg{pgf} if already loaded]%
 
@@ -48,17 +48,17 @@
 %
 %
 %
-\DeclarePackageOrdering	{ beamer	}{after}{	gWpkgs / class / before	}[jfc]
-\DeclarePackageOrdering	{ beamer	}{before}{	gWpkgs / class / after	}[jfc]
+\DeclarePackageOrdering	{ beamer	}{after}{	documentclass / before	}[jfc]
+\DeclarePackageOrdering	{ beamer	}{before}{	documentclass / after	}[jfc]
 \DeclarePackageDependency{ beamer	}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes} before *anything* else, which also loads other packages]%
-\DeclarePackageOrdering	{ beamerbasemodes	}{after}{	gWpkgs / class / before	}[jfc]
-\DeclarePackageOrdering	{ beamerbasemodes	}{before}{	gWpkgs / class / after	}[jfc]
+\DeclarePackageOrdering	{ beamerbasemodes	}{after}{	documentclass / before	}[jfc]
+\DeclarePackageOrdering	{ beamerbasemodes	}{before}{	documentclass / after	}[jfc]
 \DeclarePackageDependency*{ beamer	}{	beamerbaseoptions	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaseoptions}, which *purely* \cs{def}s stuff]%
 \DeclarePackageOrdering	{ beamerbaseoptions	}{after}{	beamerbasemodes	}
 \DeclarePackageDependency*{ beamer	}{	beamerbaserequires	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaserequires} right at the end.]%
 \DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamer	}%
 \DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamerbasemodes	}[😭]%
-\DeclarePackageOrdering	{ beamerbaserequires	}{before}{	gWpkgs / class / after	}[jfc]
+\DeclarePackageOrdering	{ beamerbaserequires	}{before}{	documentclass / after	}[jfc]
 \DeclarePackageDependency{ beamerarticle	}{	beamerbasemodes	}[\pkg{beamerarticle} \cs{RequirePackages}s \pkg{beamerbasemodes} immediately with no options]
 
 \DeclarePackageDependency{ beamerbasemodes	}{	etoolbox,	}[\pkg{beamerbasemodes} \cs{RequirePackage}s \pkg{etoolbox}]
@@ -89,9 +89,9 @@
 %pgf, hyperref, color, xcolor
 %`ucs' \POTP[hyperref]{ucs}
 
-%\DeclarePackageOrdering{ geometry	}{after}{	gWpkgs / class / after	}[classes often set page geometry using primitives, but this breaks for \cls{beamer}]%
-\DeclarePackageOrdering{ fontspec	}{after}{	gWpkgs / class / after	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
-\DeclarePackageOrdering{ fontenc	}{after}{	gWpkgs / class / after	}%
+%\DeclarePackageOrdering{ geometry	}{after}{	documentclass / after	}[classes often set page geometry using primitives, but this breaks for \cls{beamer}]%
+\DeclarePackageOrdering{ fontspec	}{after}{	documentclass / after	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
+\DeclarePackageOrdering{ fontenc	}{after}{	documentclass / after	}%
 
 \DeclarePackageDependency{ realscripts	}{	fontspec	}[\pkg{realscripts} \cs{RequirePackage}s \pkg{fontspec}.]
 
@@ -140,11 +140,11 @@
 							mathptmx,
 							geometry,
 							nag,	}[\pkg{accessibility}'s included example document loads these first...]
-\DeclarePackageOrdering{titling}{after}{gWpkgs / class / after}[Assumes title commands already defined]
+\DeclarePackageOrdering{titling}{after}{documentclass / after}[Assumes title commands already defined]
 \DeclarePackageOrdering{titling}{incompatible-error}{beamer}[\cls{beamer} does not define the bits of \cs{maketitle} that \pkg{titling} expects]
 
-\DeclarePackageOrdering{ hyperref	}{after}{	gWpkgs / class / after	}[Assumes several control sequences already defined]
-%\DeclarePackageOrdering{ hyperxmp	}{after}{	gWpkgs / class / after	}
+\DeclarePackageOrdering{ hyperref	}{after}{	documentclass / after	}[Assumes several control sequences already defined]
+%\DeclarePackageOrdering{ hyperxmp	}{after}{	documentclass / after	}
 \DeclarePackageDependency*{ hyperxmp	}{	hyperref	}
 \DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}[In newer kernels, \pkg{hyperxmp} *must* load before any \pkg{hyperref} keys are set...]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}%% WHY?!
@@ -157,9 +157,9 @@
 							etoolbox,
 							ifthen,
 							luacode,	}[\cs{RequirePackage}]
-\DeclarePackageOrdering{ hologo		}{after}{	gWpkgs / class / after	}
-\DeclarePackageOrdering{ xcolor		}{before}{	gWpkgs / class / after	}
-\DeclarePackageOrdering{ graphicx	}{before}{	gWpkgs / class / after	}
+\DeclarePackageOrdering{ hologo		}{after}{	documentclass / after	}
+\DeclarePackageOrdering{ xcolor		}{before}{	documentclass / after	}
+\DeclarePackageOrdering{ graphicx	}{before}{	documentclass / after	}
 \DeclarePackageDependency{ venndiagram	}{	graphicx	}
 \DeclarePackageDependency{ venndiagram	}{	tikz,
 						pgf,	}[\cs{RequirePackage}]
@@ -225,11 +225,11 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\DeclarePackageOrdering{ inputenc	}{before}{	gWpkgs / class / after	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
+\DeclarePackageOrdering{ inputenc	}{before}{	documentclass / after	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\DeclarePackageOrdering{ fixltx2e 	}{before}{	gWpkgs / class / after	}
+\DeclarePackageOrdering{ fixltx2e 	}{before}{	documentclass / after	}
 \DeclarePackageOrdering{ fancyhdr 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ fncychap 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ float 	}{before}{	hyperref	}

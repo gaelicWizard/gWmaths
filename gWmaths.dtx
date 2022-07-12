@@ -617,12 +617,12 @@ John Pell
 {	\DeclarePackageOrdering{hyperref}{after}{beamerbasemodes}[\cls{beamer} loads \pkg{hyperref} halfway through...]
 	\DeclarePackageOrdering{hyperref}{after}{beamerbaseoptions}[\cls{beamer} loads \pkg{hyperref} halfway through...]
 	\DeclarePackageOrdering{hyperref}{before}{beamerbaserequires}[\cls{beamer} loads \pkg{hyperref} halfway through...]
-	\DeclarePackageOrdering{hyperref}{unrelated}{gWpkgs / class / after}[\cls{beamer} loads \pkg{hyperref} halfway through...]
-	\DeclarePackageOrdering{geometry}{unrelated}{gWpkgs / class / after}[\cls{beamer} loads \pkg{hyperref} halfway through...]
+	\DeclarePackageOrdering{hyperref}{unrelated}{documentclass / after}[\cls{beamer} loads \pkg{hyperref} halfway through...]
+	\DeclarePackageOrdering{geometry}{unrelated}{documentclass / after}[\cls{beamer} loads \pkg{hyperref} halfway through...]
 }
 \AtEndOfPackage%
-{	\DeclarePackageOrdering{gWmaths}{before}{ gWpkgs / class / before }
-	\DeclarePackageOrdering{gWpkgs}{before}{ gWpkgs / class / before }
+{	\DeclarePackageOrdering{gWmaths}{before}{ documentclass / before }
+	\DeclarePackageOrdering{gWpkgs}{before}{ documentclass / before }
 	\RequestPackagesAlreadyLoaded{ gWmaths }%
 	\RequirePackage{gWpkgs}
 	\RequestPackagesAlreadyLoaded{ gWpkgs }%
@@ -750,7 +750,7 @@ John Pell
 		\cs_if_exist:cTF {	ver@ ##1 .sty	}%
 		{	\AddToHook{ gWpkgs }[##1]{\relax}	}
 		{	\DeclareHookRule{ gWpkgs }%
-				{ ##1 }{after}{ gWpkgs }%
+				{ ##1 }{after}{ gWmaths }%
 
 			\IfValueTF{#3}%
 			{\AddToHook{ gWpkgs }[##1]{	\RequirePackage{##1}[#3]	}}%
@@ -766,15 +766,15 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \AtEndOfPackage%
-{	\DeclarePackageOrdering{gWpkgs / class / before}{after}{gWpkgs}[...]
-	\DeclarePackageOrdering{gWpkgs / class / before}{before}{gWpkgs / class / after}[life is pain]
-	\AddToHook { gWpkgs }[ gWpkgs / class / before ]%
+{	\DeclarePackageOrdering{documentclass / before}{after}{gWmaths}[...]
+	\DeclarePackageOrdering{documentclass / before}{before}{documentclass / after}[life is pain]
+	\AddToHook { gWpkgs }[ documentclass / before ]%
 	{
-		\relax%\RequestPackagesAlreadyLoaded{gWpkgs / class / before}
+		\relax%\RequestPackagesAlreadyLoaded{documentclass / before}
 	}
-	\AddToHook { gWpkgs }[ gWpkgs / class / after ]%
+	\AddToHook { gWpkgs }[ documentclass / after ]%
 	{
-		\relax%\RequestPackagesAlreadyLoaded{gWpkgs / class / after}
+		\relax%\RequestPackagesAlreadyLoaded{documentclass / after}
 	}
 
 }
@@ -783,7 +783,7 @@ John Pell
 	\ActivateGenericHook{ package / #2 / request }
 	\ActivateGenericHook{ class / #2 / request }
 	\RequestPackagesAlreadyLoaded{ #2 }
-	\DeclarePackageOrdering{#2}{after}{gWpkgs / class / before}[class loads before nearly all packages]
+	\DeclarePackageOrdering{#2}{after}{documentclass / before}[class loads before nearly all packages]
 	%\PassOptionsToClass....
 	\AddToHook { gWpkgs }[#2]%
 	{%
@@ -791,7 +791,7 @@ John Pell
 		{	\LoadClass{#2}[#3]	}
 	}
 	\UseOneTimeHook{ class / #2 / request }
-	\DeclarePackageOrdering{#2}{before}{gWpkgs / class / after}[class loads before nearly all packages]
+	\DeclarePackageOrdering{#2}{before}{documentclass / after}[class loads before nearly all packages]
 	\UseOneTimeHook{ package / #2 / request }
 }
 \NewHook{ class / request }
