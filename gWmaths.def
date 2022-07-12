@@ -221,7 +221,7 @@
 \RequirePackageAfterPackageIfPackage{ hypdoc }{ hyperref }{ doc }[if \pkg{doc} is already loaded when \pkg{hyperref} is loaded, then load \pkg{hypdoc}]
 \RequirePackageAfterPackageIfPackage{ hypdoc }{ doc }{ hyperref }[if \pkg{hyperref} is already loaded when \pkg{doc} is loaded, then load \pkg{hypdoc}]
 
-\DeclarePackageDependency*{ fontspec	}{	fontenc	}[\pkg{fontspec} must be the one to load \pkg{fontenc}]
+%\DeclarePackageDependency*{ fontspec	}{	fontenc	}[\pkg{fontspec} must be the one to load \pkg{fontenc}] %% \pkg{fontenc} can be loaded repeatedly...
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
