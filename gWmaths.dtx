@@ -173,10 +173,11 @@ John Pell
 %{	\AddToHookNext{ package/ @currname /after }{ #1 }	}
 %\ProvideDocumentCommand \AtEndOfClass	{m}% ...this is not an accurate representation of the actual kernel code
 %{	\AddToHookNext{ class/ @currname /after }{ #1 }	}
+
 \ProvideDocumentCommand	\AfterEndOfClass	{m}%
-{	\AtEndOfClass{	\AddToHook{ class/ @currname /after }{ #1 }}	}
+{	\AddToHook{ class/ @currname /after }{ #1 }	}
 \ProvideDocumentCommand	\AfterEndOfPackage	{m}%
-{	\AtEndOfClass{	\AddToHook{ package/ @currname /after }{ #1 }}	}
+{	\AddToHook{ package/ @currname /after }{ #1 }	}
 %% Document Environment
 \ProvideDocumentCommand \AtEndPreamble	{om}% matches \pkg{etoolbox}
 {	\AddToHook{ begindocument/before }[ #1 ]{ #2 }	}
