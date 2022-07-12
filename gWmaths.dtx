@@ -1785,7 +1785,7 @@ John Pell
 \AtEndOfClass%
 {	\cs_if_exist:cF{thechapter}%
 	{	\cs_if_exist:cT{thepart}%
-		{	\newcounter{chapter}[part]%
+		{	\newcounter{chapter}%[part]
 			\counterwithin{section}{chapter}%
 		}%
 }	}%
