@@ -1,0 +1,5 @@
+.git*	export-ignore
+*.dtx	export-subst
+gWmaths.sh	export-ignore
+LICENSE.txt	export-ignore
+README.txt	export-ignore

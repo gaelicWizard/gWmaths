@@ -1,18 +1,20 @@
 %<*!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}[2021/11/01]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%!TEX encoding = UTF-8
+%%!TEX parameter = -8bit
 %%!TEX root = gWmaths.dtx
-%%!BIB program = biber
+\ifdefined\DocInput\else\GetIdInfo$Format: %x24Id:  %%
+\csname g_file_curr_name_str\endcsname. %(describe:tags,match=v*) %as %%
+develop \the\year-\the\month-\the\day 00Z%x24%%
+${COVID-19 Quarantine Accessible \TeX{} Project}\fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<cls>\ProvidesExplClass%
 %<sty>\ProvidesExplPackage%
 %<*!sty&!cls>
 \ProvidesExplFile%
 %</!sty&!cls>
- 	{gWmaths}%
-			{2022/07/11}	{0.6.5}%
-		{COVID-19 Quarantine Accessible \TeX{} Project}%
+ 	{\ExplFileName}	{\ExplFileDate}	{\ExplFileVersion}	{\ExplFileDescription}
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cs_if_exist:cT{DocInput}{%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifdefined\DocInput%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \begin{abstract}
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +44,7 @@ John Pell
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \end{abstract}
 % \ExplSyntaxOff
-}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*ins>
 % \section{Installer job file}	\label{ins}
@@ -1005,7 +1007,7 @@ John Pell
 %%*gWkeys>
 % \section{ \cls{ \filename } ~ configuration ~ setup }
 %    \begin{macrocode}
-\RequirePackage{ gWmaths }%
+\RequirePackage{ gWmaths }
 %    \end{macrocode}
 %
 % \begin{macro}{gWsetup}
