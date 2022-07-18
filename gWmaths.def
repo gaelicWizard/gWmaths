@@ -145,8 +145,9 @@
 
 \DeclarePackageOrdering{ hyperref	}{after}{	documentclass / after	}[Assumes several control sequences already defined]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	documentclass / after	}
-\DeclarePackageDependency*{ hyperxmp	}{	hyperref	}
-\DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}[In newer kernels, \pkg{hyperxmp} *must* load before any \pkg{hyperref} keys are set...]
+\DeclarePackageDependency{ hyperxmp	}{	hyperref	}
+\RequirePackageAfterPackage{ hyperxmp	}{	hyperref	}%ARG ARG ARG ARG ARG
+%\DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}[In newer kernels, \pkg{hyperxmp} *must* load before any \pkg{hyperref} keys are set...]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}%% WHY?!
 \DeclarePackageDependency{ hyperxmp	}{	kvoptions,
 							pdfescape,
