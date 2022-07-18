@@ -24,7 +24,7 @@ During the great pandemic of 2020, the \cls{gWmaths} class was created to shorte
 It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
 
 With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve.
-The class was renamed to \cls{gWmaths.cls}, partially split out to a \pkg{gWmaths.sty} package, and updated to \LaTeXx*.
+The class was renamed to \cls{gWmaths}, partially split out to a \pkg{gWmaths} package, and updated to \LaTeXx*.
 Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control.
 
 This work has the LPPL maintenance status `maintained'.
@@ -570,7 +570,7 @@ John Pell
 %% Hack up loaded package list
 % https://tex.stackexchange.com/a/491456
 %\expandafter\def\csname ver@l3regex.sty\endcsname{}
-\disable@package@load{l3regex}{\PackageInfo{ gWmaths }{ \pkg{l3regex}~is~no~longer~a~spearate~package ~and~therefore~need~not~be~loaded. }}
+\disable@package@load{l3regex}{\PackageInfo{ gWmaths }{ \pkg{l3regex}~is~no~longer~a~separate~package ~and~therefore~need~not~be~loaded. }}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Wrap \pkg{l3docstrip} as \env{l3docstrip}
 \ExplSyntaxOff
