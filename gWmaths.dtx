@@ -1123,8 +1123,7 @@ John Pell
 \gWsetup
 {
 	ntheorem,
-	%venn, % required \pkg{pgf}
-	%hypdoc, % this is messy
+	%venn, % requires \pkg{pgf}
 	amsmath,
 }
 %
@@ -1153,10 +1152,15 @@ John Pell
 	\gWsetup{autodate}
 }
 %
-\ProcessKeysOptions{gWmaths}%
+\ifdefined\ProcessKeyOptions
+	\ProcessKeyOptions[gWmaths]
+\else	% name change for slightly-altered code after a decade with no package...
+	\RequirePackage{l3keys2e}
+	\ProcessKeysOptions{gWmaths}
+\fi
 %
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{\gW@documentClass}}
-\ProcessOptions\relax
+%\DeclareOption*{\PassOptionsToClass{\CurrentOption}{\gW@documentClass}}
+%\ProcessOptions\relax
 %    \end{macrocode}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prepare arguments for all the packages
