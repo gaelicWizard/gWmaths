@@ -1161,12 +1161,6 @@ John Pell
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prepare arguments for all the packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% All documents are UTF-8 in the 21st century. If not, fix your document.
-%    \begin{macrocode}
-\gW@addGlobalOption{utf8}%
-\RequestPackage[utf8]{inputenc}%
-%    \end{macrocode}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up modern defaults for encodings:
 %
 %    \begin{macrocode}
@@ -1551,6 +1545,20 @@ John Pell
 }
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% All documents are UTF-8 in the 21st century. If not, fix your document.
+% When using older engines, this tells the engine to read all files as UTF-8.
+% \XeTeX* and \LuaTeX* always read UTF-8 and ignore this package.
+% \LaTeX* circa 2018 and newer default to UTF-8 as well.
+%    \begin{macrocode}
+\gW@addGlobalOption{utf8}%
+\RequestPackage[utf8]{inputenc}[2015/01/01]%
+\AddToHook{package/ inputenc /before}% Enforce UTF-8 *only*.
+{	\cs_set:cpn	{opt@inputenc.sty}	{utf8}	}
+\tracinglostchars=3 % codepoints missing characters are *errors*!
+%    \end{macrocode}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \ifTUTeX % "Unicode \TeX*" matches \LuaTeX* and/or \XeTeX*
 	% engine is unicode-native, so drop \pkg{inputenc} entirely and add \pkg{fontspec} for \pkg{fontenc}
@@ -1561,16 +1569,18 @@ John Pell
 	\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}.
 	
 	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1)
+	\AddToHook{package/ fontenc /before}% Enforce TU-encoding *only*.
+	{	\tl_set:cn	{opt@fontenc.sty}	{TU}	}
+	\AddToHook{package/ fontenc /after}%
+	{	\tl_set:cv	{ver@fontenc.sty}	{ver@@fontenc.sty}	}
 	%% Post-2017, don't use xunicode package
+	\disable@package@load{xunicode}{\PackageInfo{gWmaths}{blocked~pkg{xunicode}~from~loading.}}
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
 \else \RequirePDFTeX % don't even with others
 	\PassOptionsToPackages{% `fontenc`
-		T1	% T1 fonts extend the old OT1 format to allow greater than 128 characters
+		T1,% T1 fonts extend the old OT1 format to allow greater than 128 characters
 	}{fontenc}
-	\RequestPackage[utf8]{inputenc}[2015/01/01]
-	% When using older engines, this tells the engine to read all files as UTF-8.
-	% \XeTeX* and \LuaTeX* always read UTF-8 and ignore this package.
-	% \LaTeX* circa 2018 and newer default to UTF-8 as well.
+
 	\disable@package@load{fontspec}{\PackageInfo{gWmaths}{blocked~pkg{fontspec}~from~loading.}}
 
 	\RequestPackage{%
@@ -1583,9 +1593,6 @@ John Pell
 	% `cmap` extends default character mapping to include unicode codepoints.
 	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
 \fi%\ifTUTeX
-%\AddToHook{ package / fontspec / after}%
-%{	\setmainfont{Garamond}	}
-\tracinglostchars=3 % codepoints missing characters are *errors*!
 
 %\RequirePackage[%
 	%% docs: http://mirrors.ctan.org/macros/latex/contrib/standalone/standalone.pdf
