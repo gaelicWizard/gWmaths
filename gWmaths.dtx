@@ -160,7 +160,7 @@ John Pell
 %
 %    \begin{macrocode}
 \AddToHook{ package / etoolbox / before }% Hack to prevent "already defined"
-{	\ProvideDocumentCommand\IfFormatAtLeastTF{mmm}% Eat arguments on the same line, *imperfect*...
+{	\DeclareDocumentCommand\IfFormatAtLeastTF{mmm}% Eat arguments on the same line, *imperfect*...
 	{	\endinput	}
 }
 \AddToHook{ package / etoolbox / after }%
@@ -168,15 +168,21 @@ John Pell
 	{	\@ifl@t@r\fmtversion{#1}{#2}{#3}	}
 }
 %% Packages and Classes
+% from the kernel:
+% \def\AtEndOfPackage{%
+% \expandafter\g@addto@macro\csname\@currname.\@currext-h@@k\endcsname} 1033 \let\AtEndOfClass\AtEndOfPackage
+% \@onlypreamble\AtEndOfPackage
+% \@onlypreamble\AtEndOfClass
+%
 %\ProvideDocumentCommand \AtEndOfPackage	{m}% ...this is not an accurate representation of the actual kernel code
 %{	\AddToHookNext{ package/ @currname /after }{ #1 }	}
 %\ProvideDocumentCommand \AtEndOfClass	{m}% ...this is not an accurate representation of the actual kernel code
 %{	\AddToHookNext{ class/ @currname /after }{ #1 }	}
 
-\ProvideDocumentCommand	\AfterEndOfClass	{m}%
-{	\AddToHook{ class/ @currname /after }{ #1 }	}
-\ProvideDocumentCommand	\AfterEndOfPackage	{m}%
-{	\AddToHook{ package/ @currname /after }{ #1 }	}
+\ProvideDocumentCommand	\AfterEndOfClass	{omm}%
+{	\AddToHook{ class/ #2 /after }[ #1 ]{ #3 }	}
+\ProvideDocumentCommand	\AfterEndOfPackage	{omm}%
+{	\AddToHook{ package/ #2 /after }[ #1 ]{ #3 }	}
 %% Document Environment
 \ProvideDocumentCommand \AtEndPreamble	{om}% matches \pkg{etoolbox}
 {	\AddToHook{ begindocument/before }[ #1 ]{ #2 }	}
@@ -1088,6 +1094,10 @@ John Pell
 % \section{ \cls{ \filename } ~ document ~ class }
 %
 %\ifXeTeX\pdftrue\fi % SOME APPS ASSUME THIS MEANS PDFTEX
+\AddToHook{package/ hyperref-generic /before}%
+{	\disable@package@load{etoolbox}{\PackageInfo{gWmaths}{blocked~pkg{etoolbox}~from~loading.}}	}
+\AddToHook{package/ hyperref-generic /after}%
+{	\reenable@package@load{etoolbox}	}
 \cs_if_exist:NTF \DocumentMetadata%
 { % MUST be as early as possible, note that we have to even have to hide:
 	\cs_if_eq:NNT \documentclass \@twoclasseserror%
