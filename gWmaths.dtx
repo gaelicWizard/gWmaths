@@ -1456,11 +1456,16 @@ John Pell
 	\end{titlingpage}%
 }%
 %%
-\RequestPackage[v1]{subfiles}%
+%\RequestPackage[v1]{subfiles}%
+\NewDocumentCommand	\RenewDocumentClass	{}%
+{	\RenewDocumentCommand	\documentclass	{omo}%
+	{	\tl_if_eq:nnT{##2}{gWmaths}{\gWsetup{##1}}
+		\let\documentclass\@twoclasseserror
+		\use:n	\@documentclasshook
+}	}
 \AddToHook{include/before}%
 {	\begingroup % Keep (most) assignments local to the sub-document, not global.
-	\RenewDocumentCommand\documentclass{omo}
-	{	\tl_if_eq:nnT{#2}{gWmaths}{\gWsetup{#1}}	}%
+	\RenewDocumentClass%
 	\RenewDocumentEnvironment{document}{}% s
 	{}% This automatically starts *another* group, while also shadowing the global `document' environment.
 	{
