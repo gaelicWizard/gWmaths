@@ -1355,9 +1355,38 @@ John Pell
 
 
 \PassOptionsToPackages{% `babel`
-	provide*=*, % Load the locale, not just the language.
-	%english % The language can be tagged on the \documentclass declaration!
+		provide*=*,% Load the locale, not just the language.
+		provide@=*,% something something EXPERIMENTAL
 		}{babel}
+\ifLuaTeX%
+	\PassOptionsToPackage{bidi=basic}{babel}
+\else
+	%\PassOptionsToPackage{bidi=default}{babel}
+\fi
+\AddToHook{package/ babel /after}
+{	\babeladjust% automatically load locales
+	{
+		autoload.bcp47 = on,% Enable auto-load of language by locale name.
+		autoload.bcp47.options = import,% Load the INI directly.
+		bcp47.toname = on,% When loaded by LDF, also allow selection by locale name.
+	}
+	\babelprovide[import=en-US, language=Default, main]{american}
+	\ifLuaTeX\babelprovide[import, onchar=ids fonts]{hebrew}
+	\else\babelprovide[import]{hebrew}\fi
+	\ifXeTeX\RequestPackage[Latin,Hebrew,Cyrillics]{ucharclasses}\fi
+	%% TODO: check if main language is not Nil, then \write18 "locale" and parse out LANG(LC_*"), then \babelprovide[import=$LANG,main{default}...!
+	%% TODO: add to global class options the friendly name of the language, e.g. for \pkg{varioref}
+	\AddToHook{package/ ucharclasses /after}%
+	{	\setTransitionTo{Hebrew}%
+			{\begin{otherlanguage*}[date,captions]{hebrew}}
+		\setTransitionFrom{Hebrew}%
+			{\end{otherlanguage*}}
+		\setTransitionsForCyrillics%
+			{\begin{otherlanguage*}[date,captions]{ukrainian}}%
+			{\end{otherlanguage*}}
+	}
+}
+
 
 \RequestPackage[%
 	%heightrounded % round off to avoid overfull alrgn;earujs
