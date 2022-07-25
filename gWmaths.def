@@ -172,6 +172,11 @@
 							mathtools, 
 							empheq, }
 \DeclarePackageOrdering{ ntheorem	}{incompatible-error}{	amsthm	}
+\PassOptionsToPackageIfPackage{ntheorem}{empheq}{ntheorem}[cope with \pkg{ntheorem}]
+\PassOptionsToClassIfPackage{noamsthm}{beamer}{ntheorem}[prevent from loading \pkg{amsthm}, which conflicts with \pkg{ntheorem}]
+\PassOptionsToPackageIfPackage{hyperref}{ntheorem}{hyperref}[inform \pkg{ntheorem} that \pkg{hyperref} will be loaded]
+\PassOptionsToPackageIfPackage{amsmath}{ntheorem}{amsmath}[cope with `amsmath`]
+
 \DeclarePackageOrdering{ cmap		}{after}{	hyperref }
 \DeclarePackageOrdering{ cmap		}{before}{	fontenc }
 \DeclarePackageOrdering{ mmap		}{after}{	hyperref }
@@ -208,6 +213,7 @@
 							atveryend,
 							calc,
 							hyperref,	}[\pkg{hypdoc} heavily modifies \pkg{doc}, mostly by implementing \pkg{hyperref}.]
+\PassOptionsToPackageIfPackage{hyperindex=false}{hyperref}{hypdoc}[do *not* link page numbers from index...conflict w/ hypdoc...]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \DeclarePackageOrdering{ holtxdoc	}{after}{	hypdoc,
@@ -283,26 +289,22 @@
 							[the hyperref documentation explicitly says to do so]
 
 \DeclarePackageOrdering{ hyperref	}{before}{	glossaries	}[because otherwise terms won't be clickable hyperlinks]
+\DeclareGlobalOptionsIfPackage{hyperref}{hyperref}[many packages like to be told if \pkg{hyperref} is in use]
 
 \DeclarePackageOrdering{ glossaries	}{after}{	babel,
 							olyglossia,
 							inputenc,
 							fontenc,
-							doc	}
-%because {the glossaries documentation explicitly says to do so}
+							doc	}[because {the glossaries documentation explicitly says to do so}]
 
-\DeclarePackageOrdering{ hyperref	}{before}{	hypcap	}
-%because {hypcap redefines hyperref's caption command}
+\DeclarePackageOrdering{ hyperref	}{before}{	hypcap	}[because {hypcap redefines hyperref's caption command}]
 
-\DeclarePackageOrdering{ babel		}{before}{	selnolig	}
-%because {this was recommended by selnolig's author}
+\DeclarePackageOrdering{ babel		}{before}{	selnolig	}[because {this was recommended by selnolig's author}]
 
 \DeclarePackageOrdering{ fontenc	}{after}{	cmap,
-							mmap	}
-%because {otherwise some fonts may be unprocessed}
+							mmap	}[because {otherwise some fonts may be unprocessed}]
 
-\DeclarePackageOrdering{ listingsutf8	}{after}{	listings	}
-%because {it patches macros defined by listings}
+\DeclarePackageOrdering{ listingsutf8	}{after}{	listings	}[because {it patches macros defined by listings}]
 % ho-tex replacement for listings; it loads listings itself
 
 \DeclarePackageOrdering{ glossaries	}{before}{	cleveref	}[\pkg{glossaries} loads \pkg{amsmath}, which needs to be loaded before \pkg{cleveref}]

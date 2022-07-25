@@ -998,9 +998,12 @@ John Pell
 %    \begin{macrocode}
 \keys_define:nn { gWmaths }
 {
+%    \end{macrocode}
+%    \begin{macrocode}
 	PDFencoding .choices:nn = { PDFDocEncoding, unicode, auto }
 	{	\tl_set:cn{gW@PDFencoding}{#1}	}	,%
-
+%    \end{macrocode}
+%    \begin{macrocode}
 	unicode	.choice:	,%
 	unicode/ ascii	.meta:n	= {	PDFencoding = PDFDocEncoding	}	,%
 	unicide/ ascii	.value_forbidden:n	= true	,%
@@ -1015,34 +1018,82 @@ John Pell
 	unicode	.initial:n	= utf8	,%
 	utf8	.meta:n	= {	unicode = utf8	}	,%
 	utf8	.value_forbidden:n	= true	,%
-
-	autodate	.bool_set:N	= \gW@autodate	,
-
+%    \end{macrocode}
+%    \begin{macrocode}
+	autodate	.code:n = {	\AtEndOfClass{ \date{ \filemodprintdate{ \jobname.tex } } }	},%
+	autodate	.initial:n = {{}},%
+	audodate	.value_forbidden:n = true,%
+%    \end{macrocode}
+%    \begin{macrocode}
 	hyperTeX	.bool_set:N	= \gW@hyperTeX	,
 	hyperTeX	.initial:n	= true	,
-	
-	ntheorem	.bool_set:N	= \gW@ntheorem	,
+%    \end{macrocode}
+%    \begin{macrocode}
+	ntheorem	.code:n	= {
+		%% Set up a much nicer set of theorem environments:
+		\RequestPackage[% `ntheorem`
+			thmmarks, % enables the automatical placement of endmarks
+			thref, % enables the extended reference features
+			standard % load predefined environments
+		]{ntheorem}
+		%
+		%% Inform *all* packages that `ntheorem` is in use:
+		\DeclareGlobalOptionsIfPackage{ntheorem}{ntheorem}[some packages like to be told if \pkg{ntheorem} is in use]
+		\disable@package@load{amsthm}{\PackageInfo{gWmaths}{blocked~pkg{amsthm}~from~loading.}}
+		\DeclarePackageOrdering{ ntheorem	}{incompatible-warning}{	amsthm	}[since disabling load, no need to error]
+	},%
+	%ntheorem	.initial:n = {},%
+	ntheorem	.value_forbidden:n = true,%
+%    \end{macrocode}
+%    \begin{macrocode}
+	amsmath	.code:n	= {%
+		%% Set up the most common mathematics package:
+		\RequestPackage{amsmath}
+		%
+		%% Inform *all* packages that `amsmath` is in use:
+		\DeclareGlobalOptionsIfPackage{amsmath}{amsmath}[some packages like to be told if \pkg{amsmath} is in use]
+		%%
+	},%
+	%amsmath	.initial:n = {},%
+	amsmath	.value_forbidden:n = true,%
+%    \end{macrocode}
+%    \begin{macrocode}
+	hypdoc	.code:n	= {	\RequestPackage{hypdoc}	},%
+%    \end{macrocode}
+%    \begin{macrocode}
+	accessibility	.code:n	= {%
+		\RequirePDFTeX
+		% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
+		\RequestPackage% `accessibility` is badly hacked together and quite old...
+		[	tagged,
+			highstructure,
+		]{accessibility}
+	},%
 
-	amsmath	.bool_set:N	= \gW@amsmath	,
-
-	hypdoc	.bool_set:N	= \gW@hypdoc	,
-
-	amsthm	.bool_set:N	= \gW@amsthm	,
-
-	accessibility	.bool_set:N	= \gW@accessibility	,
-
-	tagpdf	.bool_set:N	= \gW@tagpdf	,
-
-	axessibility	.bool_set:N	= \gW@axessibility	,
-
+	axessibility	.code:n	= {%
+		\PassOptionsToPackageIfPackage{tagpdf}{axessibility}{tagpdf}
+		%\PassOptionsToPackages{accsupp}{axessibility}
+		\RequestPackage{axessibility}
+	},%
+%    \end{macrocode}
+%    \begin{macrocode}
 	videolecture	.bool_set:N	= \gW@videolecture	,
-
+%    \end{macrocode}
+%    \begin{macrocode}
 	oneinch	.bool_set:N	= \gW@oneinch	,
-	
+%    \end{macrocode}
+%    \begin{macrocode}
 	titlesec	.bool_set:N	= \gW@titlesec	,
-
-	venn	.bool_set:N	= \gW@venn	,
-
+%    \end{macrocode}
+%    \begin{macrocode}
+	venn	.code:n	= {%
+		%TODO: load this if \cls{beamer}, since it loads \pkg{pgf}
+		%TODO: detect \pkg{pgf} and default this on?
+		\RequestPackage{
+			venndiagram,	%https://tex.stackexchange.com/a/381249
+		}	},%
+%    \end{macrocode}
+%    \begin{macrocode}
 	documentClass	.tl_set:N	= \gW@documentClass	,
 	documentClass	.initial:n	= article	,	% .default vs .initial-value
 	documentClass	.value_required:n	= true	,
@@ -1074,17 +1125,17 @@ John Pell
 		documentClass	= l3doc	,
 			}	,
 	dtx	.value_forbidden:n	= true	,
-
+%    \end{macrocode}
+%    \begin{macrocode}
 	unknown	.code:n	= {
 		%\msg_error:nnx { gWmaths }
 		%{ unknown-key } { \l_keys_key_tl }
 			}	,
-}
-%
-\NewDocumentCommand \gWsetup { s m }
-{
-	\keys_set:nn { gWmaths } { #2 }
-}
+%    \end{macrocode}
+%    \begin{macrocode}
+}%
+\NewDocumentCommand \gWsetup { s m }%
+{	\keys_set:nn { gWmaths } { #2 }	}
 %    \end{macrocode}
 % \end{macro}
 %%/gWkeys>
@@ -1147,9 +1198,6 @@ John Pell
 	{ \str_if_eq_p:Vn \c_sys_output_str { pdf } }
 	%\AddToHook{package/hyperref/before}{\pdffalse}
 	%\AddToHook{package/hyperref/after}{\pdftrue}
-}
-\sys_if_output_pdf:T{
-	\gWsetup{autodate}
 }
 %
 \ifdefined\ProcessKeyOptions
@@ -1214,10 +1262,9 @@ John Pell
 	\AddToHook{ class / beamer / before }%
 	{% Choose violence over \cls{beamer}.
 	%TODO: *check* if implicit=true before forcing it here
-	%TODO: can \pkg{hyperref}'s `implicit's be fixed to new hooks?
 		\AddToHook{ package / hyperref / before }%
 		{	\PassOptionsToPackage{	implicit,	}{hyperref}	}
-	}% hook: package/before/hyperref
+	}
 
 	\PassOptionsToPackages
 	{	%implicit, % Redefine \LaTeX* internals, already default
@@ -1242,8 +1289,6 @@ John Pell
 ]{hyperref}
 %% Inform *all* packages that `hyperref` is in use:
 %\gW@addGlobalOption{hyperref}
-\DeclareGlobalOptionsIfPackage%
-{hyperref}{hyperref}[many packages like to be told if \pkg{hyperref} is in use]
 %
 \PassOptionsToPackages{bookmarks}{hyperref}% Write TOC as PDF bookmarks
 \RequestPackageIfPackageOption{bookmark}{hyperref}{bookmarks}%
@@ -1254,8 +1299,6 @@ John Pell
 \PassOptionsToPackageIfPackage%
 {hyperref}{xcolor}{hyperref}[color expressions by defining additional keys]%
 %
-\PassOptionsToPackageIfPackage
-{hyperref}{ntheorem}{hyperref}
 %
 \AddToHook{ package / hyperxmp / after }%
 {%
@@ -1272,9 +1315,6 @@ John Pell
 
 
 %
-%% Set up documentation utilities from `hyperref` documentation package.
-\PassOptionsToPackageIfPackage%
-{hyperindex=false}{hyperref}{hypdoc}[do *not* link page numbers from index...conflict w/ hypdoc...]
 
 %
 %% Use colors now that we have color printers and video screens...
@@ -1288,37 +1328,9 @@ John Pell
 	table, % Load the `colortbl` package
 ]{xcolor}
 %
-%% Set up a much nicer set of theorem environments:
-\bool_if:nT \gW@ntheorem{
-\RequestPackage[% `ntheorem`
-	thmmarks, % enables the automatical placement of endmarks
-	thref, % enables the extended reference features
-	standard % load predefined environments
-]{ntheorem}
-%
-%% Inform *all* packages that `ntheorem` is in use:
-%\gW@addGlobalOption{ntheorem}
-\DeclareGlobalOptionsIfPackage{ntheorem}{ntheorem}[some packages like to be told if \pkg{ntheorem} is in use]
-%%
-\PassOptionsToPackageIfPackage
-{ntheorem}{empheq}{ntheorem}[cope with `ntheorem`]
-\PassOptionsToClassIfPackage
-{noamsthm}{beamer}{ntheorem}[prevent from loading \pkg{amsthm}, which conflicts with \pkg{ntheorem}]
 
-}%\gW@ntheorem
 
 %
-%% Set up the most common mathematics package:
-\bool_if:nT \gW@amsmath{
-\RequestPackage{amsmath}
-%
-%% Inform *all* packages that `amsmath` is in use:
-%\gW@addGlobalOption{amsmath}
-\DeclareGlobalOptionsIfPackage{amsmath}{amsmath}[some packages like to be told if \pkg{amsmath} is in use]
-%%
-\PassOptionsToPackageIfPackage
-{amsmath}{ntheorem}{amsmath}[cope with `amsmath`]
-}%\gW@amsmath
 
 %
 %% Set up formatting for telephone numbers:
@@ -1397,11 +1409,6 @@ John Pell
 ]{geometry}
 
 
-%\bool_if:nT \gW@autodate%
-%{
-	\AtEndOfClass{ \date{ \filemodprintdate{ \jobname.tex } } }%
-%}%
-
 
 \PassOptionsToPackages
 { % Documentation expressly states that \TUTeX* should use \meta{pdfencoding=unicode}
@@ -1413,8 +1420,6 @@ John Pell
 %\let\@classoptionslist\gW@classoptionslist
 % ref: https://www.overleaf.com/learn/latex/Writing_your_own_class
 % ref: https://www.latex-project.org/help/documentation/clsguide.pdf
-
-\bool_if:nTF \gW@axessibility{}{}
 
 \bool_if:nTF \gW@videolecture%
 {%
@@ -1448,11 +1453,6 @@ John Pell
 \sys_if_output_pdf:T{
 	%\pdf_version_min_gset:n {1.6} % see \cs{DocumentMetadata}
 	\DeclarePackageOrdering{cmap}{unrelated}{hyperref}[by using \cs{pdfminorversion} here, we obviate the ordering dependency]
-}
-
-\bool_if:nT \gW@accessibility{
-	\RequirePDFTeX
-	%\pdf_version_gset:n {1.6} % see \cs{DocumentMetadata}
 }
 
 
@@ -1531,14 +1531,6 @@ John Pell
 	%mathtools,
 %%don't use: http://mirrors.ctan.org/macros/latex/required/amscls/doc/amsthdoc.pdf
 }
-
-%TODO: \RequestPackageIfBool
-\bool_if:nT \gW@venn{
-%TODO: load this if \cls{beamer}, since it loads \pkg{pgf}
-%TODO: detect \pkg{pgf} and default this on?
-\RequestPackage{
-	venndiagram,	%https://tex.stackexchange.com/a/381249
-}}
 
 \RequestPackage% Use real subscripts/superscripts from OTF fonts, when available.
 	{realscripts}
@@ -1700,23 +1692,7 @@ John Pell
 {	\disable@package@load{luacode}{\PackageInfo{gWmaths}{blocked~pkg{luacode}~(not~luatex.}}	}
 
 \ifPDFTeX% not \XeTeX* nor \LuaTeX*
-	\bool_if:nT \gW@accessibility
-	{% This package is the magic that associates, structures, and tags the TeX sources to show up in the PDF:
-		\RequestPackage% `accessibility` is badly hacked together and quite old...
-		[	tagged,
-			highstructure,
-		]{accessibility}
-	}
 \else
-	\ifLuaTeX
-		%\PassOptionsToPackages{tagpdf}{axessibility}
-		%\RequestPackage{tagpdf} % official work-in-progress package for future integrated tagging
-	\else % \XeTeX*
-		\let\pdfcompresslevel\pdf@compress@xetex
-		\PassOptionsToPackages{accsupp}{axessibility}
-	\fi
-	\bool_if:nT \gW@axessibility%
-	{	\RequestPackage{axessibility}	}%
 \fi%\ifPDFTeX
 
 %http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf % too complex
@@ -1730,8 +1706,6 @@ John Pell
 		% \pkg{nameref} patches a bunch of shit, including \pkg{titlesec, beamer, varioref, ifthen, listings}
 }% %also: http://mirrors.ctan.org/macros/latex/contrib/hyperref/doc/manual.html#x1-520009
 
-\bool_if:nT \gW@hypdoc%
-{	\RequestPackage{hypdoc}	}%
 
 %\RequestPackage[
 	%linewidth = 1 % TODO: what is `linewidth` for?
