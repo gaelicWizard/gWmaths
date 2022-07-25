@@ -1000,6 +1000,12 @@ John Pell
 {
 %    \end{macrocode}
 %    \begin{macrocode}
+	format	.code:n = {%
+		%%% set up a hook at the right spot to dump a custom format
+		\AddToHook{gWpkgs}[format]{	\dump	}
+	},%
+%    \end{macrocode}
+%    \begin{macrocode}
 	PDFencoding .choices:nn = { PDFDocEncoding, unicode, auto }
 	{	\tl_set:cn{gW@PDFencoding}{#1}	}	,%
 %    \end{macrocode}

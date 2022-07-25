@@ -17,6 +17,10 @@
 \declare@file@substitution{fink.sty}{currfile.sty}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\DeclarePackageOrdering{ format	}{before}{	fontspec, fontenc	}[dumping the format must happen before any platform-native fonts are loaded]
+\DeclarePackageOrdering{ format	}{before}{	cmap, mmap, unicode-math, babel, realscripts	}[]
+\DeclarePackageOrdering{ format	}{after}{	documentclass / before, 	}[]
+
 \DeclarePackageDependency{markdown}{	keyval,
 					url,
 					graphicx,
