@@ -100,7 +100,7 @@ John Pell
 % \end{macro}
 %</ins>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage{ iftex,	l3keys2e,	}%
+\RequirePackage{ iftex,	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
 % \section{ Documentation driver file }
@@ -217,6 +217,19 @@ John Pell
 	\exp_args:Neee	\l_tmpa_cs	{#1}{#2}{#3}
 	\tl_map_inline:Nn	\l_tmpa_tl	{\group_insert_after:N##1}
 }
+%    \end{macrocode}
+%    \begin{macrocode}
+\ProvideDocumentCommand	\AtEndDocumentClass	{o+m}%
+{	\AddToHook{documentclass / end}[#1]{#2}	}
+\ProvideDocumentCommand	\AfterDocumentClass	{o+m}%
+{	\AddToHook{documentclass / after}[#1]{#2}	}
+\AtEndOfPackage%
+{	\tl_if_in:NnF	\@documentclasshook	{\UseOneTimeHook}%
+	{	\g@addto@macro	\@documentclasshook	{\UseOneTimeHook{documentclass/end}}	{}{}% should be \cs{pretocmd}
+		\g@addto@macro	\@documentclasshook	{\UseOneTimeHook{documentclass/after}}	{}{}
+}	}
+\ActivateGenericHook{documentclass / end}
+\ActivateGenericHook{documentclass / after}
 %    \end{macrocode}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -369,7 +382,7 @@ John Pell
 %
 %% Define logos for the \TeX* family, w/ hyp.
 % use end-of-class, so nothing is undefined in the document preamble
-\AtEndOfClass{\DeclareHologos%
+\AfterDocumentClass{\DeclareHologos%
 {
 	TeX,
 	eTeX,
@@ -794,7 +807,8 @@ John Pell
 	\AddToHook { gWpkgs }[#2]%
 	{%
 		\cs_if_exist:cF{ ver@ #2 .cls }%
-		{	\LoadClass{#2}[#3]	}
+		{	\def\LoadClass{\@fileswithoptions\@clsextension}
+			\LoadClass{#2}[#3]	}
 	}
 	\UseOneTimeHook{ class / #2 / request }
 	\DeclarePackageOrdering{#2}{before}{documentclass / after}[class loads before nearly all packages]
@@ -987,22 +1001,55 @@ John Pell
 %
 % \end{macro}
 %
+%</sty>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%<*cls>
 %%*gWkeys>
 % \section{ \cls{ \filename } ~ configuration ~ setup }
+%    \begin{macrocode}
+\RequirePackage{ gWmaths }%
+%    \end{macrocode}
 %
 % \begin{macro}{gWsetup}
-%
-% Set up our options 
-%
 %    \begin{macrocode}
 \keys_define:nn { gWmaths }
 {
 %    \end{macrocode}
+%
+% Set up our options 
+%
+%    \begin{macrocode}
+	DocumentMetadata	.code:n = {%
+		\cs_if_exist:NTF \IfDocumentMetadataTF{\IfDocumentMetadataTF%
+		{	\DocumentMetadata{#1}	}% Already loaded, just pass along...
+		{% MUST be as early as possible, note that we have to even have to hide:
+			\cs_if_eq:NNT \documentclass \@twoclasseserror%
+			{	\let\documentclass\relax	}
+			\DocumentMetadata%
+			{%
+				pdfversion=1.6,% fucking hack for \pkg{accessibility}
+				testphase=phase-II,% loads \pkg{tagpdf}, calls \cs{tagpdfsetup{activate,interwordspace,paratagging}}
+				#1
+			}%
+			\ExplSyntaxOn\makeatletter% ...turned off by \cs{DocumentMetadata}???
+			\let\documentclass\@twoclasseserror%
+		}%
+		}{% format too old...
+			\pdf_version_min_gset:n {1.6} % fucking hack for \pkg{accessibility}
+	}},%
+	DocumentMetadata	.initial:n = {},%
+%    \end{macrocode}
 %    \begin{macrocode}
 	format	.code:n = {%
 		%%% set up a hook at the right spot to dump a custom format
-		\AddToHook{gWpkgs}[format]{	\dump	}
+		\AddToHook{gWpkgs}[format]%
+		{	\RemoveFromHook{gWpkgs}[format]% so we don't run again!!
+			\RenewDocumentClass% to avoid \@twoclasserror
+			%\nonstopmode% don't prompt for user input from here on
+			\dump% Output a format file to disk!
+			%\endbatchfile% stop our run immediately now.
+		}
+		\RequestPackagesAlreadyLoaded{ format }%
 	},%
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -1026,7 +1073,7 @@ John Pell
 	utf8	.value_forbidden:n	= true	,%
 %    \end{macrocode}
 %    \begin{macrocode}
-	autodate	.code:n = {	\AtEndOfClass{ \date{ \filemodprintdate{ \jobname.tex } } }	},%
+	autodate	.code:n = {	\AfterDocumentClass{ \date{ \filemodprintdate{ \jobname.tex } } }	},%
 	autodate	.initial:n = {{}},%
 	audodate	.value_forbidden:n = true,%
 %    \end{macrocode}
@@ -1145,9 +1192,6 @@ John Pell
 %    \end{macrocode}
 % \end{macro}
 %%/gWkeys>
-%</sty>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%<*cls>
 % \section{ \cls{ \filename } ~ document ~ class }
 %
 %\ifXeTeX\pdftrue\fi % SOME APPS ASSUME THIS MEANS PDFTEX
@@ -1155,21 +1199,8 @@ John Pell
 {	\disable@package@load{etoolbox}{\PackageInfo{gWmaths}{blocked~pkg{etoolbox}~from~loading.}}	}
 \AddToHook{package/ hyperref-generic /after}%
 {	\reenable@package@load{etoolbox}	}
-\cs_if_exist:NTF \DocumentMetadata%
-{ % MUST be as early as possible, note that we have to even have to hide:
-	\cs_if_eq:NNT \documentclass \@twoclasseserror%
-	{	\let\documentclass\relax	}%
-	\DocumentMetadata%
-	{%
-		pdfversion=1.6,% fucking hack for \pkg{accessibility}
-		testphase=phase-II,% loads \pkg{tagpdf}, calls \cs{tagpdfsetup{activate,interwordspace,paratagging}
-	}%
-	\ExplSyntaxOn\makeatletter% ...turned off by \cs{DocumentMetadata}???
-	\let\documentclass\@twoclasseserror%
-}{%
-	\pdf_version_min_gset:n {1.6} % fucking hack for \pkg{accessibility}
-}%
-\RequirePackage{ gWmaths }%
+\AtEndDocumentClass%
+{	\LoadPackagesNow{}	}%
 \GetFileInfo{\CurrentFile}%
 %
 % \begin{macro}{gWsetup}
@@ -1474,19 +1505,19 @@ John Pell
 \RequestClass	{\gW@documentClass}%
 %%
 \RequestPackage{regexpatch}% ...see \pkg{regexpatch}...
-\AtEndOfClass{%
-	\ProvideDocumentCommand	\subtitle	{m}%
-	{\def\@subtitle{#1}}%
-	\subtitle{}%default is blank
-	%%
+%\ShowHook{documentclass}
+\AfterDocumentClass%
+{	\ProvideDocumentCommand	\subtitle	{m}%
+	{	\@namedef{@subtitle}{#1}	}%
+	\subtitle{}{}{}% default is blank
 	% Patch \cs{@maketitle} to add a smaller subtitle after the main title, while keeping \cs{@title} clean.
 	\xpatchcmd{\@maketitle}{{\LARGE \@title \par}}{{\LARGE \@title \par}{\Large \@subtitle \par}}{}{}%
-	\xapptocmd{\maketitlehookb}{\par {\centering\Large \@subtitle \par}}{}{}
+	\xapptocmd{\maketitlehookb}{\par {\centering\Large \@subtitle \par}}{}{}%
 	% Patch \cs{title}, \cs{author}, \cs{date} to be non-global.
-	\xpatchcmd{\title}{\gdef\@title}{\def\@title}{}{}
-	\xpatchcmd{\subtitle}{\gdef\@subtitle}{\def\@subtitle}{}{}
-	\xpatchcmd{\author}{\gdef\@author}{\def\@author}{}{}
-	\xpatchcmd{\date}{\gdef\@date}{\def\@date}{}{}
+	\xpatchcmd{\title}{\gdef\@title}{\def\@title}{}{}%
+	\xpatchcmd{\subtitle}{\gdef\@subtitle}{\def\@subtitle}{}{}%
+	\xpatchcmd{\author}{\gdef\@author}{\def\@author}{}{}%
+	\xpatchcmd{\date}{\gdef\@date}{\def\@date}{}{}%
 }%
 \NewDocumentCommand	\maketitlingpage	{}%
 {%
@@ -1498,10 +1529,13 @@ John Pell
 %\RequestPackage[v1]{subfiles}%
 \NewDocumentCommand	\RenewDocumentClass	{}%
 {	\RenewDocumentCommand	\documentclass	{omo}%
-	{	\tl_if_eq:nnT{##2}{gWmaths}{\gWsetup{##1}}
+	{	\tl_if_eq:nnTF{##2}{gWmaths}{\gWsetup{##1}}{\@twoclasseserror}
+		\UseHook{ gWpkgs }
 		\let\documentclass\@twoclasseserror
-		\use:n	\@documentclasshook
+		\UseHook{documentclass / after}
+		%\use:n	\@documentclasshook
 }	}
+%\NewHook{documentclass}
 \AddToHook{include/before}%
 {	\begingroup % Keep (most) assignments local to the sub-document, not global.
 	\RenewDocumentClass%
@@ -1516,7 +1550,7 @@ John Pell
 		\cs_set:cpn{@partaux}{}% Allow nested \cs{include}
 }	}%
 \AddToHook{include/after}{\endgroup}
-\AtEndOfClass%
+\AfterDocumentClass%
 {	\xpatchcmd{\@include}{\write\@mainaux{\string\@input{#1.aux}}}{\write\@auxout{\string\@input{#1.aux}}}{}{}
 }%
 %TODO: make \cs{include} nestable...
@@ -1548,7 +1582,7 @@ John Pell
 %	{embedall}
 
 \bool_if:nT \gW@oneinch{
-	\AtEndOfClass{
+	\AfterDocumentClass{
 		\geometry{
 			%letterpaper, % screen % TODO: try to get this to auto-detect or something so \documentclass[a4paper,landscape]{gWmaths} works
 			margin=1in
@@ -1821,7 +1855,7 @@ John Pell
 % https://en.wikibooks.org/wiki/LaTeX/Document_Structure#Sectioning_commands
 %%
 
-\AtEndOfClass%
+\AfterDocumentClass%
 {	\cs_if_exist:cF{thechapter}%
 	{	\cs_if_exist:cT{thepart}%
 		{	\newcounter{chapter}%[part]
@@ -1879,25 +1913,6 @@ John Pell
 
 
 
-\NewDocumentCommand \AllTheCards {}
-{{	\centering	%% Mind the group
-	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
-	{	\blackcard{##1}{\spadesuit}	}
-	\par
-	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
-	{	\redcard{##1}{\varheartsuit}	}
-	\par
-	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
-	{	\blackcard{##1}{\clubsuit}	}
-	\par
-	\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
-	{	\redcard{##1}{\vardiamondsuit}	}
-	\par
-}}%
-%\blackcard{Q}{\spadesuit}
-%\redcard{10}{\varheartsuit}
-%\redcard{A}{\vardiamondsuit}
-%\blackcard{\jokerface}{\joker} %% Joker is broken...
 
 
 
@@ -1908,7 +1923,6 @@ John Pell
 
 
 
-\ExplSyntaxOff
 
 
 
@@ -1916,25 +1930,52 @@ John Pell
 
 %% from https://tex.stackexchange.com/a/514184/233148
 \RequestPackage{tabstackengine,xcolor,fancybox,graphicx}
-\newcommand\blackcard[2]{%
-  \begingroup\cornersize{.1}\fboxsep=0pt\relax
-  \Ovalbox{\tabbedCenterstack{%
-  \makebox[0pt][l]{\scriptsize$#2$} && \\
-    &\makebox[22pt]{#1}&\\
-    &&\makebox[0pt][r]{\rotatebox[origin=c]{180}{\scriptsize$#2$}}}}%
-  \endgroup}
-\newcommand\redcard[2]{%
-  \begingroup\cornersize{.1}\fboxsep=0pt\relax
-  \Ovalbox{\color{red}\tabbedCenterstack{%
-  \makebox[0pt][l]{\scriptsize$#2$} && \\
-    &\makebox[22pt]{#1}&\\
-    &&\makebox[0pt][r]{\rotatebox[origin=c]{180}{\scriptsize$#2$}}}}%
-  \endgroup}
-\newcommand\jokerface{\raisebox{-2pt}{\kern-1pt\stackengine{0pt}{%
-  \stackinset{c}{1pt}{c}{-.4pt}{\stackunder[.7pt]{$\cdot\kern2pt\cdot\kern0.3pt$}%
-  {--}}{$\bigcirc$}}{\,$\steaming$}{O}{c}{F}{F}{S}}}
-\newcommand\joker{\vcenter{\hbox{\scalebox{.4}{ \tiny JOKER }}}}
+\AddToHook{package/ fancybox /after}%
+{\AddToHook{package/ tabstackengine /after}%
+{	\NewDocumentCommand	\blackcard	{mm}%
+	{{	\cornersize{.1}\fboxsep=0pt\relax	%% Mind the group
+		\Ovalbox{\tabbedCenterstack{%
+		\makebox[0pt][l]{\scriptsize$#2$} && \\
+			&\makebox[22pt]{#1}&\\
+			&&\makebox[0pt][r]{\rotatebox[origin=c]{180}{\scriptsize$#2$}}}}%
+	}}
 
+	\NewDocumentCommand	\redcard	{mm}%
+	{{	\cornersize{.1}\fboxsep=0pt\relax	%% Mind the group
+		\Ovalbox{\color{red}\tabbedCenterstack{%
+		\makebox[0pt][l]{\scriptsize$#2$} && \\
+			&\makebox[22pt]{#1}&\\
+			&&\makebox[0pt][r]{\rotatebox[origin=c]{180}{\scriptsize$#2$}}}}%
+	}}
+
+	\NewDocumentCommand	\jokerface	{}%
+	{	\raisebox{-2pt}{\kern-1pt\stackengine{0pt}{%
+			\stackinset{c}{1pt}{c}{-.4pt}{\stackunder[.7pt]{$\cdot\kern2pt\cdot\kern0.3pt$}%
+			{--}}{$\bigcirc$}}{\,$\steaming$}{O}{c}{F}{F}{S}}
+	}
+	\NewDocumentCommand	\joker	{}%
+	{	\vcenter{\hbox{\scalebox{.4}{ \tiny JOKER }}}	}
+
+	\NewDocumentCommand \AllTheCards {}
+	{{	\centering	%% Mind the group
+		\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+		{	\blackcard{##1}{\spadesuit}	}
+		\par
+		\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+		{	\redcard{##1}{\varheartsuit}	}
+		\par
+		\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+		{	\blackcard{##1}{\clubsuit}	}
+		\par
+		\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
+		{	\redcard{##1}{\vardiamondsuit}	}
+		\par
+	}}%
+	%\blackcard{Q}{\spadesuit}
+	%\redcard{10}{\varheartsuit}
+	%\redcard{A}{\vardiamondsuit}
+	%\blackcard{\jokerface}{\joker} %% Joker is broken...
+}	}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Begin user defined commands
 
@@ -1971,13 +2012,12 @@ John Pell
 }
 %\renewcommand{\labelenumi}{(\alphalph{enumi})}
 
-\providecommand{\blankpage}%
-{%
-	\clearpage%
+\ProvideDocumentCommand	\blankpage	{}%
+{	\clearpage%
 	\thispagestyle{empty}%
 	\addtocounter{page}{-1}%
 	\null%
-	\clearpage
+	\clearpage%
 }
 
 %  End user defined commands
@@ -1988,7 +2028,7 @@ John Pell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % These establish different environments for stating Theorems, Lemmas, Remarks, etc.
-\AddToHook{package/ntheorem/after}%%https://tex.stackexchange.com/a/340458/233148
+\AddToHook{package/ ntheorem /after}%%https://tex.stackexchange.com/a/340458/233148
 {
 	\theorembodyfont{\upshape}
 	\newtheorem{Exercise}{\textcolor{brown}{Exercise}}
@@ -2017,11 +2057,11 @@ John Pell
 
 % End environments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\LoadPackagesNow{}%
 
 
 %% https://tex.stackexchange.com/questions/108696/what-do-explsyntaxon-and-explsyntaxoff-do
 
+\ExplSyntaxOff
 
 \begin{filecontents*}{latexmkrc}
 # This file _MUST NOT_ have any file extension; just `latexmkrc`.
