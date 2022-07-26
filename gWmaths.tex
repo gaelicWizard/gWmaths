@@ -36,6 +36,19 @@
 \begin{document}
 
 
+%% https://ctan.mirror.garr.it/mirrors/ctan/macros/latex/required/graphics/mathcolor.pdf
+\[	\left\{ \frac{1}{2} \mathcolor{red}{\right\}}	\]
+\[	\mathcolor{red}{\int}\limits_0^1 \textrm{ or }
+	\mathcolor{red}{\int\limits}_0^1				\]
+
+
+Old way:
+\[ X = \color{red} \sum
+	_{{\color{black} i=1}}	% without {{ the superscript is misplaced
+	^{{\color{black} n}}	% without {{ the \sum is black
+	\color{black}	% without the x_i is red
+	x_i					\]
+
 \end{document}
 
 
