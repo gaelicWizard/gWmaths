@@ -5,7 +5,7 @@ During the great pandemic of 2020, the \cls{gWmaths} class was created to shorte
 It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
 
 With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve.
-The class was renamed to \cls{gWmaths}, partially split out to a \pkg{gWmaths} package, and updated to \LaTeXx*.
+The class was renamed to \cls{gWmaths}, partially split out to a \pkg{gWmaths} package, and updated to \LaTeX3.
 Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control.
 
 This work has the LPPL maintenance status `maintained'.

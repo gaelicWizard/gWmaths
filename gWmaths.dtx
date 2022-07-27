@@ -24,7 +24,7 @@ During the great pandemic of 2020, the \cls{gWmaths} class was created to shorte
 It was initially \cls{pellmaths} and was just a shortcut for 80 lines of boilerplate at the top of every darn file.
 
 With the first week of 2021 declaring "hold my beer", some effort was made to expand and improve.
-The class was renamed to \cls{gWmaths}, partially split out to a \pkg{gWmaths} package, and updated to \LaTeXx*.
+The class was renamed to \cls{gWmaths}, partially split out to a \pkg{gWmaths} package, and updated to \LaTeX3.
 Meanwhile, the source transformed to require build via \pkg{docstrip} and was brought under version control.
 
 This work has the LPPL maintenance status `maintained'.
@@ -51,7 +51,7 @@ John Pell
 %
 % The ASCII character 9 (tab) becomes |^^I| in \XeTeX*, unless \meta{-8bit} is passed on the command line.
 %
-% Begin a \TeX* group so the unprotected input doesn't jack up too much stuff, then input \LaTeXx*'s edition of \pkg{docstrip}.
+% Begin a \TeX* group so the unprotected input doesn't jack up too much stuff, then input \LaTeX3's edition of \pkg{docstrip}.
 %
 %    \begin{macrocode}
 \begingroup	\ExplSyntaxOff	\input l3docstrip
@@ -105,7 +105,7 @@ John Pell
 %<*drv>
 % \section{ Documentation driver file }
 %
-% Load \LaTeXx*'s documentation class, load ourselves (utility package), set the document title \etc., then \cs{DocInput} this very file.
+% Load \LaTeX3's documentation class, load ourselves (utility package), set the document title \etc., then \cs{DocInput} this very file.
 %
 %    \begin{macrocode}
 \documentclass{l3doc}
@@ -321,7 +321,7 @@ John Pell
 {	%\RequestPackage{hologo}
 %    \end{macrocode}
 %
-% Use \LaTeXx*'s \cs{cs_gset:cpn} to define a control sequence named \oarg{2}, with a trailing parameter delimiter \meta{/} (without any parameters, just the trailing delimiter), which simply expands through to calling \cs{hologo} with the named logo.
+% Use \LaTeX3's \cs{cs_gset:cpn} to define a control sequence named \oarg{2}, with a trailing parameter delimiter \meta{/} (without any parameters, just the trailing delimiter), which simply expands through to calling \cs{hologo} with the named logo.
 %
 %    \begin{macrocode}
 	\cs_if_free:cTF {#2}%
@@ -398,7 +398,7 @@ John Pell
 
 	NTS,% LOL
 }
-\DeclareHologo{LaTeX3}[LaTeXx]% Map \hologo{LaTeX3} to \LaTeXx*
+\DeclareHologo{LaTeX3}[LaTeXx]% Map \hologo{LaTeX3} to \LaTeX3
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% better documentation links from \cls{l3doc} and \pkg{hypdoc}
@@ -557,10 +557,10 @@ John Pell
 %% Define \ifLaTeX3
 % \begin{macro}{\ifLaTeXxTF}
 % \begin{arguments}
-%   \item Code to run if the format is \LaTeXx*.
-%   \item Code to run if the format is not \LaTeXx*.
+%   \item Code to run if the format is \LaTeX3.
+%   \item Code to run if the format is not \LaTeX3.
 % \end{arguments}
-% Note that this macro is defined in \LaTeXx* syntax, so failure is impossible.
+% Note that this macro is defined in \LaTeX3 syntax, so failure is impossible.
 %   \begin{macrocode}
 \ProvideDocumentCommand \ifLaTeXxTF { O{} O{} }%
 {	\cs_if_exist:cTF {ExplSyntaxOn} {#1} {#2}	}%
