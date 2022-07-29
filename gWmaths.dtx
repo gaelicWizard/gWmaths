@@ -901,8 +901,7 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\RequestPackagesAlreadyLoaded	{ s m }%
-{
-	%For each package already loaded:
+{	%For each package already loaded:
 	\clist_map_inline:cn { @filelist }
 	{\tl_if_in:nnT { ##1 } { .sty }{
 		\tl_set:Nn \l_tmpa_tl { ##1 }
@@ -930,6 +929,7 @@ John Pell
 	}%
 	{\UseHook{ gWpkgs }}%
 	\UseHook{ gWpkgs / after }
+	\PackageWarning{gWpkgs}{ Finished~Loading~Packages }
 }
 \newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
 \newcounter{gWpkgd}%...
@@ -951,8 +951,7 @@ John Pell
 %
 %    \begin{macrocode}
 \NewDocumentCommand	\DeclarePackageOrdering	{ m m m o}
-{
-	\clist_map_inline:nn{ #3 }
+{	\clist_map_inline:nn{ #3 }
 	{\tl_if_blank:nF{##1}{
 %		\@ifpackageloaded{ ##1 }
 %		{
@@ -971,8 +970,7 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand	\DeclarePackageDependency	{ s m m o }
-{
-	\IfBooleanF {#1}
+{	\IfBooleanF {#1}
 	{ % It's possible that a package is required to be loaded, but not necessarily that it be loaded *first*
 		\DeclarePackageOrdering{#2}{after}{#3}
 	} % For example, \pkg{hyperxmp} requires \pkg{hyperref} in order to function, but can be loaded before or after
@@ -1084,16 +1082,16 @@ John Pell
 %    \begin{macrocode}
 	ntheorem	.code:n	= {
 		%% Set up a much nicer set of theorem environments:
-		\RequestPackage[% `ntheorem`
-			thmmarks, % enables the automatical placement of endmarks
+		\RequestPackage% `ntheorem`
+		[	thmmarks, % enables the automatical placement of endmarks
 			thref, % enables the extended reference features
 			standard % load predefined environments
 		]{ntheorem}
 		%
 		%% Inform *all* packages that `ntheorem` is in use:
 		\DeclareGlobalOptionsIfPackage{ntheorem}{ntheorem}[some packages like to be told if \pkg{ntheorem} is in use]
-		\disable@package@load{amsthm}{\PackageInfo{gWmaths}{blocked~pkg{amsthm}~from~loading.}}
-		\DeclarePackageOrdering{ ntheorem	}{incompatible-warning}{	amsthm	}[since disabling load, no need to error]
+		\disable@package@load{amsthm}{\PackageInfo{ntheorem}{blocked~pkg{amsthm}~from~loading.}}
+		\DeclarePackageOrdering{ ntheorem	}{voids}{	amsthm	}[since disabling load, no need to error]
 	},%
 	%ntheorem	.initial:n = {},%
 	ntheorem	.value_forbidden:n = true,%
@@ -1496,7 +1494,6 @@ John Pell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1646,6 +1643,9 @@ John Pell
 	%% Post-2017, don't use xunicode package
 	\disable@package@load{xunicode}{\PackageInfo{gWmaths}{blocked~pkg{xunicode}~from~loading.}}
 	%% Post-2017, default `tuenc` package uses TU font encoding, full unicode.
+
+	\sys_if_engine_luatex:F% Don't load \pkg{luacode} if we're not in \LuaTeX*.
+	{	\disable@package@load{luacode}{\PackageInfo{gWmaths}{blocked~pkg{luacode}~(not~luatex.}}	}
 \else \RequirePDFTeX % don't even with others
 	\PassOptionsToPackages{% `fontenc`
 		T1,% T1 fonts extend the old OT1 format to allow greater than 128 characters
@@ -1664,32 +1664,10 @@ John Pell
 	% something about ASCII or Unicode fonts: ...Package[noTeX]{mmap}
 \fi%\ifTUTeX
 
-%\RequirePackage[%
-	%% docs: http://mirrors.ctan.org/macros/latex/contrib/standalone/standalone.pdf
-%	subpreambles=false % do not automatically collect preambles
-%		]{standalone}
-%\documentclass[class=gWmaths,crop=false]{standalone}
-%\standaloneconfig{}
-
-%\RequestPackage[%
-	%activeospeccharacters, % don't fuck with < and >
-	%notheorems?
-		%]{beamerarticle}
-%\documentclass[ignorenonframetext]{beamer}
-%\documentclass[trans]{beamer}
-%Note: When using \include or \input commands, conversions of modes must be controlled manually. See Section 21.3 for details
-%\mode<article>{\usepackage{fullpage}}
-%\mode<presentation>{\usetheme{Berlin}}
-%\subsection<article>{Article-Only Section}
-%\only<article>{\item This particular item is only part of the article version.}
-%\item<presentation:only@0> This text is also only part of the article.
-%The command \setjobnamebeamerversion{main.beamer} tells the article version where to find the presentation version. This is necessary if you wish to include slides from the presentation version in an article as figures.
-%By adjusting the frame template, you can “mimic” the appearance of frames typeset by beamer in your articles.
 
 
 %https://tex.stackexchange.com/a/5231
 
-%pdflatex --jobname=Cookies %\jobname
 
 
 % \subsection{Required Packages}
@@ -1725,19 +1703,12 @@ John Pell
 }%
 
 
-%define new \listofXs
-% docs: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
+%% tocloft: http://mirrors.ctan.org/macros/latex/contrib/tocloft/tocloft.pdf
 
-\sys_if_engine_luatex:F% Don't load \pkg{luacode} if we're not in \LuaTeX*.
-{	\disable@package@load{luacode}{\PackageInfo{gWmaths}{blocked~pkg{luacode}~(not~luatex.}}	}
+%% titlesec: http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf % too complex
 
-\ifPDFTeX% not \XeTeX* nor \LuaTeX*
-\else
-\fi%\ifPDFTeX
 
-%http://mirrors.ctan.org/macros/latex/contrib/titlesec/titlesec.pdf % too complex
-
-\RequestPackage% `hyperref` claims to be about hypertext, but it's actually a significant structural support!
+\RequestPackage% `hyperref` claims to be about hypertext, but it actually controls the structure of the PDF!
 {	%% NOTE: https://tex.stackexchange.com/q/1863
 	hyperref,
 	bookmark, % replaces \pkg{hyperref}'s PDF TOC implementation
@@ -1763,23 +1734,6 @@ John Pell
 %    \end{macrocode}
 %\end{macro}
 
-%\RequestPackage{ifthen}%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Ugly hack, because of the unfortunate deprecation of 'n' to 'c' conversion,
-% plus the fact that kernel errors, even non-fatal ones, cannot be redirected.
-% Will think of a better solution at some point, but not now.
-%\let\__withargs_docs_old_kernel_msg_error:nnnnnn\__kernel_msg_error:nnnnnn
-%\def\__kernel_msg_error:nnnnnn#1#2{
-%  \str_if_eq:nnTF { #1/#2 } { kernel/deprecated-variant }{
-%    \__kernel_msg_warning:nnnnnn{#1}{#2}
-%  }{
-%    \__withargs_docs_old_kernel_msg_error:nnnnnn{#1}{#2}
-%  }
-%}
-%\fi%???????
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \AtBeginDocument%
 {%
 	\listfiles % track loaded files in this job
@@ -1796,9 +1750,6 @@ John Pell
 		%pdfsource={\jobname.tex} % default
 		pdfuapart=1, % that's the whole point, but we're lacking...
 	}
-	\cs_if_exist:cT{fileinfo}{\hypersetup{
-		%pdfsubject={\fileinfo}, % this takes the name/description of the *class*...
-			}}
 }
 
 
@@ -1813,10 +1764,13 @@ John Pell
 }
 \AtBeginDocument% *inside* main document environment
 {
-	\cs_if_exist:cT{currfilename}%
+	\cs_if_exist:NT	\c_sys_jobname_str%
 	{	\file_get_full_name:nN{\c_sys_jobname_str}	\CurrentFile	}
 	\file_parse_full_name:VNNN \CurrentFile \CurrentFilePath \CurrentFileName \CurrentFileExt
 	\GetFileInfo{\CurrentFile}
+	\cs_if_exist:cT{fileinfo}{\hypersetup{
+		pdfsubject={\fileinfo},
+			}}
 }
 
 
