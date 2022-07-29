@@ -323,3 +323,11 @@
 \DeclarePackageOrdering{ hyperref	}{before}{	uri	}[uri uses hyperref's commands if hyperref is loaded]
 
 \DeclarePackageDependency{ uri		}{	url	}[uri has a RequirePackage on url]
+
+\AddToHook{package/ regexpatch /before}[xpatch]%
+{	\UseOneTimeHook{package/ xpatch /before}	}
+\AddToHook{package/ regexpatch /after}[xpatch]%
+{	\disable@package@load{xpatch}{\PackageInfo{regexpatch}{blocked~pkg{xpatch}~from~loading.}}
+	\UseOneTimeHook{package/ xpatch /after}
+}
+\DeclarePackageOrdering{ regexpatch	}{voids}{	xpatch	}[\pkg{regexpatch} is the development version of \pkg{xpatch}]
