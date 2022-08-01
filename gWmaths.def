@@ -30,15 +30,15 @@
 					csvsimple,
 					gobble,	}[documentation explicitly states dependencies]
 
-\DeclarePackageOrdering{ article	}{before}{ hyperref, amsmath, babel, bookmark, nameref, hyperxmp, backref, geometry, parskip }[jfc]
-\DeclarePackageOrdering{ report	}{before}{ hyperref, amsmath, babel, bookmark, nameref, hyperxmp, backref, geometry, parskip }[jfc]
-%\DeclarePackageOrdering
+\DeclarePackageOrdering{ \gW@documentClass	}{before}{ hyperref, amsmath, babel, bookmark, nameref, hyperxmp, backref, geometry, parskip, fontspec }[lots of packages assume some prerequisites set by the class, like page size]
+%\DeclarePackageOrdering{ geometry	}{after}{	\gW@documentClass	}[classes often set page geometry using primitives, but this breaks for \cls{beamer}]%
+%\DeclarePackageOrdering{ fontspec	}{after}{	\gW@documentClass	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
 
 \DeclarePackageDependency{mmap}{cmap}[\pkg{mmap} loads \pkg{cmap} without options immediately...unless \pkg{mmap} decides not to load (\cs{RequirePDFTeX})]
 
-\DeclarePackageOrdering{ csquotes	}{after}{ documentclass / after }[\pkg{csquotes} redefines \cs{quote}]
-\DeclarePackageOrdering{ paralist	}{after}{ documentclass / after }[\pkg{paralist} redefines several environments]
-\DeclarePackageOrdering{ ntheorem	}{after}{ documentclass / after }[\pkg{ntheorem} redefines several environments]
+\DeclarePackageOrdering{ csquotes	}{after}{ \gW@documentClass }[\pkg{csquotes} redefines \cs{quote}]
+\DeclarePackageOrdering{ paralist	}{after}{ \gW@documentClass }[\pkg{paralist} redefines several environments]
+\DeclarePackageOrdering{ ntheorem	}{after}{ \gW@documentClass }[\pkg{ntheorem} redefines several environments]
 
 \DeclarePackageOrdering{ hologo	}{after}{	graphics, pgf,	}[\pkg{hologo} will use \pkg{graphics} or \pkg{pgf} if already loaded]%
 
@@ -51,51 +51,8 @@
 
 %
 %
-%
-\DeclarePackageOrdering	{ beamer	}{after}{	documentclass / before	}[jfc]
-\DeclarePackageOrdering	{ beamer	}{before}{	documentclass / after	}[jfc]
-\DeclarePackageDependency{ beamer	}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes} before *anything* else, which also loads other packages]%
-\DeclarePackageOrdering	{ beamerbasemodes	}{after}{	documentclass / before	}[jfc]
-\DeclarePackageOrdering	{ beamerbasemodes	}{before}{	documentclass / after	}[jfc]
-\DeclarePackageDependency*{ beamer	}{	beamerbaseoptions	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaseoptions}, which *purely* \cs{def}s stuff]%
-\DeclarePackageOrdering	{ beamerbaseoptions	}{after}{	beamerbasemodes	}
-\DeclarePackageDependency*{ beamer	}{	beamerbaserequires	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaserequires} right at the end.]%
-\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamer	}%
-\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamerbasemodes	}[😭]%
-\DeclarePackageOrdering	{ beamerbaserequires	}{before}{	documentclass / after	}[jfc]
-\DeclarePackageDependency{ beamerarticle	}{	beamerbasemodes	}[\pkg{beamerarticle} \cs{RequirePackages}s \pkg{beamerbasemodes} immediately with no options]
 
-\DeclarePackageDependency{ beamerbasemodes	}{	etoolbox,	}[\pkg{beamerbasemodes} \cs{RequirePackage}s \pkg{etoolbox}]
-\DeclarePackageDependency{ beamer	}{	iftex, 	}[\cls{beamer} \cs{RequirePackage}s these]%
-\DeclarePackageDependency{ beamerbaseoptions	}{	keyval	}[[\pkg{beamerbaseoptions} \cs{RequirePackage}s \pkg{beamerbaseoptions}, which *purely* \cs{def}s stuff]]
-\DeclarePackageDependency{ beamer	}{	inputenc	}[\cls{beamer} \cs{RequirePackages}s \pkg{inputenc}]
-\DeclarePackageDependency{ beamer	}{	pgfmath	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfmath}]
-\DeclarePackageDependency*{ beamer	}{	geometry	}[\cls{beamer} \cs{RequirePackages}s \pkg{geometry}, but passes in specific \meta{papersize = \cs{beamer@paperwidth},\cs{beamer@paperheight}} \etc.]
-\DeclarePackageOrdering	{ beamerbaseoptions	}{before}{	geometry	}[\cls{beamer} loads \pkg{geometry} halfway through, well after \pkg{beamerbaseoptions}.]
-\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	geometry	}[\cls{beamer} loads \pkg{geometry} halfway through, shortly before \pkg{beamerbaserequires}.]
-\DeclarePackageOrdering	{ beamerbasemodes	}{before}{	hyperref	}
-\DeclarePackageOrdering	{ beamerbaseoptions	}{before}{	hyperref	}[\cls{beamer} loads \pkg{hyperref} halfway through, well after \pkg{beamerbaseoptions}.]
-\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	hyperref	}[\cls{beamer} loads \pkg{hyperref} halfway through, shortly before \pkg{beamerbaserequires}.]
-\DeclarePackageOrdering	{ beamer	}{before}{	geometry	}[hacking this up to make sure it loads after the middle of \cls{beamer}...]
-%\beamer@filterclassoptions????
-\DeclarePackageDependency{ beamer	}{	pgfcore, xxcolor, atbegshi, 	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfcore, xxcolor, atbegshi}]
-\DeclarePackageDependency*{ beamer	}{	hyperref	}[\cls{beamer} \cs{RequirePackages}s \pkg{hyperref} \emph{with option implicit=false}]
-%beamer@autopdfinfo
-%notheorems
-%noamsthm
-%compress
-%leqno / fleqn
-%handout
-%trans
-%ignorenonframetext
-%noamssymb
-%\PassOptionsToPackage{bookmarks=true, bookmarksopen=true, pdfborder={ 0 0 0}, pdfhighlight={/N}, linkbordercolor={.5 .5 .5}}{hyperref}
-%pgf, hyperref, color, xcolor
-%`ucs' \POTP[hyperref]{ucs}
-
-%\DeclarePackageOrdering{ geometry	}{after}{	documentclass / after	}[classes often set page geometry using primitives, but this breaks for \cls{beamer}]%
-\DeclarePackageOrdering{ fontspec	}{after}{	documentclass / after	}[\pkg{fontspec} requires classes to have already defined \cs{normalfont}]%
-\DeclarePackageOrdering{ fontenc	}{after}{	documentclass / after	}%
+%\DeclarePackageOrdering{ fontenc	}{after}{	documentclass / after	}%
 
 \DeclarePackageDependency{ realscripts	}{	fontspec	}[\pkg{realscripts} \cs{RequirePackage}s \pkg{fontspec}.]
 
@@ -144,10 +101,11 @@
 							mathptmx,
 							geometry,
 							nag,	}[\pkg{accessibility}'s included example document loads these first...]
-\DeclarePackageOrdering{titling}{after}{documentclass / after}[Assumes title commands already defined]
-\DeclarePackageOrdering{titling}{incompatible-warning}{beamer}[\cls{beamer} does not define the bits of \cs{maketitle} that \pkg{titling} expects]
+\DeclarePackageOrdering{titling}{after}{\gW@documentClass}[Assumes title commands already defined]
+\DeclarePackageOrdering{titling}{incompatible-error}{beamer}[\cls{beamer} does not define the bits of \cs{maketitle} that \pkg{titling} expects]
+\DeclarePackageOrdering{beamer}{voids}{titling}
 
-\DeclarePackageOrdering{ hyperref	}{after}{	documentclass / after	}[Assumes several control sequences already defined]
+\DeclarePackageOrdering{ hyperref	}{after}{	\gW@documentClass	}[Assumes several control sequences already defined]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	documentclass / after	}
 \DeclarePackageDependency{ hyperxmp	}{	hyperref	}
 \RequirePackageAfterPackage{ hyperxmp	}{	hyperref	}%ARG ARG ARG ARG ARG
@@ -162,7 +120,7 @@
 							etoolbox,
 							ifthen,
 							luacode,	}[\cs{RequirePackage}]
-\DeclarePackageOrdering{ hologo		}{after}{	documentclass / after	}
+\DeclarePackageOrdering{ hologo		}{after}{	\gW@documentClass	}
 \DeclarePackageOrdering{ xcolor		}{before}{	documentclass / after	}
 \DeclarePackageOrdering{ graphicx	}{before}{	documentclass / after	}
 \DeclarePackageDependency{ venndiagram	}{	graphicx	}
@@ -331,3 +289,48 @@
 	\UseOneTimeHook{package/ xpatch /after}
 }
 \DeclarePackageOrdering{ regexpatch	}{voids}{	xpatch	}[\pkg{regexpatch} is the development version of \pkg{xpatch}]
+
+
+
+
+%
+\DeclarePackageOrdering	{ beamer	}{after}{	documentclass / before	}[jfc]
+\DeclarePackageOrdering	{ beamer	}{before}{	documentclass / after	}[jfc]
+\DeclarePackageDependency{ beamer	}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes} before *anything* else, which also loads other packages]%
+\DeclarePackageOrdering	{ beamerbasemodes	}{after}{	documentclass / before	}[jfc]
+\DeclarePackageOrdering	{ beamerbasemodes	}{before}{	documentclass / after	}[jfc]
+\DeclarePackageDependency*{ beamer	}{	beamerbaseoptions	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaseoptions}, which *purely* \cs{def}s stuff]%
+\DeclarePackageOrdering	{ beamerbaseoptions	}{after}{	beamerbasemodes	}
+\DeclarePackageDependency*{ beamer	}{	beamerbaserequires	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaserequires} right at the end.]%
+\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamer	}%
+\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamerbasemodes	}[😭]%
+\DeclarePackageOrdering	{ beamerbaserequires	}{before}{	documentclass / after	}[jfc]
+\DeclarePackageDependency{ beamerarticle	}{	beamerbasemodes	}[\pkg{beamerarticle} \cs{RequirePackages}s \pkg{beamerbasemodes} immediately with no options]
+
+\DeclarePackageDependency{ beamerbasemodes	}{	etoolbox,	}[\pkg{beamerbasemodes} \cs{RequirePackage}s \pkg{etoolbox}]
+\DeclarePackageDependency{ beamer	}{	iftex, 	}[\cls{beamer} \cs{RequirePackage}s these]%
+\DeclarePackageDependency{ beamerbaseoptions	}{	keyval	}[[\pkg{beamerbaseoptions} \cs{RequirePackage}s \pkg{beamerbaseoptions}, which *purely* \cs{def}s stuff]]
+\DeclarePackageDependency{ beamer	}{	inputenc	}[\cls{beamer} \cs{RequirePackages}s \pkg{inputenc}]
+\DeclarePackageDependency{ beamer	}{	pgfmath	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfmath}]
+\DeclarePackageDependency*{ beamer	}{	geometry	}[\cls{beamer} \cs{RequirePackages}s \pkg{geometry}, but passes in specific \meta{papersize = \cs{beamer@paperwidth},\cs{beamer@paperheight}} \etc.]
+\DeclarePackageOrdering	{ beamerbaseoptions	}{before}{	geometry	}[\cls{beamer} loads \pkg{geometry} halfway through, well after \pkg{beamerbaseoptions}.]
+\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	geometry	}[\cls{beamer} loads \pkg{geometry} halfway through, shortly before \pkg{beamerbaserequires}.]
+\DeclarePackageOrdering	{ beamerbasemodes	}{before}{	hyperref	}
+\DeclarePackageOrdering	{ beamerbaseoptions	}{before}{	hyperref	}[\cls{beamer} loads \pkg{hyperref} halfway through, well after \pkg{beamerbaseoptions}.]
+\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	hyperref	}[\cls{beamer} loads \pkg{hyperref} halfway through, shortly before \pkg{beamerbaserequires}.]
+\DeclarePackageOrdering	{ beamer	}{before}{	geometry	}[hacking this up to make sure it loads after the middle of \cls{beamer}...]
+%\beamer@filterclassoptions????
+\DeclarePackageDependency{ beamer	}{	pgfcore, xxcolor, atbegshi, 	}[\cls{beamer} \cs{RequirePackages}s \pkg{pgfcore, xxcolor, atbegshi}]
+\DeclarePackageDependency*{ beamer	}{	hyperref	}[\cls{beamer} \cs{RequirePackages}s \pkg{hyperref} \emph{with option implicit=false}]
+%beamer@autopdfinfo
+%notheorems
+%noamsthm
+%compress
+%leqno / fleqn
+%handout
+%trans
+%ignorenonframetext
+%noamssymb
+%\PassOptionsToPackage{bookmarks=true, bookmarksopen=true, pdfborder={ 0 0 0}, pdfhighlight={/N}, linkbordercolor={.5 .5 .5}}{hyperref}
+%pgf, hyperref, color, xcolor
+%`ucs' \POTP[hyperref]{ucs}

@@ -643,7 +643,6 @@ John Pell
 {	\DeclarePackageOrdering{gWmaths}{before}{ documentclass / before }
 	\DeclarePackageOrdering{gWpkgs}{before}{ documentclass / before }
 	\RequestPackagesAlreadyLoaded{ gWmaths }%
-	\input{gWmaths.def}
 	\RequestPackagesAlreadyLoaded{ gWpkgs }%
 }%
 %
@@ -801,6 +800,7 @@ John Pell
 {	\UseHook{ class / request }
 	\ActivateGenericHook{ package / #2 / request }
 	\ActivateGenericHook{ class / #2 / request }
+	\file_input:n{gWmaths.def}
 	\RequestPackagesAlreadyLoaded{ #2 }
 	\DeclarePackageOrdering{#2}{after}{documentclass / before}[class loads before nearly all packages]
 	%\PassOptionsToClass....
@@ -1145,7 +1145,10 @@ John Pell
 		}	},%
 %    \end{macrocode}
 %    \begin{macrocode}
-	documentClass	.tl_set:N	= \gW@documentClass	,
+	documentClass	.code = {%\tl_const:Nx
+		\tl_set:Nx	\gW@documentClass	{#1}
+		%\keys_define:nn{gWmaths}{documentClass .value_forbidden:n = true}
+	},%
 	documentClass	.initial:n	= article	,	% .default vs .initial-value
 	documentClass	.value_required:n	= true	,
 	syllabus	.meta:n	= {
@@ -1835,33 +1838,28 @@ John Pell
 
 
 
-\NewDocumentCommand	\gW@provideTheoremBreak	{}%
-{%
-\setbeamertemplate{theorem begin}
-{%
-  \par\vskip\medskipamount%
-  \begin{beamercolorbox}[colsep*=.75ex]{block title}
-    \usebeamerfont*{block title}%
-      \inserttheoremname
-      \ifx\inserttheoremaddition\empty\else\ (\inserttheoremaddition)\fi%
-  \end{beamercolorbox}%
-  {\parskip0pt\par}%
-  \ifbeamercolorempty[bg]{block title}
-  {}
-  {\ifbeamercolorempty[bg]{block body}{}{\nointerlineskip\vskip-0.5pt}}%
-  \usebeamerfont{block body}%
-  \vskip-.25ex\vbox{}%
-}
-\setbeamertemplate{theorem end}{}
+\AddToHook{class/ beamer /after}%
+{	\setbeamertemplate{theorem begin}%
+	{	\par\vskip\medskipamount%
+		\begin{beamercolorbox}[colsep*=.75ex]{block title}
+			\usebeamerfont*{block title}%
+			\inserttheoremname
+			\ifx\inserttheoremaddition\empty\else\ (\inserttheoremaddition)\fi%
+		\end{beamercolorbox}%
+		{\parskip0pt\par}%
+		\ifbeamercolorempty[bg]{block title}
+		{}
+		{\ifbeamercolorempty[bg]{block body}{}{\nointerlineskip\vskip-0.5pt}}%
+		\usebeamerfont{block body}%
+		\vskip-.25ex\vbox{}%
+	}
+	\setbeamertemplate{theorem end}{}
 
 	\ProvideDocumentCommand	\theorembreak	{}%
-	{%
-		\usebeamertemplate{theorem end}
+	{	\usebeamertemplate{theorem end}
 		\framebreak
 		\usebeamertemplate{theorem begin}
-	}%
-}
-\AddToHook{class/beamer/after}{	\gW@provideTheoremBreak	}%
+}	}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
