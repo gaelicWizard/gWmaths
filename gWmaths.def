@@ -138,6 +138,7 @@
 \PassOptionsToClassIfPackage{noamsthm}{beamer}{ntheorem}[prevent from loading \pkg{amsthm}, which conflicts with \pkg{ntheorem}]
 \PassOptionsToPackageIfPackage{hyperref}{ntheorem}{hyperref}[inform \pkg{ntheorem} that \pkg{hyperref} will be loaded]
 \PassOptionsToPackageIfPackage{amsmath}{ntheorem}{amsmath}[cope with `amsmath`]
+\DeclarePackageDependency{onlyamsmath}{amsmath}
 
 \DeclarePackageOrdering{ cmap		}{after}{	hyperref }
 \DeclarePackageOrdering{ cmap		}{before}{	fontenc }
