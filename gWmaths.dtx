@@ -112,7 +112,6 @@ John Pell
 %    \begin{macrocode}
 \documentclass{l3doc}
 \usepackage{gWmaths}
-\ifPDFTeX\RequestPackage{embedfile,dtx-attach}\fi
 
 %\EnableCrossrefs % Say \DisableCrossrefs if index is ready
 \CodelineIndex % \vs. \PageIndex
@@ -128,6 +127,15 @@ John Pell
 	\author{\pkg{\filename}
 		\thanks{ \url{ https://github.com/gaelicWizard/\filename } } ~
 		~ \fileversion }
+
+%\ifPDFTeX\RequestPackage{embedfile,dtx-attach}\fi
+{	\pdfdict_put:nnn{l_pdffile/Filespec}	{AFRelationship}	{/Source}
+	\pdf_string_from_unicode:nnN	{utf16/string}%
+		{\fileinfo}	\l_tmpa_str
+	\pdfdict_put:nnx	{l_pdffile/Filespec}	{Desc}	{\l_tmpa_str}
+	\pdffile_embed_file:nnn	{\CurrentFile}	{\CurrentFile}	{gWmaths/dtx}
+	\pdfmanagement_add:nnx	{Catalog/Names}	{EmbeddedFiles}	{\pdf_object_ref:n{gWmaths/dtx}}
+}% Embed DTX source in PDF.
 
 \AtEndPreamble{\ExplSyntaxOff}
 \begin{document}
