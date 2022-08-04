@@ -102,7 +102,7 @@ John Pell
 % \end{macro}
 %</ins>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage{ iftex,	}%
+\RequirePackage{ iftex,	}	\errorcontextlines20%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
 % \section{ Documentation driver file }
@@ -110,6 +110,8 @@ John Pell
 % Load \LaTeX3's documentation class, load ourselves (utility package), set the document title \etc., then \cs{DocInput} this very file.
 %
 %    \begin{macrocode}
+\DocumentMetadata%
+{	testphase=phase-II	}
 \documentclass{l3doc}
 \usepackage{gWmaths}
 
@@ -128,12 +130,13 @@ John Pell
 		\thanks{ \url{ https://github.com/gaelicWizard/\filename } } ~
 		~ \fileversion }
 
+\ExplSyntaxOn
 %\ifPDFTeX\RequestPackage{embedfile,dtx-attach}\fi
 {	\pdfdict_put:nnn{l_pdffile/Filespec}	{AFRelationship}	{/Source}
 	\pdf_string_from_unicode:nnN	{utf16/string}%
 		{\fileinfo}	\l_tmpa_str
 	\pdfdict_put:nnx	{l_pdffile/Filespec}	{Desc}	{\l_tmpa_str}
-	\pdffile_embed_file:nnn	{\CurrentFile}	{\CurrentFile}	{gWmaths/dtx}
+	\pdffile_embed_file:nnn	{gWmaths.dtx}	{gWmaths.dtx}	{gWmaths/dtx}
 	\pdfmanagement_add:nnx	{Catalog/Names}	{EmbeddedFiles}	{\pdf_object_ref:n{gWmaths/dtx}}
 }% Embed DTX source in PDF.
 
@@ -1207,7 +1210,6 @@ John Pell
 %%/gWkeys>
 % \section{ \cls{ \filename } ~ document ~ class }
 %
-%\ifXeTeX\pdftrue\fi % SOME APPS ASSUME THIS MEANS PDFTEX
 \AddToHook{package/ hyperref-generic /before}%
 {	\disable@package@load{etoolbox}{\PackageInfo{gWmaths}{blocked~pkg{etoolbox}~from~loading.}}	}
 \AddToHook{package/ hyperref-generic /after}%
