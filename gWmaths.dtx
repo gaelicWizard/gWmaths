@@ -1385,8 +1385,9 @@ John Pell
 %
 %% Set up a nicer quotation package:
 \RequestPackage[% `csquotes`
-	autostyle=try, % use `babel` if available
-	%autopunct % look ahead for trailing punctuation to move inside marks
+	autostyle=try,% use `babel` if available
+	%autopunct,% look ahead for trailing punctuation to move inside marks
+	strict=true,% turn warnings to errors
 ]{csquotes}
 
 %
