@@ -127,13 +127,14 @@
 \DeclarePackageDependency{ venndiagram	}{	tikz,
 						pgf,	}[\cs{RequirePackage}]
 \DeclarePackageOrdering{ varioref	}{after}{	babel }
-\DeclarePackageDependency{ bookmark	}{	currfile }[uses if already loaded]
+\DeclarePackageOrdering{ bookmark	}{after}{	currfile }[uses if already loaded]
 \DeclarePackageDependency{ bookmark	}{	hyperref }[loads itself without options early]
 \DeclarePackageOrdering{ ntheorem	}{after}{	babel, 
 							amsmath, 
 							mathtools, 
 							empheq, }
 \DeclarePackageOrdering{ ntheorem	}{incompatible-error}{	amsthm	}
+\DeclarePackageDependency{ntheorem}{latexsym,amssymb}[\cs{RequirePackage}'d with option \meta{standard}]
 \PassOptionsToPackageIfPackage{ntheorem}{empheq}{ntheorem}[cope with \pkg{ntheorem}]
 \PassOptionsToClassIfPackage{noamsthm}{beamer}{ntheorem}[prevent from loading \pkg{amsthm}, which conflicts with \pkg{ntheorem}]
 \PassOptionsToPackageIfPackage{hyperref}{ntheorem}{hyperref}[inform \pkg{ntheorem} that \pkg{hyperref} will be loaded]
