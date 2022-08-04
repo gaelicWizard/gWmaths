@@ -1230,25 +1230,6 @@ John Pell
 %
 %    \end{macrocode}
 %    \begin{macrocode}
-\sys_if_engine_xetex:T% Use violence on the format that XeTeX outputs fucking PDF.
-{% XDV IS NOT DVI; IT CAN ONLY GO TO PDF.
-	%\pdftrue
-	\str_gset:Nn \c_sys_output_str { pdf }
-	\cs_undefine:N \sys_if_output_dvi_p:
-	\cs_undefine:N \sys_if_output_dvi:T
-	\cs_undefine:N \sys_if_output_dvi:F
-	\cs_undefine:N \sys_if_output_dvi:TF
-	\cs_undefine:N \sys_if_output_pdf_p:
-	\cs_undefine:N \sys_if_output_pdf:T
-	\cs_undefine:N \sys_if_output_pdf:F
-	\cs_undefine:N \sys_if_output_pdf:TF
-	\__sys_const:nn { sys_if_output_dvi }%
-	{ \str_if_eq_p:Vn \c_sys_output_str { dvi } }
-	\__sys_const:nn { sys_if_output_pdf }%
-	{ \str_if_eq_p:Vn \c_sys_output_str { pdf } }
-	%\AddToHook{package/hyperref/before}{\pdffalse}
-	%\AddToHook{package/hyperref/after}{\pdftrue}
-}
 %
 \ifdefined\ProcessKeyOptions
 	\ProcessKeyOptions[gWmaths]
