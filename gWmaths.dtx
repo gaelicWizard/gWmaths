@@ -222,6 +222,12 @@ John Pell
 {	\AddToHook{ env/ #2 /end }[ #1 ]{ #3 }	}
 \ProvideDocumentCommand	\AfterEndEnvironment	{omm}%
 {	\AddToHook{ env/ #2 /after }[ #1 ]{ #3 }	}
+%% Shipouts
+\ProvideDocumentCommand	\EveryShipout	{om}% matches \pkg{everyshi}
+{	\AddToHook{shipout/before}[#1]{#2}	}
+\ProvideDocumentCommand	\AtNextShipout	{om}% matches \pkg{everyshi}
+{	\AddToHookNext{shipout/before}[#1]{#2}	}
+\disable@package@load{everyshi}{\PackageInfo{gWmaths}{blocked~pkg{everyshi}~from~loading.}}
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvideDocumentCommand	\AfterGroup	{ooom}%
