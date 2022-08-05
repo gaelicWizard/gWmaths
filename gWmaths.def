@@ -19,7 +19,7 @@
 
 \DeclarePackageOrdering{ format	}{before}{	fontspec,	}[dumping the format must happen before any platform-native fonts are loaded]
 \DeclarePackageOrdering{ format	}{before}{	cmap, mmap, unicode-math, realscripts	}[package which may reference native fonts cannot be included]
-\DeclarePackageOrdering{ format	}{after}{	documentclass / before, 	}
+\DeclarePackageOrdering{ format	}{after}{	gWpkgs, 	}
 \DeclarePackageOrdering{ format	}{after}{	\gW@documentClass	}[document class should nearly always be included]
 \DeclarePackageOrdering{ format	}{after}%
 	{	etoolbox,	expl3,	l3keys2e,	xparse,% standard packages
@@ -311,10 +311,10 @@
 
 %
 \DeclarePackageOrdering	{ beamer	}{unrelated}{	format	}[jfc]
-\DeclarePackageOrdering	{ beamer	}{after}{	documentclass / before	}[jfc]
+\DeclarePackageOrdering	{ beamer	}{after}{	gWpkgs	}[jfc]
 \DeclarePackageOrdering	{ beamer	}{before}{	documentclass / after	}[jfc]
 \DeclarePackageDependency{ beamer	}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes} before *anything* else, which also loads other packages]%
-\DeclarePackageOrdering	{ beamerbasemodes	}{after}{	documentclass / before	}[jfc]
+\DeclarePackageOrdering	{ beamerbasemodes	}{after}{	gWpkgs	}[jfc]
 \DeclarePackageOrdering	{ beamerbasemodes	}{before}{	documentclass / after	}[jfc]
 \DeclarePackageDependency*{ beamer	}{	beamerbaseoptions	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaseoptions}, which *purely* \cs{def}s stuff]%
 \DeclarePackageOrdering	{ beamerbaseoptions	}{after}{	beamerbasemodes	}

@@ -653,10 +653,8 @@ John Pell
 	\DeclarePackageOrdering{geometry}{unrelated}{documentclass / after}[\cls{beamer} loads \pkg{hyperref} halfway through...]
 }
 \AtEndOfPackage%
-{	\DeclarePackageOrdering{gWmaths}{before}{ documentclass / before }
-	\DeclarePackageOrdering{gWpkgs}{before}{ documentclass / before }
+{	\DeclarePackageOrdering{gWmaths}{before}{ gWpkgs }
 	\RequestPackagesAlreadyLoaded{ gWmaths }%
-	\RequestPackagesAlreadyLoaded{ gWpkgs }%
 }%
 %
 \NewDocumentCommand	\RequirePackageBeforePackage	{ o m o m }%
@@ -797,11 +795,11 @@ John Pell
 %    \end{macrocode}
 %    \begin{macrocode}
 \AtEndOfPackage%
-{	\DeclarePackageOrdering{documentclass / before}{after}{gWmaths}[...]
-	\DeclarePackageOrdering{documentclass / before}{before}{documentclass / after}[life is pain]
-	\AddToHook { gWpkgs }[ documentclass / before ]%
+{	\DeclarePackageOrdering{gWpkgs}{after}{gWmaths}[...]
+	\DeclarePackageOrdering{gWpkgs}{before}{documentclass / after}[life is pain]
+	\AddToHook { gWpkgs }[ gWpkgs ]%
 	{
-		\relax%\RequestPackagesAlreadyLoaded{documentclass / before}
+		\relax%\RequestPackagesAlreadyLoaded{gWpkgs}
 	}
 	\AddToHook { gWpkgs }[ documentclass / after ]%
 	{
@@ -813,9 +811,8 @@ John Pell
 {	\UseHook{ class / request }
 	\ActivateGenericHook{ package / #2 / request }
 	\ActivateGenericHook{ class / #2 / request }
-	\file_input:n{gWmaths.def}
 	\RequestPackagesAlreadyLoaded{ #2 }
-	\DeclarePackageOrdering{#2}{after}{documentclass / before}[class loads before nearly all packages]
+	\DeclarePackageOrdering{#2}{after}{gWpkgs}[class loads before nearly all packages]
 	%\PassOptionsToClass....
 	\AddToHook { gWpkgs }[#2]%
 	{%
@@ -823,8 +820,9 @@ John Pell
 		{	\def\LoadClass{\@fileswithoptions\@clsextension}
 			\LoadClass{#2}[#3]	}
 	}
-	\UseOneTimeHook{ class / #2 / request }
 	\DeclarePackageOrdering{#2}{before}{documentclass / after}[class loads before nearly all packages]
+	\file_input:n{gWmaths.def}
+	\UseOneTimeHook{ class / #2 / request }
 	\UseOneTimeHook{ package / #2 / request }
 }
 \NewHook{ class / request }
@@ -929,13 +927,17 @@ John Pell
 	\AddToHook{gWpkgs}[#2]{\relax}
 }
 \AddToHook{ package / before }%
-{	\exp_args:NV	\RequestPackage	{\@currname}	}
+{	\exp_args:NV	\RequestPackage	{\@currname}
+	\AddToHookNext{gWpkgs / before}% TODO: this needs to be expanded or it won't work...
+	{	\DeclarePackageOrdering{\@currname}{after}{gWmaths}[try to make sensible hook ordering]	}
+}
 %
 \NewDocumentCommand	\LoadPackagesNow	{ s }
 {%TODO: fix up the at-end-preamble version
 	\PackageWarning{gWpkgs}{ Loading~Packages~Now }
 	\stepcounter{gWpkgs}
 	\LogHook{ gWpkgs }%
+	\UseHook{ gWpkgs / before }
 	\IfBooleanTF{#1}%
 	{	\UseOneTimeHook{ gWpkgs }
 		\let\LoadPackagesNow\relax
@@ -946,6 +948,7 @@ John Pell
 }
 \newcounter{gWpkgs}% Calls to \cs{LoadPackagesNow}
 \newcounter{gWpkgd}%...
+\NewHook{ gWpkgs / before }
 \NewHook{ gWpkgs }
 \NewHook{ gWpkgs / after }
 \AtEndPreamble%
