@@ -1436,13 +1436,19 @@ John Pell
 %% Fix paragraph spacing: don't indent, do separate paragraphs.
 \RequestPackage{parskip} % Doesn't work with \cls{beamer}...maybe just loaded too late?
 
+\RequestPackage% sub-package of \pkg{currfile}
+	{currfile-abspath}
+\DeclarePackageOrdering{currfile-abspath}{after}{currfile}% temp..
+\AddToHook{package/ currfile-abspath /after}% Read \file{\jobname.fls} to determine absolute path to main document.
+	{	\getmainfile	}
+%\providecommand\currfile@mainext{tex}
 
-\RequestPackage[% `currfile`
-	abspath, %-recorder (default in latexmk)
-	realmainfile,
-	parent,
-	%parents,
-]{currfile}[2020/09/29]
+%\RequestPackage[% `currfile`
+%	abspath, %-recorder (default in latexmk)
+%	realmainfile,
+%	parent,
+%	%parents,
+%]{currfile}[2020/09/29]
 
 
 
@@ -1810,16 +1816,19 @@ John Pell
 	%\let\docthanks\@thanks % this is bjorked due to missing macros
 	\let\docdate\@date
 }
-\AtBeginDocument% *inside* main document environment
-{
-	\cs_if_exist:NT	\c_sys_jobname_str%
+\AfterDocumentClass% should be in the main file, still processing line 1.
+{	\cs_if_exist:NTF	\themainfile%
+	{	\file_get_full_name:nN{\themainfile}	\CurrentFile	}
 	{	\file_get_full_name:nN{\c_sys_jobname_str}	\CurrentFile	}
+
 	\file_parse_full_name:VNNN \CurrentFile \CurrentFilePath \CurrentFileName \CurrentFileExt
-	\GetFileInfo{\CurrentFile}
-	\cs_if_exist:cT{fileinfo}{\hypersetup{
-		pdfsubject={\fileinfo},
-			}}
 }
+\AfterEndPreamble% *inside* main document environment
+{	\GetFileInfo{\CurrentFile}
+	\tl_if_blank:nF	\fileinfo%
+	{	\hypersetup%
+		{	pdfsubject={\fileinfo},
+}	}	}
 
 
 
