@@ -1097,8 +1097,8 @@ John Pell
 	ntheorem	.code:n	= {
 		%% Set up a much nicer set of theorem environments:
 		\RequestPackage% `ntheorem`
-		[	thmmarks, % enables the automatical placement of endmarks
-			thref, % enables the extended reference features
+		[	thmmarks,% enables the automatical placement of endmarks
+			thref,% enables the extended reference features
 			%standard % load predefined environments
 		]{ntheorem}
 		\AddToHook{package/ ntheorem /before}% remove \meta{standard}, we do it ourselves
@@ -1299,28 +1299,28 @@ John Pell
 %
 %    \begin{macrocode}
 \PassOptionsToPackages{% \pkg{cmap}
-	resetfonts,	% Clear any already-loaded fonts and reload
+	resetfonts,% Clear any already-loaded fonts and reload
 }{cmap}% maps font glyphs back to unicode characters (allows copy/pasta from PDF).
 \PassOptionsToPackages{% `mmap`
-	noTeX % use unicode codepoints, not \TeX* names, [2008/08/11]
-}{mmap} % \pkg{mmap} extends \pkg{cmap} with math mappings.
+	noTeX,% use unicode codepoints, not \TeX* names, [2008/08/11]
+}{mmap}% \pkg{mmap} extends \pkg{cmap} with math mappings.
 %    \end{macrocode}
 %
 \PassOptionsToPackages{% \pkg{url}
-	obeyspaces, % allow spaces in URLs, but be wary of backslashes 
-	hyphens, % allow line-breaks to happen in an *already* hyphenated URL
-	lowtilde, % always use math tilde \cs{sim}
+	obeyspaces,% allow spaces in URLs, but be wary of backslashes 
+	hyphens,% allow line-breaks to happen in an *already* hyphenated URL
+	lowtilde,% always use math tilde \cs{sim}
 }{url}% \pkg{hyperref} loads \pkg{url} and then patches it
 %
 \PassOptionsToPackages{% \pkg{showkeys}
-	color, % allow labels to be colored by defining \meta{color}s
-	notref, % do not redefine \cs{ref} and \cs{pageref} (\pkg{varioref})
-	notcite, % do not redefine \cs{cite} et al (\pkg{natbib}
-}{showkeys} % print \cs{label} name in margin or superscript
+	color,% allow labels to be colored by defining \meta{color}s
+	notref,% do not redefine \cs{ref} and \cs{pageref} (\pkg{varioref})
+	notcite,% do not redefine \cs{cite} et al (\pkg{natbib}
+}{showkeys}% print \cs{label} name in margin or superscript
 %
 \PassOptionsToPackages{% \pkg{varioref}
-	nospace, % documented as being required because the default from 2001 was wrong...but compatibility...
-}{varioref} % \cs{vref} adds text indicating document location
+	nospace,% documented as being required because the default from 2001 was wrong...but compatibility...
+}{varioref}% \cs{vref} adds text indicating document location
 %
 %\ifdraft{
 %\PassOptionsToPackages{%
@@ -1329,13 +1329,13 @@ John Pell
 %}{}% \ifdraft
 %
 \PassOptionsToPackages{% \pkg{bookmark} for \pkg{hyperref}
-	atend, % define \cs{BookmarksAtEnd} 
-	%color=anyshit , % PDFv1.4+
+	atend,% define \cs{BookmarksAtEnd} 
+	%color=anyshit,% PDFv1.4+
 }{bookmark}
 %
 \PassOptionsToPackages{% \pkg{backref}
-	%hyperref, % already global option? Also, \pkg{hyperref} loads \pkg{backref} if \meta{backref} passed to it.
-	hyperpageref, % \pkg{hyperref} loads \pkg{backref} if \meta{pagebackref} passed to it
+	%hyperref,% already global option? Also, \pkg{hyperref} loads \pkg{backref} if \meta{backref} passed to it.
+	hyperpageref,% \pkg{hyperref} loads \pkg{backref} if \meta{pagebackref} passed to it
 }{backref}
 %
 %% Set up \HyperTeX* (hyperref, et al), which is basically the structural core of the document:
