@@ -117,10 +117,11 @@
 \DeclarePackageOrdering{titling}{after}{\gW@documentClass}[Assumes title commands already defined]
 \DeclarePackageOrdering{titling}{incompatible-error}{beamer}[\cls{beamer} does not define the bits of \cs{maketitle} that \pkg{titling} expects]
 \DeclarePackageOrdering{beamer}{voids}{titling}
+\DeclarePackageDependency{totpages}{everyshi}[\cs{RequirePackage}'s]
 
 \DeclarePackageOrdering{ hyperref	}{after}{	\gW@documentClass	}[Assumes several control sequences already defined]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	documentclass / after	}
-\DeclarePackageDependency{ hyperxmp	}{	hyperref	}
+\DeclarePackageDependency{ hyperxmp	}{	hyperref, totpages	}
 \RequirePackageAfterPackage{ hyperxmp	}{	hyperref	}%ARG ARG ARG ARG ARG
 %\DeclarePackageOrdering{ hyperxmp	}{before}{	hyperref	}[In newer kernels, \pkg{hyperxmp} *must* load before any \pkg{hyperref} keys are set...]
 %\DeclarePackageOrdering{ hyperxmp	}{after}{	babel	}%% WHY?!
