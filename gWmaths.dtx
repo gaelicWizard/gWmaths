@@ -1357,11 +1357,11 @@ John Pell
 	}{hyperref}
 }% \@gWhyperTeX
 
-\sys_if_output_pdf:T{\PassOptionsToPackages{
-	pdfusetitle, % use \title{} for PDF metadata
-	pdfdisplaydoctitle, % set PDF display \title{} in UI title bar
-	pdfpagelabels, % tag pages with page numbers from \LaTeX* ("ii" or whatever)
-}{hyperref}}
+\PassOptionsToPackages{% ...it's always PDF...
+	pdfusetitle,% use \title{} for PDF metadata
+	pdfdisplaydoctitle,% set PDF display \title{} in UI title bar
+	pdfpagelabels,% tag pages with page numbers from \LaTeX* ("ii" or whatever)
+}{hyperref}
 
 \RequestPackage[% `hyperref`
 	colorlinks, % set hyperlinks in color
