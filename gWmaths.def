@@ -210,11 +210,11 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\DeclarePackageOrdering{ inputenc	}{before}{	documentclass / after	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
+\DeclarePackageOrdering{ inputenc	}{before}{	\gW@documentClass	}[\pkg{inputenc} can affect package loading (if a file has non-ascii characters)]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\DeclarePackageOrdering{ fixltx2e 	}{before}{	documentclass / after	}
+\DeclarePackageOrdering{ fixltx2e 	}{before}{	\gW@documentClass	}
 \DeclarePackageOrdering{ fancyhdr 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ fncychap 	}{before}{	hyperref	}
 \DeclarePackageOrdering{ float 	}{before}{	hyperref	}
