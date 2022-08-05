@@ -1099,8 +1099,57 @@ John Pell
 		\RequestPackage% `ntheorem`
 		[	thmmarks, % enables the automatical placement of endmarks
 			thref, % enables the extended reference features
-			standard % load predefined environments
+			%standard % load predefined environments
 		]{ntheorem}
+		\AddToHook{package/ ntheorem /before}% remove \meta{standard}, we do it ourselves
+		{	\clist_remove_all:cn	{opt@ntheorem.sty}	{standard}	}
+		\AddToHook{package/ ntheorem /after}% specify the standard environments:
+		{	\theoremnumbering{arabic}
+			\theoremstyle{plain}
+			\RequestPackage{latexsym}
+			\theoremsymbol{\ensuremath{_\Box}}
+			\theorembodyfont{\itshape}
+			\theoremheaderfont{\normalfont\bfseries}
+			\theoremseparator{}
+			\newtheorem{theorem}{\textcolor{green}{Theorem}}[section]
+			\let\Theorem\theorem	\let\endTheorem\endtheorem
+			\newtheorem{satz}[theorem]{\textcolor{green}{Satz}}
+			\let\Satz\satz	\let\endSatz\endsatz
+			\newtheorem{proposition}[theorem]{\textcolor{blue}{Proposition}}
+			\let\Proposition\proposition	\let\endProposition\endproposition
+			\newtheorem{lemma}[theorem]{\textcolor{orange}{Lemma}}
+			\let\Lemma\lemma	\let\endLemma\endlemma
+			\newtheorem{corollary}{\textcolor{violet}{Corollary}}[theorem]
+			\let\Corollary\corollary	\let\endCorollary\endcorollary
+			\newtheorem{korollar}[corollary]{\textcolor{violet}{Korollar}}
+			\let\Korollar\korollar	\let\endKorollar\endkorollar
+
+			\theorembodyfont{\upshape}
+			\newtheorem{example}{Example}[section]
+			\let\Example\example	\let\endExample\endexample
+			\newtheorem{beispiel}[example]{Beispiel}
+			\let\Beispiel\beispiel	\let\endBeispiel\endbeispiel
+			\newtheorem{remark}{Remark}[section]
+			\let\Remark\remark	\let\endRemark\endremark
+			\newtheorem{bemerkung}[remark]{Bemerkung}
+			\let\Bemerkung\bemerkung	\let\endBemerkung\endbemerkung
+			\newtheorem{anmerkung}[remark]{Anmerkung}
+			\let\Anmerkung\anmerkung	\let\endAnmerkung\endanmberkung
+			\newtheorem{definition}{\textcolor{red}{Definition}}[section]
+			\let\Definition\definition	\let\endDefinition\enddefinition
+
+			\theoremstyle{nonumberplain}
+			\theoremheaderfont{\scshape}
+			\theorembodyfont{\normalfont}
+			\theoremsymbol{\ensuremath{_\blacksquare}}
+			\RequestPackage{amssymb}
+			\newtheorem{proof}{Proof}[section]
+			\let\Proof\proof	\let\endProof\endproof
+			\newtheorem{beweis}[proof]{Beweis}
+			\let\Beweis\beweis	\let\endBeweis\endbeweis
+			\qedsymbol{\ensuremath{_\blacksquare}}
+			\theoremclass{LaTeX}
+		}
 		%
 		%% Inform *all* packages that `ntheorem` is in use:
 		\DeclareGlobalOptionsIfPackage{ntheorem}{ntheorem}[some packages like to be told if \pkg{ntheorem} is in use]
@@ -1988,19 +2037,6 @@ John Pell
 	%{	\xpatchcmd{\setparams@definition}{\}\def \theorem@separator \{}{ \textcolor{red}{#1}\ \}\def \theorem@separator \{}	{}{}	}	{}
 	\xpatchcmd{\setparms@definition}{\csname th@plain\endcsname}{\th@plain}%
 	{}{}
-
-
-	\xpatchcmd{\mkheader@definition}{{definition}{definition}{Definition}}{{definition}{definition}{\textcolor{red}{Definition}}}%
-	{\let\Definition\definition}	{}
-
-	\xpatchcmd{\mkheader@theorem}{{theorem}{theorem}{Theorem}}{{theorem}{theorem}{\textcolor{green}{Theorem}}}%
-	{\let\Theorem\theorem}	{}
-	\xpatchcmd{\mkheader@corollary}{{corollary}{corollary}{Corollary}}{{corollary}{corollary}{\textcolor{violet}{Corollary}}}%
-	{\let\Corollary\corollary}	{}
-	\xpatchcmd{\mkheader@lemma}{{lemma}{lemma}{Lemma}}{{lemma}{lemma}{\textcolor{orange}{Lemma}}}%
-	{\let\Lemma\lemma}	{}
-	\xpatchcmd{\mkheader@proposition}{{proposition}{proposition}{Proposition}}{{proposition}{proposition}{\textcolor{blue}{Proposition}}}%
-	{\let\Proposition\proposition}	{}
 }
 
 % End environments
