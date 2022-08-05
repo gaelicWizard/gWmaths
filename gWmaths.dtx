@@ -1967,7 +1967,7 @@ John Pell
 	{	\vcenter{\hbox{\scalebox{.4}{ \tiny JOKER }}}	}
 
 	\NewDocumentCommand \AllTheCards {}
-	{{	\centering	%% Mind the group
+	{{	\leavevmode\par\centering	%% Mind the group
 		\clist_map_inline:nn { A,2,3,4,5,6,7,8,9,10,J,Q,K }
 		{	\blackcard{##1}{\spadesuit}	}
 		\par
