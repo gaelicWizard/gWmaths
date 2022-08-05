@@ -13,7 +13,7 @@
 \declare@file@substitution{ifpdf.sty}{iftex.sty}
 \declare@file@substitution{ifluatex.sty}{iftex.sty}
 %\declare@file@substitution{ifvtex.sty}{iftex.sty}% bunchastuff
-%\declare@file@substitution{ifetex.sty}{iftex.sty}% \NeedsETeX
+%\declare@file@substitution{ifetex.sty}{iftex.sty}% \cs{NeedsETeX}
 \declare@file@substitution{fink.sty}{currfile.sty}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

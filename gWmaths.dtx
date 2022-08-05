@@ -15,7 +15,7 @@ ${COVID-19 Quarantine Accessible \TeX{} Project}\fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  	{\ExplFileName}	{\ExplFileDate}	{\ExplFileVersion}	{\ExplFileDescription}
 %<*dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ifdefined\DocInput%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \begin{abstract}
+% \begin{abstract}\ExplSyntaxOff
 %</dtx>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %</!README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*dtx|README>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,33 +76,33 @@ John Pell
 %
 %    \begin{macrocode}
 \generate{	\catcode9=12 % tabs %https://tex.stackexchange.com/a/453323
-  \file{README.txt}{\from{\jobname.dtx}{README}}%
+  \file{README.txt}{\from{\jobname.dtx}{README}}
   %\filename@parse{\jobname.ins} % https://tex.stackexchange.com/a/39636 https://tex.stackexchange.com/a/39647
   %\file{\filename@base.\filename@ext}{\from{\filename@base.dtx}{\filename@ext}}
   %\file{\jobname.\@stripextension}{\from{\jobname.dtx}{\@stripextension}}
-  \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}%
-  \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}%
+  \file{\jobname.\@pkgextension}{\from{\jobname.dtx}{\@pkgextension}}
+  \file{\jobname.\@clsextension}{\from{\jobname.dtx}{\@clsextension}}
   %\file{\jobname.\@docextension}{\from{\jobname.dtx}{\@docextension}}
-  %\file{MAT-101.tex}{\from{\jobname.dtx}{xmplmain}}%
-  %\file{Lectures/Chapter~2.tex}{\from{\jobname.dtx}{xmpllecture}}%
+  %\file{MAT-101.tex}{\from{\jobname.dtx}{xmplmain}}
+  %\file{Lectures/Chapter~2.tex}{\from{\jobname.dtx}{xmpllecture}}
 %    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{ReportTotals}
 %
 % Print some stats to the terminal, then \cs{endgroup} to escape from \pkg{l3docstrip}.
 %
 %    \begin{macrocode}
-}	\ifToplevel{	\ReportTotals
+}	\ifToplevel{	\ReportTotals	}
 %
+\endgroup	% \end{l3docstrip}
 %<ins>\endbatchfile
-}	\endgroup	% \end{l3docstrip}
 %    \end{macrocode}
-% \end{macro}
 % \end{macro}
 % \end{macro}
 %</ins>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage{ iftex,	}	\errorcontextlines20%
+\RequirePackage{ iftex,	}	\errorcontextlines20
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
 % \section{ Documentation driver file }
@@ -150,12 +150,16 @@ John Pell
 	%\file{\jobname}~requires~the~following~packages:~\clist_use:cn {g_gWpkgs_clist}{,~}.
 	%\clist_show:c {g_gWpkgs_clist}
 	\ExplSyntaxOff%
-	%\part{\jobname.dtx}%
 
 %\DescribeMacro{\DescribeMacro} % \vs. \begin{macro}{\DescribeMacro}
 %\DescribeEnv{scontents}
 
-	\DocInput{\jobname.dtx}%
+	\part{\jobname.dtx}
+	\DocInput{\jobname.dtx}
+	\part{\jobname.def}
+	%\DocInput{\jobname.def}
+	\part{\jobname.tex}
+	%\DocInput{\jobname.tex}
 	%\IndexInput{}%
 	%\endpart%{\jobname.dtx}%
 	%\IndexInput{}
@@ -468,6 +472,7 @@ John Pell
 			~ #3 }
 		\date{#2}
 		\title{#4}
+		\ExplSyntaxOn\makeatletter
 	}
 	\RenewDocumentCommand\ProvidesExplPackage{ m m m m }
 	{ % \cs_map to \ProvidesExplFile
