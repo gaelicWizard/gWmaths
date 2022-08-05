@@ -17,9 +17,22 @@
 \declare@file@substitution{fink.sty}{currfile.sty}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\DeclarePackageOrdering{ format	}{before}{	fontspec, fontenc	}[dumping the format must happen before any platform-native fonts are loaded]
-\DeclarePackageOrdering{ format	}{before}{	cmap, mmap, unicode-math, babel, realscripts	}[]
-\DeclarePackageOrdering{ format	}{after}{	documentclass / before, 	}[]
+\DeclarePackageOrdering{ format	}{before}{	fontspec,	}[dumping the format must happen before any platform-native fonts are loaded]
+\DeclarePackageOrdering{ format	}{before}{	cmap, mmap, unicode-math, realscripts	}[package which may reference native fonts cannot be included]
+\DeclarePackageOrdering{ format	}{after}{	documentclass / before, 	}
+\DeclarePackageOrdering{ format	}{after}{	\gW@documentClass	}[document class should nearly always be included]
+\DeclarePackageOrdering{ format	}{after}%
+	{	etoolbox,	expl3,	l3keys2e,	xparse,% standard packages
+		phonenumbers,
+		csquotes,
+		parskip,
+		paralist,
+		titling,
+		hyperref,
+		hyperxmp,
+		backref,
+		nameref,
+	}[packages intended to be included in format]
 
 \DeclarePackageDependency{markdown}{	keyval,
 					url,
@@ -296,6 +309,7 @@
 
 
 %
+\DeclarePackageOrdering	{ beamer	}{unrelated}{	format	}[jfc]
 \DeclarePackageOrdering	{ beamer	}{after}{	documentclass / before	}[jfc]
 \DeclarePackageOrdering	{ beamer	}{before}{	documentclass / after	}[jfc]
 \DeclarePackageDependency{ beamer	}{	beamerbasemodes	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbasemodes} before *anything* else, which also loads other packages]%
