@@ -1,14 +1,14 @@
 \NeedsTeXFormat{LaTeX2e}[2020/10/01]%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%!TeX program = pdflatexmk
 %%!TEX encoding = UTF-8
+%%!TEX parameter = -8bit
 %%!TEX root = gWmaths.dtx
-%!TEX parameter = -8bit
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ProvidesExplFile
  	{gWpkgs}	{2022/06/30}	{0.1.0}%
 		{COVID-19 Quarantine Accessible \TeX* Project: Package Ordering Edition}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    \begin{macrocode}
 \declare@file@substitution{ifxetex.sty}{iftex.sty}
 \declare@file@substitution{ifpdf.sty}{iftex.sty}
 \declare@file@substitution{ifluatex.sty}{iftex.sty}
@@ -320,7 +320,10 @@
 \DeclarePackageOrdering	{ beamerbaseoptions	}{after}{	beamerbasemodes	}
 \DeclarePackageDependency*{ beamer	}{	beamerbaserequires	}[\cls{beamer} \cs{RequirePackage}s \pkg{beamerbaserequires} right at the end.]%
 \DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamer	}%
-\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamerbasemodes	}[😭]%
+\DeclarePackageOrdering	{ beamerbaserequires	}{after}{	beamerbasemodes	}
+%    \end{macrocode}
+[\number`😭]%%
+%    \begin{macrocode}
 \DeclarePackageOrdering	{ beamerbaserequires	}{before}{	documentclass / after	}[jfc]
 \DeclarePackageDependency{ beamerarticle	}{	beamerbasemodes	}[\pkg{beamerarticle} \cs{RequirePackages}s \pkg{beamerbasemodes} immediately with no options]
 
@@ -351,3 +354,4 @@
 %\PassOptionsToPackage{bookmarks=true, bookmarksopen=true, pdfborder={ 0 0 0}, pdfhighlight={/N}, linkbordercolor={.5 .5 .5}}{hyperref}
 %pgf, hyperref, color, xcolor
 %`ucs' \POTP[hyperref]{ucs}
+%    \end{macrocode}

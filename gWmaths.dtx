@@ -73,7 +73,7 @@ ${COVID-19 Quarantine Accessible \TeX{} Project}\fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{ iftex,	}	\errorcontextlines20
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*drv>
-% \section{ Documentation driver file }
+% \section{Documentation driver file}
 %
 % Load \LaTeX3's documentation class, load ourselves (utility package), set the document title \etc., then \cs{DocInput} this very file.
 %
@@ -150,11 +150,12 @@ John Pell
 % \end{abstract}
 % \ExplSyntaxOff
 
+	\tableofcontents % \catcode9=12
 
 	\part{\jobname.dtx}
 	\DocInput{\jobname.dtx}
 	\part{\jobname.def}
-	%\DocInput{\jobname.def}
+	\DocInput{\jobname.def}
 	\part{\jobname.tex}
 	%\DocInput{\jobname.tex}
 	%\IndexInput{}%
@@ -169,7 +170,7 @@ John Pell
 %</drv>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*sty>
-% \section{ Convenience Names for Common Hooks }
+% \section{Convenience Names for Common Hooks}
 % Most of these are provided by the format, so the following declarations do absolutely nothing. Others are provided by \pkg{etoolbox}, so this really only covers the case where \pkg{etoolbox} isn't ever loaded.
 %
 %    \begin{macrocode}
@@ -253,7 +254,7 @@ John Pell
 %    \end{macrocode}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{ \pkg{\filename} utilities package }
+% \section{\pkg{\filename} utilities package}
 %
 %    \begin{macrocode}
 %\makeatletter
@@ -393,7 +394,9 @@ John Pell
 
 %
 %<*dtx>%%% If we're in the original DTX,
+%
 % \StopEventually{Further code is badly formatted and needs some DTX-fixage...}
+%
 %</dtx>
 %
 
