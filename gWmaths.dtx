@@ -170,7 +170,9 @@ John Pell
 %</drv>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %<*sty>
-% \section{Convenience Names for Common Hooks}
+% \section{\pkg{\filename} utilities package}
+% \subsection{Convenience Names for Common Hooks}
+%
 % Most of these are provided by the format, so the following declarations do absolutely nothing. Others are provided by \pkg{etoolbox}, so this really only covers the case where \pkg{etoolbox} isn't ever loaded.
 %
 %    \begin{macrocode}
@@ -254,7 +256,7 @@ John Pell
 %    \end{macrocode}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{\pkg{\filename} utilities package}
+% \subsection{utilities packages}
 %
 %    \begin{macrocode}
 %\makeatletter
@@ -302,7 +304,7 @@ John Pell
 %
 %    \end{macrocode}
 %
-%
+% \subsection{utilities}
 % \begin{macro}{endpart}
 %
 % Convenience function to \emph{end} a \cs{part}, but without starting another. This is useful for hierarchy breaks like in PDF bookmarks / TOC.
@@ -330,6 +332,8 @@ John Pell
 }%
 %    \end{macrocode}
 % \end{macro}
+%
+% \subsection{Logos}
 %
 % \begin{macro}{DeclareHologo}
 %
@@ -437,6 +441,7 @@ John Pell
 \DeclareHologo{LaTeX3}[LaTeXx]% Map \hologo{LaTeX3} to \LaTeX3
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{links}
 %% better documentation links from \cls{l3doc} and \pkg{hypdoc}
 \ProvideDocumentCommand {\gW@CTAN} { o m }
 { % TODO: switch on #1 for pkg, mirror, TDS
