@@ -1049,7 +1049,9 @@ John Pell
 % Set up our options 
 %
 %    \begin{macrocode}
-	DocumentMetadata	.code:n = {%
+	DocumentMetadata	.choices:nn	=	{ disable, block, off, false,	}%
+	{	},
+	DocumentMetadata / unknown	.code:n = {%
 		\cs_if_exist:NTF \IfDocumentMetadataTF{\IfDocumentMetadataTF%
 		{	\DocumentMetadata{#1}	}% Already loaded, just pass along...
 		{% MUST be as early as possible, note that we have to even have to hide:
@@ -1071,7 +1073,10 @@ John Pell
 	DocumentMetadata	.initial:n = {},%
 %    \end{macrocode}
 %    \begin{macrocode}
-	format	.code:n = {%
+	format	.choices:nn	=	{ disable, block, off, false,	}%
+	{	%TODO: remove format hook? 
+	},
+	format / unknown	.code:n = {%
 		%%% set up a hook at the right spot to dump a custom format
 		\AddToHook{gWpkgs}[format]%
 		{	\RemoveFromHook{gWpkgs}[format]% so we don't run again!!
