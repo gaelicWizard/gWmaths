@@ -1712,7 +1712,9 @@ John Pell
 	\RequestPackage{fontspec} % Handle modern fonts
 	\PassOptionsToPackages{TU}{fontenc} % FIXME: somehow i'm loading this twice somewhere...
 	\AddToHook{package/ fontspec /after}% Make ASCII nicer; see \href{https://tex.stackexchange.com/a/577364/233148}
-	{	\defaultfontfeatures{Ligatures={Required,Common,TeX,Discretionary}}	}
+	{	\defaultfontfeatures{Ligatures={Required,Common,TeX,Discretionary}}
+		\defaultfontfeatures{Ligatures=TeX}
+	}
 	\RequestPackage{unicode-math} % Use unicode symbols, basically \pkg{mmap}.
 	
 	%% Post-2017, don't use EU1/EU2 font encoding (nor T1, nor TS1, nor OT1)
