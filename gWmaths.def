@@ -4,9 +4,13 @@
 %%!TEX parameter = -8bit
 %%!TEX root = gWmaths.dtx
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ProvidesExplFile
- 	{gWpkgs}	{2022/06/30}	{0.1.0}%
-		{COVID-19 Quarantine Accessible \TeX* Project: Package Ordering Edition}
+\GetIdInfo$Format: %x24Id:  %%
+\csname g_file_curr_name_str\endcsname. %(describe:tags,match=v*) %as %%
+develop \the\year-\the\month-\the\day 0%x24%%
+${COVID-19 Quarantine Accessible \TeX{} Project: Package Ordering Edition}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProvidesExplFile%
+ 	{\ExplFileName}	{\ExplFileDate}	{\ExplFileVersion}	{\ExplFileDescription}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %    \begin{macrocode}
 \declare@file@substitution{ifxetex.sty}{iftex.sty}
@@ -15,6 +19,7 @@
 %\declare@file@substitution{ifvtex.sty}{iftex.sty}% bunchastuff
 %\declare@file@substitution{ifetex.sty}{iftex.sty}% \cs{NeedsETeX}
 \declare@file@substitution{fink.sty}{currfile.sty}
+\declare@file@substitution{newarray.sty}{array.sty}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \DeclarePackageOrdering{ format	}{before}{	fontspec,	}[dumping the format must happen before any platform-native fonts are loaded]
@@ -23,6 +28,8 @@
 \DeclarePackageOrdering{ format	}{after}{	\gW@documentClass	}[document class should nearly always be included]
 \DeclarePackageOrdering{ format	}{after}%
 	{	etoolbox,	expl3,	l3keys2e,	xparse,% standard packages
+		fixltx2e, ifthen, inputenc, latexrelease, shortvrb,% standard packages
+		graphics, color, array, layout, multicol, showkeys, trace,% standard packages
 		phonenumbers,
 		csquotes,
 		parskip,
