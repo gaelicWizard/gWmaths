@@ -108,6 +108,18 @@ ${COVID-19 Quarantine Accessible \TeX{} Project}\fi%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\pdfmanagement_add:nnx	{Catalog/Names}	{EmbeddedFiles}	{\pdf_object_ref:n{gWmaths/dtx}}
 }% Embed DTX source in PDF.
 
+\dim_new:c{randx}% Coordinates of the next word should be saved since
+\dim_new:c{randy}%  the random generator produces one number at a time.
+\AddToHookNext{shipout/background}%
+{	\clist_map_inline:nn	{TeX, LaTeXTeX, LaTeX2e, LaTeX3, eTeX, XeTeX}% for-each
+	{	\dim_set:Nn	\randx%	set random X position
+		{	\paperwidth * \dim_ratio:nn{\int_rand:n{1000}mm}{1000mm} * 7/9 + \paperwidth*1/9	}
+		\dim_set:Nn	\randy%	set random Y position
+		{	\paperheight/3 * \dim_ratio:nn{\int_rand:n{1000}mm}{1000mm} 	}
+		\put(\randx,-\randy)%	print word
+		{	\makebox(0,0)[c]{{\Large \hologo{#1} }}	}
+}	}
+
 \AtEndPreamble{\ExplSyntaxOff}
 \begin{document}
 	\maketitle
